@@ -27,3 +27,26 @@ include_directories(
 target_include_directories(${PROJECT_NAME} INTERFACE
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
 )
+
+# Make formatting run before we build the project.
+add_dependencies(${PROJECT_NAME} clangformat)
+
+file(
+    GLOB_RECURSE
+    SOURCES_TO_FORMAT
+    include/*.c
+    include/*.cpp
+    include/*.h
+    include/*.hpp
+    src/*.c
+    src/*.cpp
+    src/*.h
+    src/*.hpp
+)
+add_custom_target(
+    clangformat
+    ALL
+    COMMAND /usr/bin/clang-format
+    -i
+    ${SOURCES_TO_FORMAT}
+)
