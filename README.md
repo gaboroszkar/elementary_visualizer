@@ -11,7 +11,12 @@ cmake -S . -B build
 cmake --build build
 ```
 
-## Running automatic reformatting
+## Running tests and automatic reformatting
+
+To run tests, run the following command.
+```
+ctest --test-dir build
+```
 
 To automatically reformat the code, run the following command.
 ```

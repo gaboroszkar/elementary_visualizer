@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.22)
 
 project(elementary_visualizer)
 
+option(BUILD_TESTING "Build testing" ON)
+
 # Generate compile_commands.json.
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -73,6 +75,11 @@ target_include_directories(${PROJECT_NAME} INTERFACE
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
 )
 
+if(BUILD_TESTING)
+    enable_testing()
+    add_subdirectory(tests)
+endif()
+
 # Make formatting run before we build the project.
 add_dependencies(${PROJECT_NAME} clangformat)
 
@@ -87,6 +94,10 @@ file(
     src/*.cpp
     src/*.h
     src/*.hpp
+    tests/*.c
+    tests/*.cpp
+    tests/*.h
+    tests/*.hpp
 )
 add_custom_target(
     clangformat
