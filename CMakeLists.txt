@@ -5,6 +5,49 @@ project(elementary_visualizer)
 # Generate compile_commands.json.
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+function(add_external_subdirectories)
+    # External libraries are statically linked.
+    set(BUILD_SHARED_LIBS OFF)
+
+    # expected-lite.
+    set(EXPECTED_LITE_DIR ${PROJECT_SOURCE_DIR}/external/expected/)
+    set(EXPECTED_BUILD_TESTS OFF)
+    add_subdirectory(${EXPECTED_LITE_DIR})
+    target_link_libraries(${PROJECT_NAME} expected)
+
+    # GLFW.
+    set(GLFW_DIR ${PROJECT_SOURCE_DIR}/external/glfw/)
+    set(GLFW_BUILD_EXAMPLES OFF CACHE INTERNAL "Build the GLFW example programs")
+    set(GLFW_BUILD_TESTS OFF CACHE INTERNAL "Build the GLFW test programs")
+    set(GLFW_BUILD_DOCS OFF CACHE INTERNAL "Build the GLFW documentation")
+    set(GLFW_INSTALL OFF CACHE INTERNAL "Generate installation target")
+    add_subdirectory(${GLFW_DIR})
+    target_link_libraries(${PROJECT_NAME} glfw)
+
+    # glad.
+    set(GL_VERSION_MAJOR 4)
+    set(GL_VERSION_MINOR 6)
+    set(GLAD_CORE_LIBRARY glad_gl_core_${GL_VERSION_MAJOR}${GL_VERSION_MINOR})
+    set(GLAD_DIR ${PROJECT_SOURCE_DIR}/external/glad/)
+    add_subdirectory(${GLAD_DIR}/cmake)
+    glad_add_library(${GLAD_CORE_LIBRARY} STATIC API
+        gl:core=${GL_VERSION_MAJOR}.${GL_VERSION_MINOR})
+    # If BUILD_SHARED_LIBS is OFF, the glad is built without the -fPIC option,
+    # which is fine if we statically link this to an executable,
+    # but not when this library is built into an other library which will be
+    # dynamically linked to an executable.
+    set_property(TARGET ${GLAD_CORE_LIBRARY} PROPERTY POSITION_INDEPENDENT_CODE ON)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE
+        GL_VERSION_MAJOR=${GL_VERSION_MAJOR}
+        GL_VERSION_MINOR=${GL_VERSION_MINOR})
+    target_link_libraries(${PROJECT_NAME} ${GLAD_CORE_LIBRARY})
+
+    # glm.
+    set(GLM_DIR ${PROJECT_SOURCE_DIR}/external/glm/)
+    add_subdirectory(${GLM_DIR})
+    target_link_libraries(${PROJECT_NAME} glm::glm)
+endfunction()
+
 # Add target and sources.
 set(SOURCES
     src/scene.cpp
@@ -19,6 +62,8 @@ include_directories(
     ${PROJECT_SOURCE_DIR}/include
     ${PROJECT_SOURCE_DIR}/src
 )
+
+add_external_subdirectories()
 
 # Add include directories to the targets using this library.
 # Note, because INTERFACE is set, this is applied

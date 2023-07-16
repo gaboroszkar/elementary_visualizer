@@ -18,6 +18,15 @@ To automatically reformat the code, run the following command.
 cmake --build build --target clangformat
 ```
 
+## Credits
+
+This project makes use of the following open-source software.
+
+- [expected](https://github.com/TartanLlama/expected.git): Single header implementation of `std::expected` with functional-style extensions.
+- [GLFW](https://www.glfw.org/): GLFW is an Open Source, multi-platform library for OpenGL, OpenGL ES and Vulkan application development.
+- [glad](https://github.com/Dav1dde/glad.git): Vulkan/GL/GLES/EGL/GLX/WGL Loader-Generator based on the official specifications for multiple languages.
+- [glm](https://github.com/g-truc/glm.git): Header only C++ mathematics library for graphics software.
+
 ## Development guidelines
 
 * Before each commit, use the automatic code formatter.

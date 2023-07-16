@@ -1,0 +1,16 @@
+[submodule "external/expected"]
+	path = external/expected
+	url = https://github.com/TartanLlama/expected.git
+	branch = master
+[submodule "external/glfw"]
+	path = external/glfw
+	url = https://github.com/glfw/glfw.git
+	branch = 3.3-stable
+[submodule "external/glad"]
+	path = external/glad
+	url = https://github.com/Dav1dde/glad.git
+	branch = glad2
+[submodule "external/glm"]
+	path = external/glm
+	url = https://github.com/g-truc/glm.git
+	branch = master
