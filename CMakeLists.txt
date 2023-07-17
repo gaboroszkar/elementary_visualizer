@@ -52,6 +52,10 @@ endfunction()
 
 # Add target and sources.
 set(SOURCES
+    src/elementary_visualizer.cpp
+    src/entity.cpp
+    src/gl_resources.cpp
+    src/glfw_resources.cpp
     src/scene.cpp
 )
 add_library(${PROJECT_NAME} ${SOURCES})
