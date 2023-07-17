@@ -119,6 +119,58 @@ void Window::Impl::destroy()
         this->glfw_window.reset();
 }
 
+void Window::Impl::on_keyboard_event(
+    std::optional<std::function<void(EventAction, Key, ModifierKey)>> function
+)
+{
+    if (this->glfw_window)
+    {
+        this->glfw_window->key_callback =
+            [function](int key, int, int action, int mods) -> void
+        {
+            if (function)
+                function.value(
+                )(static_cast<EventAction>(action),
+                  static_cast<Key>(key),
+                  static_cast<ModifierKey>(mods));
+        };
+    }
+}
+
+void Window::Impl::on_mouse_button_event(
+    std::optional<std::function<void(EventAction, MouseButton, ModifierKey)>>
+        function
+)
+{
+    if (this->glfw_window)
+    {
+        this->glfw_window->mouse_button_callback =
+            [function](int button, int action, int mods) -> void
+        {
+            if (function)
+                function.value(
+                )(static_cast<EventAction>(action),
+                  static_cast<MouseButton>(button),
+                  static_cast<ModifierKey>(mods));
+        };
+    }
+}
+
+void Window::Impl::on_mouse_move_event(
+    std::optional<std::function<void(glm::vec2)>> function
+)
+{
+    if (this->glfw_window)
+    {
+        this->glfw_window->cursor_pos_callback =
+            [function](double xpos, double ypos) -> void
+        {
+            if (function)
+                function.value()(glm::vec2(xpos, ypos));
+        };
+    }
+}
+
 Window::Impl::~Impl(){};
 
 Expected<Window, Error> Window::create(
@@ -176,6 +228,28 @@ void Window::render(
 )
 {
     this->impl->render(rendered_scene, render_mode);
+}
+
+void Window::on_keyboard_event(
+    std::optional<std::function<void(EventAction, Key, ModifierKey)>> function
+)
+{
+    this->impl->on_keyboard_event(function);
+}
+
+void Window::on_mouse_button_event(
+    std::optional<std::function<void(EventAction, MouseButton, ModifierKey)>>
+        function
+)
+{
+    this->impl->on_mouse_button_event(function);
+}
+
+void Window::on_mouse_move_event(
+    std::optional<std::function<void(glm::vec2)>> function
+)
+{
+    this->impl->on_mouse_move_event(function);
 }
 
 Window::~Window() {}

@@ -34,6 +34,18 @@ public:
 
     void destroy();
 
+    void on_keyboard_event(
+        std::optional<std::function<void(EventAction, Key, ModifierKey)>>
+            function
+    );
+    void on_mouse_button_event(
+        std::optional<
+            std::function<void(EventAction, MouseButton, ModifierKey)>> function
+    );
+    void on_mouse_move_event(
+        std::optional<std::function<void(glm::vec2)>> function
+    );
+
     ~Impl();
 
     Impl(const Impl &) = delete;

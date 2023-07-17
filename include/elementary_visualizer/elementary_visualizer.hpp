@@ -1,6 +1,7 @@
 #ifndef ELEMENTARY_VISUALIZER_ELEMENTARY_VISUALIZER_HPP
 #define ELEMENTARY_VISUALIZER_ELEMENTARY_VISUALIZER_HPP
 
+#include <elementary_visualizer/event_values.hpp>
 #include <glm/glm.hpp>
 #include <memory>
 #include <optional>
@@ -83,6 +84,19 @@ public:
     void render(
         std::shared_ptr<const RenderedScene> rendered_scene,
         const RenderMode = RenderMode::fill
+    );
+
+    void on_keyboard_event(
+        std::optional<std::function<void(EventAction, Key, ModifierKey)>>
+            function = std::nullopt
+    );
+    void on_mouse_button_event(
+        std::optional<
+            std::function<void(EventAction, MouseButton, ModifierKey)>>
+            function = std::nullopt
+    );
+    void on_mouse_move_event(
+        std::optional<std::function<void(glm::vec2)>> function = std::nullopt
     );
 
     ~Window();
