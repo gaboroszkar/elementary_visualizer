@@ -54,6 +54,53 @@ private:
 
     Scene(std::unique_ptr<Impl> &&impl);
 };
+
+enum class RenderMode
+{
+    fill,
+    fit,
+    absolute
+};
+
+class Window
+{
+public:
+
+    static Expected<Window, Error> create(
+        const std::string &title,
+        const glm::ivec2 &size,
+        const bool resizable = true
+    );
+
+    Window(Window &&other);
+    Window &operator=(Window &&other);
+
+    operator bool() const;
+
+    void destroy();
+    bool should_close_or_invalid() const;
+
+    void render(
+        std::shared_ptr<const RenderedScene> rendered_scene,
+        const RenderMode = RenderMode::fill
+    );
+
+    ~Window();
+
+    Window(const Window &other) = delete;
+    Window &operator=(const Window &other) = delete;
+
+    Window() = delete;
+
+private:
+
+    class Impl;
+    std::unique_ptr<Impl> impl;
+
+    Window(std::unique_ptr<Impl> &&impl);
+};
+
+void poll_window_events();
 }
 
 #endif

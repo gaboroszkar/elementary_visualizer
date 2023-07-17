@@ -99,6 +99,85 @@ private:
         std::shared_ptr<GlTexture> texture
     );
 };
+
+class GlVertexBuffer
+{
+public:
+
+    static Expected<std::shared_ptr<GlVertexBuffer>, Error>
+        create(std::shared_ptr<WrappedGlfwWindow> glfw_window);
+
+    void bind(bool make_context = true) const;
+
+    ~GlVertexBuffer();
+
+    GlVertexBuffer(GlVertexBuffer &&other) = delete;
+    GlVertexBuffer &operator=(GlVertexBuffer &&other) = delete;
+    GlVertexBuffer(const GlVertexBuffer &other) = delete;
+    GlVertexBuffer &operator=(const GlVertexBuffer &other) = delete;
+
+private:
+
+    GlVertexBuffer(
+        std::shared_ptr<WrappedGlfwWindow> glfw_window, const GLuint index
+    );
+
+    std::shared_ptr<WrappedGlfwWindow> glfw_window;
+    const GLuint index;
+};
+
+class GlVertexArray
+{
+public:
+
+    static Expected<std::shared_ptr<GlVertexArray>, Error>
+        create(std::shared_ptr<WrappedGlfwWindow> glfw_window);
+
+    void bind(bool make_context = true) const;
+
+    ~GlVertexArray();
+
+    GlVertexArray(GlVertexArray &&other) = delete;
+    GlVertexArray &operator=(GlVertexArray &&other) = delete;
+    GlVertexArray(const GlVertexArray &other) = delete;
+    GlVertexArray &operator=(const GlVertexArray &other) = delete;
+
+private:
+
+    GlVertexArray(
+        std::shared_ptr<WrappedGlfwWindow> glfw_window, const GLuint index
+    );
+
+    std::shared_ptr<WrappedGlfwWindow> glfw_window;
+    const GLuint index;
+};
+
+class GlQuad
+{
+public:
+
+    static Expected<std::shared_ptr<GlQuad>, Error>
+        create(std::shared_ptr<WrappedGlfwWindow> glfw_window);
+
+    void render(bool make_context = true) const;
+
+    ~GlQuad();
+
+    GlQuad(GlQuad &&other) = delete;
+    GlQuad &operator=(GlQuad &&other) = delete;
+    GlQuad(const GlQuad &other) = delete;
+    GlQuad &operator=(const GlQuad &other) = delete;
+
+private:
+
+    GlQuad(
+        std::shared_ptr<GlVertexArray> vertex_array,
+        std::shared_ptr<GlVertexBuffer> vertex_buffer
+    );
+
+    const std::shared_ptr<GlVertexArray> vertex_array;
+    const std::shared_ptr<GlVertexBuffer> vertex_buffer;
+};
 }
 
 #endif

@@ -3,6 +3,7 @@
 
 #include <elementary_visualizer/elementary_visualizer.hpp>
 #include <gl_resources.hpp>
+#include <gl_shader_program.hpp>
 #include <glfw_resources.hpp>
 #include <memory>
 #include <optional>
@@ -38,9 +39,16 @@ private:
 
     static Expected<std::shared_ptr<Entity>, Error> initialize();
 
-    Entity(std::shared_ptr<WrappedGlfwWindow> glfw_window);
+    Entity(
+        std::shared_ptr<WrappedGlfwWindow> glfw_window,
+        std::shared_ptr<GlShaderProgram> quad_shader_program
+    );
 
     std::shared_ptr<WrappedGlfwWindow> glfw_window;
+
+public:
+
+    const std::shared_ptr<GlShaderProgram> quad_shader_program;
 };
 }
 

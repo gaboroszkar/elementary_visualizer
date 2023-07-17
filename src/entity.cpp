@@ -1,4 +1,5 @@
 #include <entity.hpp>
+#include <shader_sources.hpp>
 
 namespace elementary_visualizer
 {
@@ -46,11 +47,28 @@ Expected<std::shared_ptr<Entity>, Error> Entity::initialize()
     return window_creation_result.and_then(
         [](std::shared_ptr<WrappedGlfwWindow> glfw_window
         ) -> Expected<std::shared_ptr<Entity>, Error>
-        { return std::shared_ptr<Entity>(new Entity(glfw_window)); }
+        {
+            std::vector<GlShaderSource> quad_shader_sources;
+            quad_shader_sources.push_back(quad_vertex_shader_source());
+            quad_shader_sources.push_back(quad_fragment_shader_source());
+            Expected<std::shared_ptr<GlShaderProgram>, Error>
+                quad_shader_program(
+                    GlShaderProgram::create(glfw_window, quad_shader_sources)
+                );
+            if (!quad_shader_program)
+                return Unexpected<Error>(Error());
+
+            return std::shared_ptr<Entity>(
+                new Entity(glfw_window, quad_shader_program.value())
+            );
+        }
     );
 }
 
-Entity::Entity(std::shared_ptr<WrappedGlfwWindow> glfw_window)
-    : glfw_window(glfw_window)
+Entity::Entity(
+    std::shared_ptr<WrappedGlfwWindow> glfw_window,
+    std::shared_ptr<GlShaderProgram> quad_shader_program
+)
+    : glfw_window(glfw_window), quad_shader_program(quad_shader_program)
 {}
 }

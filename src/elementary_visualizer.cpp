@@ -10,4 +10,10 @@ Error::operator std::string() const
 {
     return "";
 }
+
+void poll_window_events()
+{
+    if (Entity::ensure_initialized_and_get())
+        glfwPollEvents();
+}
 }

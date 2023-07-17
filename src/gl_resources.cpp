@@ -179,4 +179,155 @@ GlFramebufferTexture::GlFramebufferTexture(
     : framebuffer(framebuffer), texture(texture)
 {}
 
+Expected<std::shared_ptr<GlVertexBuffer>, Error>
+    GlVertexBuffer::create(std::shared_ptr<WrappedGlfwWindow> glfw_window)
+{
+    if (!glfw_window)
+        return Unexpected<Error>(Error());
+    glfw_window->make_current_context();
+
+    GLuint index;
+    glGenBuffers(1, &index);
+    return std::shared_ptr<GlVertexBuffer>(
+        new GlVertexBuffer(glfw_window, index)
+    );
+}
+
+void GlVertexBuffer::bind(bool make_context) const
+{
+    if (make_context)
+        this->glfw_window->make_current_context();
+    glBindBuffer(GL_ARRAY_BUFFER, this->index);
+}
+
+GlVertexBuffer::~GlVertexBuffer()
+{
+    this->glfw_window->make_current_context();
+    glDeleteBuffers(1, &this->index);
+}
+
+GlVertexBuffer::GlVertexBuffer(
+    std::shared_ptr<WrappedGlfwWindow> glfw_window, const GLuint index
+)
+    : glfw_window(glfw_window), index(index)
+{}
+
+Expected<std::shared_ptr<GlVertexArray>, Error>
+    GlVertexArray::create(std::shared_ptr<WrappedGlfwWindow> glfw_window)
+{
+    if (glfw_window)
+        glfw_window->make_current_context();
+
+    GLuint index;
+    glGenVertexArrays(1, &index);
+    return std::shared_ptr<GlVertexArray>(new GlVertexArray(glfw_window, index)
+    );
+}
+
+void GlVertexArray::bind(bool make_context) const
+{
+    if (make_context)
+        this->glfw_window->make_current_context();
+    glBindVertexArray(this->index);
+}
+
+GlVertexArray::~GlVertexArray()
+{
+    this->glfw_window->make_current_context();
+    glDeleteVertexArrays(1, &this->index);
+}
+
+GlVertexArray::GlVertexArray(
+    std::shared_ptr<WrappedGlfwWindow> glfw_window, const GLuint index
+)
+    : glfw_window(glfw_window), index(index)
+{}
+
+Expected<std::shared_ptr<GlQuad>, Error>
+    GlQuad::create(std::shared_ptr<WrappedGlfwWindow> glfw_window)
+{
+    Expected<std::shared_ptr<GlVertexArray>, Error> vertex_array =
+        GlVertexArray::create(glfw_window);
+    if (!vertex_array)
+        return Unexpected<Error>(Error());
+    vertex_array.value()->bind();
+
+    Expected<std::shared_ptr<GlVertexBuffer>, Error> vertex_buffer =
+        GlVertexBuffer::create(glfw_window);
+    if (!vertex_buffer)
+        return Unexpected<Error>(Error());
+    vertex_buffer.value()->bind();
+
+    // Position 3 coordinates and texture uv 2 coordinates.
+    std::vector<float> vertices = {
+        // Lower left corner.
+        -1.0f,
+        -1.0f,
+        0.0f,
+        0.0f,
+        0.0f,
+        // Lower right corner.
+        +1.0f,
+        -1.0f,
+        0.0f,
+        1.0f,
+        0.0f,
+        // Upper left corner.
+        -1.0f,
+        +1.0f,
+        0.0f,
+        0.0f,
+        1.0f,
+        // Upper right corner.
+        +1.0f,
+        +1.0f,
+        0.0f,
+        1.0f,
+        1.0f,
+    };
+
+    glBufferData(
+        GL_ARRAY_BUFFER,
+        sizeof(float) * vertices.size(),
+        &vertices[0],
+        GL_STATIC_DRAW
+    );
+
+    // Configure the vertex attribute so that OpenGL knows how to read the
+    // vertex buffer.
+    glVertexAttribPointer(
+        0, 3, GL_FLOAT, GL_FALSE, (3 + 2) * sizeof(float), nullptr
+    );
+    glVertexAttribPointer(
+        1,
+        2,
+        GL_FLOAT,
+        GL_FALSE,
+        (3 + 2) * sizeof(float),
+        reinterpret_cast<void *>(3 * sizeof(float))
+    );
+
+    // Enable the vertex attribute.
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+
+    return std::shared_ptr<GlQuad>(
+        new GlQuad(vertex_array.value(), vertex_buffer.value())
+    );
+}
+
+void GlQuad::render(bool make_context) const
+{
+    this->vertex_array->bind(make_context);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+}
+
+GlQuad::~GlQuad() {}
+
+GlQuad::GlQuad(
+    std::shared_ptr<GlVertexArray> vertex_array,
+    std::shared_ptr<GlVertexBuffer> vertex_buffer
+)
+    : vertex_array(vertex_array), vertex_buffer(vertex_buffer)
+{}
 }

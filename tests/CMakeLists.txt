@@ -8,6 +8,9 @@ function(setup_test TEST_NAME SOURCE_FILE)
 endfunction()
 
 setup_test(simple_scene_test simple_scene_test.cpp)
+setup_test(simple_window_test simple_window_test.cpp)
+setup_test(window_size_test window_size_test.cpp)
+setup_test(window_render_test window_render_test.cpp)
 
 if(BUILD_SHARED_LIBS)
     # By default the library search path for the executable is set

@@ -55,8 +55,11 @@ set(SOURCES
     src/elementary_visualizer.cpp
     src/entity.cpp
     src/gl_resources.cpp
+    src/gl_shader_program.cpp
     src/glfw_resources.cpp
     src/scene.cpp
+    src/shader_sources.cpp
+    src/window.cpp
 )
 add_library(${PROJECT_NAME} ${SOURCES})
 set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 20)
