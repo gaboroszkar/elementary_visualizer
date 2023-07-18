@@ -17,7 +17,8 @@ public:
     static Expected<std::shared_ptr<GlTexture>, Error> create(
         std::shared_ptr<WrappedGlfwWindow> glfw_window,
         const glm::ivec2 &size,
-        bool depth = false
+        bool depth,
+        const std::optional<int> samples
     );
 
     void bind(bool make_context = true) const;
@@ -39,10 +40,12 @@ private:
         std::shared_ptr<WrappedGlfwWindow> glfw_window,
         const GLuint index,
         const glm::ivec2 &size,
-        const bool depth
+        const bool depth,
+        const std::optional<int> samples
     );
 
-    static GLenum target();
+    static GLenum target(const std::optional<int> &samples);
+    GLenum target() const;
     static GLint internalformat(bool depth);
     GLint internalformat() const;
     static GLenum format(bool depth);
@@ -52,6 +55,17 @@ private:
     const GLuint index;
     glm::ivec2 size;
     const bool depth;
+
+public:
+
+    const std::optional<int> samples;
+};
+
+enum class FrameBufferBindType
+{
+    read,
+    draw,
+    read_draw
 };
 
 class GlFramebuffer
@@ -61,7 +75,11 @@ public:
     static Expected<std::shared_ptr<GlFramebuffer>, Error>
         create(std::shared_ptr<WrappedGlfwWindow> glfw_window);
 
-    void bind(bool make_context = true) const;
+    void bind(
+        bool make_context = true,
+        const FrameBufferBindType framebuffer_bind_type =
+            FrameBufferBindType::read_draw
+    ) const;
 
     ~GlFramebuffer();
 
@@ -85,7 +103,9 @@ class GlFramebufferTexture
 public:
 
     static Expected<std::shared_ptr<GlFramebufferTexture>, Error> create(
-        std::shared_ptr<WrappedGlfwWindow> glfw_window, const glm::ivec2 &size
+        std::shared_ptr<WrappedGlfwWindow> glfw_window,
+        const glm::ivec2 &size,
+        const std::optional<int> samples
     );
 
     const std::shared_ptr<GlFramebuffer> framebuffer;

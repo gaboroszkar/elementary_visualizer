@@ -19,16 +19,19 @@ Expected<std::shared_ptr<WrappedGlfwWindow>, Error> Entity::create_window(
     return WrappedGlfwWindow::create(title, size, resizable, this->glfw_window);
 }
 
-Expected<std::shared_ptr<GlTexture>, Error>
-    Entity::create_texture(const glm::ivec2 &size, const bool depth)
+Expected<std::shared_ptr<GlTexture>, Error> Entity::create_texture(
+    const glm::ivec2 &size, const bool depth, const std::optional<int> samples
+)
 {
-    return GlTexture::create(this->glfw_window, size, depth);
+    return GlTexture::create(this->glfw_window, size, depth, samples);
 }
 
 Expected<std::shared_ptr<GlFramebufferTexture>, Error>
-    Entity::create_framebuffer_texture(const glm::ivec2 &size)
+    Entity::create_framebuffer_texture(
+        const glm::ivec2 &size, const std::optional<int> samples
+    )
 {
-    return GlFramebufferTexture::create(this->glfw_window, size);
+    return GlFramebufferTexture::create(this->glfw_window, size, samples);
 }
 
 Expected<std::shared_ptr<GlLinesegments>, Error>

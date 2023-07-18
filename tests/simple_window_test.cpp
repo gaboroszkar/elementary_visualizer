@@ -46,12 +46,14 @@ int main(int, char **)
     if (window_1->should_close_or_invalid())
         return EXIT_FAILURE;
 
-    auto scene_0 =
-        ev::Scene::create(scene_size_0, glm::vec4(0.25f, 0.5f, 0.75f, 1.0f));
+    auto scene_0 = ev::Scene::create(
+        scene_size_0, glm::vec4(0.25f, 0.5f, 0.75f, 1.0f), std::nullopt
+    );
     if (!scene_0)
         return EXIT_FAILURE;
-    auto scene_1 =
-        ev::Scene::create(scene_size_1, glm::vec4(0.1f, 0.2f, 0.3f, 0.4f));
+    auto scene_1 = ev::Scene::create(
+        scene_size_1, glm::vec4(0.1f, 0.2f, 0.3f, 0.4f), std::nullopt
+    );
     if (!scene_1)
         return EXIT_FAILURE;
 

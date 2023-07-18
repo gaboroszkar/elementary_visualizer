@@ -96,7 +96,8 @@ public:
 
     static Expected<Scene, Error> create(
         const glm::ivec2 &size,
-        const glm::vec4 &background_color = glm::vec4(1.0f)
+        const glm::vec4 &background_color = glm::vec4(1.0f),
+        std::optional<int> samples = 4
     );
 
     Scene(Scene &&other);

@@ -5,7 +5,8 @@ namespace elementary_visualizer
 Expected<std::shared_ptr<GlTexture>, Error> GlTexture::create(
     std::shared_ptr<WrappedGlfwWindow> glfw_window,
     const glm::ivec2 &size,
-    const bool depth
+    const bool depth,
+    const std::optional<int> samples
 )
 {
     if (!glfw_window)
@@ -15,7 +16,7 @@ Expected<std::shared_ptr<GlTexture>, Error> GlTexture::create(
     GLuint index;
     glGenTextures(1, &index);
 
-    const GLenum target = GlTexture::target();
+    const GLenum target = GlTexture::target(samples);
 
     glBindTexture(target, index);
 
@@ -27,12 +28,25 @@ Expected<std::shared_ptr<GlTexture>, Error> GlTexture::create(
     const GLint internalformat = GlTexture::internalformat(depth);
     const GLenum format = GlTexture::format(depth);
 
-    glTexImage2D(
-        target, 0, internalformat, size.x, size.y, 0, format, GL_FLOAT, nullptr
-    );
+    if (samples)
+        glTexImage2DMultisample(
+            target, samples.value(), internalformat, size.x, size.y, GL_TRUE
+        );
+    else
+        glTexImage2D(
+            target,
+            0,
+            internalformat,
+            size.x,
+            size.y,
+            0,
+            format,
+            GL_FLOAT,
+            nullptr
+        );
 
     return std::shared_ptr<GlTexture>(
-        new GlTexture(glfw_window, index, size, depth)
+        new GlTexture(glfw_window, index, size, depth, samples)
     );
 }
 
@@ -62,17 +76,27 @@ glm::ivec2 GlTexture::get_size() const
 void GlTexture::set_size(const glm::ivec2 &size)
 {
     this->bind();
-    glTexImage2D(
-        this->target(),
-        0,
-        this->internalformat(),
-        size.x,
-        size.y,
-        0,
-        this->format(),
-        GL_FLOAT,
-        nullptr
-    );
+    if (this->samples)
+        glTexImage2DMultisample(
+            this->target(),
+            samples.value(),
+            this->internalformat(),
+            size.x,
+            size.y,
+            GL_TRUE
+        );
+    else
+        glTexImage2D(
+            this->target(),
+            0,
+            this->internalformat(),
+            size.x,
+            size.y,
+            0,
+            this->format(),
+            GL_FLOAT,
+            nullptr
+        );
     this->size = size;
 }
 
@@ -86,14 +110,24 @@ GlTexture::GlTexture(
     std::shared_ptr<WrappedGlfwWindow> glfw_window,
     const GLuint index,
     const glm::ivec2 &size,
-    const bool depth
+    bool depth,
+    const std::optional<int> samples
 )
-    : glfw_window(glfw_window), index(index), size(size), depth(depth)
+    : glfw_window(glfw_window),
+      index(index),
+      size(size),
+      depth(depth),
+      samples(samples)
 {}
 
-GLenum GlTexture::target()
+GLenum GlTexture::target(const std::optional<int> &samples)
 {
-    return GL_TEXTURE_2D;
+    return samples ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
+}
+
+GLenum GlTexture::target() const
+{
+    return GlTexture::target(this->samples);
 }
 
 GLint GlTexture::internalformat(bool depth)
@@ -131,11 +165,24 @@ Expected<std::shared_ptr<GlFramebuffer>, Error>
     );
 }
 
-void GlFramebuffer::bind(bool make_context) const
+void GlFramebuffer::bind(
+    bool make_context, const FrameBufferBindType framebuffer_bind_type
+) const
 {
     if (make_context)
         this->glfw_window->make_current_context();
-    glBindFramebuffer(GL_FRAMEBUFFER, this->index);
+    switch (framebuffer_bind_type)
+    {
+    case FrameBufferBindType::read:
+        glBindFramebuffer(GL_READ_FRAMEBUFFER, this->index);
+        break;
+    case FrameBufferBindType::draw:
+        glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->index);
+        break;
+    case FrameBufferBindType::read_draw:
+        glBindFramebuffer(GL_FRAMEBUFFER, this->index);
+        break;
+    }
 }
 
 GlFramebuffer::~GlFramebuffer()
@@ -152,7 +199,9 @@ GlFramebuffer::GlFramebuffer(
 
 Expected<std::shared_ptr<GlFramebufferTexture>, Error>
     GlFramebufferTexture::create(
-        std::shared_ptr<WrappedGlfwWindow> glfw_window, const glm::ivec2 &size
+        std::shared_ptr<WrappedGlfwWindow> glfw_window,
+        const glm::ivec2 &size,
+        const std::optional<int> samples
     )
 {
     if (!glfw_window)
@@ -169,7 +218,7 @@ Expected<std::shared_ptr<GlFramebufferTexture>, Error>
     glDrawBuffers(1, DrawBuffers);
 
     Expected<std::shared_ptr<GlTexture>, Error> texture =
-        GlTexture::create(glfw_window, size);
+        GlTexture::create(glfw_window, size, false, samples);
     if (!texture)
         return Unexpected<Error>(Error());
     texture.value()->bind();

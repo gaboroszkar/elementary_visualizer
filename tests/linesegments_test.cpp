@@ -11,8 +11,9 @@ namespace ev = elementary_visualizer;
 int main(int, char **)
 {
     const glm::ivec2 scene_size(1280, 720);
-    auto scene =
-        ev::Scene::create(scene_size, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f));
+    auto scene = ev::Scene::create(
+        scene_size, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), std::nullopt
+    );
     if (!scene)
         return EXIT_FAILURE;
 

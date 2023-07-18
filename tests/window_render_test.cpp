@@ -51,8 +51,9 @@ int main(int, char **)
               glm::ivec2(400, 150),
               glm::ivec2(2000, 1500)})
         {
-            auto rendered_scene =
-                ev::GlTexture::create(wrapped_glfw_window, scene_size);
+            auto rendered_scene = ev::GlTexture::create(
+                wrapped_glfw_window, scene_size, false, std::nullopt
+            );
             if (!rendered_scene)
                 return EXIT_FAILURE;
 
