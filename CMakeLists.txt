@@ -58,7 +58,9 @@ set(SOURCES
     src/gl_shader_program.cpp
     src/glfw_resources.cpp
     src/scene.cpp
-    src/shader_sources.cpp
+    src/shader_sources_quad.cpp
+    src/shader_sources_depth_peeling.cpp
+    src/shader_sources_linesegments.cpp
     src/visuals.cpp
     src/window.cpp
 )
