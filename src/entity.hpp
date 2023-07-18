@@ -31,7 +31,9 @@ public:
             const glm::ivec2 &size, const std::optional<int> samples
         );
     Expected<std::shared_ptr<GlLinesegments>, Error>
-        create_linesegments(const std::vector<Linesegment> &linesegments);
+        create_linesegments(const std::vector<Linesegment> &linesegments_data);
+    Expected<std::shared_ptr<GlLines>, Error>
+        create_lines(const std::vector<Vertex> &lines_data);
 
     void make_current_context();
 
@@ -51,7 +53,8 @@ private:
         std::shared_ptr<GlQuad> quad,
         std::shared_ptr<GlShaderProgram> quad_shader_program,
         std::shared_ptr<GlShaderProgram> quad_multisampled_shader_program,
-        std::shared_ptr<GlShaderProgram> linesegments_shader_program
+        std::shared_ptr<GlShaderProgram> linesegments_shader_program,
+        std::shared_ptr<GlShaderProgram> lines_shader_program
     );
 
     std::shared_ptr<WrappedGlfwWindow> glfw_window;
@@ -62,6 +65,7 @@ public:
     const std::shared_ptr<GlShaderProgram> quad_shader_program;
     const std::shared_ptr<GlShaderProgram> quad_multisampled_shader_program;
     const std::shared_ptr<GlShaderProgram> linesegments_shader_program;
+    const std::shared_ptr<GlShaderProgram> lines_shader_program;
 };
 }
 

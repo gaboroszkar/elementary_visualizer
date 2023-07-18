@@ -61,6 +61,7 @@ set(SOURCES
     src/shader_sources_quad.cpp
     src/shader_sources_depth_peeling.cpp
     src/shader_sources_linesegments.cpp
+    src/shader_sources_lines.cpp
     src/visuals.cpp
     src/window.cpp
 )

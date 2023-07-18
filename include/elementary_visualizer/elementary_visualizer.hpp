@@ -65,7 +65,7 @@ class LinesegmentsVisual : public Visual
 public:
 
     static Expected<std::shared_ptr<LinesegmentsVisual>, Error>
-        create(const std::vector<Linesegment> &linesegments);
+        create(const std::vector<Linesegment> &linesegments_data);
 
     LinesegmentsVisual(LinesegmentsVisual &&other);
     LinesegmentsVisual &operator=(LinesegmentsVisual &&other);
@@ -91,6 +91,39 @@ private:
     std::unique_ptr<Impl> impl;
 
     LinesegmentsVisual(std::unique_ptr<Impl> impl);
+};
+
+class LinesVisual : public Visual
+{
+public:
+
+    static Expected<std::shared_ptr<LinesVisual>, Error>
+        create(const std::vector<Vertex> &lines_data, const float width = 1.0f);
+
+    LinesVisual(LinesVisual &&other);
+    LinesVisual &operator=(LinesVisual &&other);
+
+    LinesVisual(LinesVisual &other);
+    LinesVisual &operator=(LinesVisual &other);
+
+    void render(
+        const glm::ivec2 &scene_size, const DepthPeelingData &depth_peeling_data
+    ) const;
+
+    void set_model(const glm::mat4 &model);
+    void set_view(const glm::mat4 &view);
+    void set_projection(const glm::mat4 &projection);
+    void set_lines_data(const std::vector<Vertex> &lines_data);
+    void set_width(const float width);
+
+    ~LinesVisual();
+
+private:
+
+    class Impl;
+    std::unique_ptr<Impl> impl;
+
+    LinesVisual(std::unique_ptr<Impl> impl);
 };
 
 class GlTexture;

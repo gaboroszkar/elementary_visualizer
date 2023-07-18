@@ -34,10 +34,17 @@ Expected<std::shared_ptr<GlFramebufferTexture>, Error>
     return GlFramebufferTexture::create(this->glfw_window, size, samples);
 }
 
-Expected<std::shared_ptr<GlLinesegments>, Error>
-    Entity::create_linesegments(const std::vector<Linesegment> &linesegments)
+Expected<std::shared_ptr<GlLinesegments>, Error> Entity::create_linesegments(
+    const std::vector<Linesegment> &linesegments_data
+)
 {
-    return GlLinesegments::create(this->glfw_window, linesegments);
+    return GlLinesegments::create(this->glfw_window, linesegments_data);
+}
+
+Expected<std::shared_ptr<GlLines>, Error>
+    Entity::create_lines(const std::vector<Vertex> &lines_data)
+{
+    return GlLines::create(this->glfw_window, lines_data);
 }
 
 void Entity::make_current_context()
@@ -107,12 +114,26 @@ Expected<std::shared_ptr<Entity>, Error> Entity::initialize()
             if (!linesegments_shader_program)
                 return Unexpected<Error>(Error());
 
+            std::vector<GlShaderSource> lines_shader_sources;
+            lines_shader_sources.push_back(depth_peeling_fragment_shader_source(
+            ));
+            lines_shader_sources.push_back(lines_vertex_shader_source());
+            lines_shader_sources.push_back(lines_geometry_shader_source());
+            lines_shader_sources.push_back(lines_fragment_shader_source());
+            Expected<std::shared_ptr<GlShaderProgram>, Error>
+                lines_shader_program(
+                    GlShaderProgram::create(glfw_window, lines_shader_sources)
+                );
+            if (!lines_shader_program)
+                return Unexpected<Error>(Error());
+
             return std::shared_ptr<Entity>(new Entity(
                 glfw_window,
                 quad.value(),
                 quad_shader_program.value(),
                 quad_multisampled_shader_program.value(),
-                linesegments_shader_program.value()
+                linesegments_shader_program.value(),
+                lines_shader_program.value()
             ));
         }
     );
@@ -123,12 +144,14 @@ Entity::Entity(
     std::shared_ptr<GlQuad> quad,
     std::shared_ptr<GlShaderProgram> quad_shader_program,
     std::shared_ptr<GlShaderProgram> quad_multisampled_shader_program,
-    std::shared_ptr<GlShaderProgram> linesegments_shader_program
+    std::shared_ptr<GlShaderProgram> linesegments_shader_program,
+    std::shared_ptr<GlShaderProgram> lines_shader_program
 )
     : glfw_window(glfw_window),
       quad(quad),
       quad_shader_program(quad_shader_program),
       quad_multisampled_shader_program(quad_multisampled_shader_program),
-      linesegments_shader_program(linesegments_shader_program)
+      linesegments_shader_program(linesegments_shader_program),
+      lines_shader_program(lines_shader_program)
 {}
 }

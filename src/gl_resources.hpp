@@ -242,6 +242,44 @@ private:
     const std::shared_ptr<GlVertexBuffer> vertex_buffer;
     int number_of_linesegments;
 };
+
+class GlLines
+{
+public:
+
+    static Expected<std::shared_ptr<GlLines>, Error> create(
+        std::shared_ptr<WrappedGlfwWindow> glfw_window,
+        const std::vector<Vertex> &lines_data
+    );
+
+    void render(bool make_context = true) const;
+
+    void set_lines_data(const std::vector<Vertex> &lines_data);
+
+    ~GlLines();
+
+    GlLines(GlLines &&other) = delete;
+    GlLines &operator=(GlLines &&other) = delete;
+    GlLines(const GlLines &other) = delete;
+    GlLines &operator=(const GlLines &other) = delete;
+
+private:
+
+    GlLines(
+        std::shared_ptr<GlVertexArray> vertex_array,
+        std::shared_ptr<GlVertexBuffer> vertex_buffer,
+        const int number_of_lines
+    );
+
+    static void add_empty_vertex(std::vector<float> &vertices);
+    static void add_vertex(std::vector<float> &vertices, const Vertex &vertex);
+    static std::unique_ptr<std::vector<float>>
+        generate_vertex_buffer_data(const std::vector<Vertex> &lines_data);
+
+    const std::shared_ptr<GlVertexArray> vertex_array;
+    const std::shared_ptr<GlVertexBuffer> vertex_buffer;
+    int number_of_lines;
+};
 }
 
 #endif

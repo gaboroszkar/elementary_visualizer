@@ -45,6 +45,43 @@ public:
     glm::mat4 view;
     glm::mat4 projection;
 };
+
+class LinesVisual::Impl
+{
+public:
+
+    Impl(
+        std::shared_ptr<Entity> entity,
+        std::shared_ptr<GlLines> lines,
+        const float width
+    );
+
+    Impl(Impl &&other);
+    Impl &operator=(Impl &&other);
+
+    void render(
+        const glm::ivec2 &scene_size, const DepthPeelingData &depth_peeling_data
+    ) const;
+
+    void set_lines_data(const std::vector<Vertex> &lines_data);
+
+    Impl(const Impl &) = delete;
+    Impl &operator=(const Impl &) = delete;
+
+    ~Impl();
+
+private:
+
+    std::shared_ptr<Entity> entity;
+    std::shared_ptr<GlLines> lines;
+
+public:
+
+    float width;
+    glm::mat4 model;
+    glm::mat4 view;
+    glm::mat4 projection;
+};
 }
 
 #endif

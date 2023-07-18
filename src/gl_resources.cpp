@@ -559,4 +559,161 @@ std::unique_ptr<std::vector<float>> GlLinesegments::generate_vertex_buffer_data(
     }
     return vertices;
 }
+
+Expected<std::shared_ptr<GlLines>, Error> GlLines::create(
+    std::shared_ptr<WrappedGlfwWindow> glfw_window,
+    const std::vector<Vertex> &lines_data
+)
+{
+    Expected<std::shared_ptr<GlVertexArray>, Error> vertex_array =
+        GlVertexArray::create(glfw_window);
+    if (!vertex_array)
+        return Unexpected<Error>(Error());
+    vertex_array.value()->bind();
+
+    Expected<std::shared_ptr<GlVertexBuffer>, Error> vertex_buffer =
+        GlVertexBuffer::create(glfw_window);
+    if (!vertex_buffer)
+        return Unexpected<Error>(Error());
+    vertex_buffer.value()->bind();
+
+    std::unique_ptr<std::vector<float>> vertices =
+        GlLines::generate_vertex_buffer_data(lines_data);
+    if (!vertices)
+        return Unexpected<Error>(Error());
+
+    glBufferData(
+        GL_ARRAY_BUFFER,
+        sizeof(float) * vertices->size(),
+        &(*vertices)[0],
+        GL_DYNAMIC_DRAW
+    );
+    const int number_of_lines =
+        (lines_data.size() < 2) ? 0 : (lines_data.size() - 1);
+
+    // Configure the vertex attribute so that OpenGL knows how to read the
+    // vertex buffer. 3 floats for position; 4 floats for color.
+    const int stride = 3 + 4;
+    glVertexAttribPointer(
+        0,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        stride * sizeof(float),
+        reinterpret_cast<void *>(0 * sizeof(float))
+    );
+    glVertexAttribPointer(
+        1,
+        4,
+        GL_FLOAT,
+        GL_FALSE,
+        stride * sizeof(float),
+        reinterpret_cast<void *>(3 * sizeof(float))
+    );
+
+    // Enable the vertex attribute.
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+
+    return std::shared_ptr<GlLines>(new GlLines(
+        vertex_array.value(), vertex_buffer.value(), number_of_lines
+    ));
+}
+
+void GlLines::render(bool make_context) const
+{
+    this->vertex_array->bind(make_context);
+    glDrawArrays(GL_LINES_ADJACENCY, 0, 4 * this->number_of_lines);
+}
+
+void GlLines::set_lines_data(const std::vector<Vertex> &lines_data)
+{
+    std::unique_ptr<std::vector<float>> vertices =
+        GlLines::generate_vertex_buffer_data(lines_data);
+    if (!vertices)
+        return;
+
+    this->vertex_array->bind();
+    this->vertex_buffer->bind();
+
+    glBufferData(
+        GL_ARRAY_BUFFER,
+        sizeof(float) * vertices->size(),
+        &(*vertices)[0],
+        GL_DYNAMIC_DRAW
+    );
+    this->number_of_lines = lines_data.size();
+}
+
+GlLines::~GlLines() {}
+
+GlLines::GlLines(
+    std::shared_ptr<GlVertexArray> vertex_array,
+    std::shared_ptr<GlVertexBuffer> vertex_buffer,
+    const int number_of_lines
+)
+    : vertex_array(vertex_array),
+      vertex_buffer(vertex_buffer),
+      number_of_lines(number_of_lines)
+{}
+
+// This function adds an "empty" vertex, signaling
+// the beginning or the end of the line.
+void GlLines::add_empty_vertex(std::vector<float> &vertices)
+{
+    // If 4 consequtive vertices start with this, or end with this
+    // that represents the beginning or the end of the line.
+    // It is a memory efficient way to store these properties.
+    const float nan = std::numeric_limits<float>::quiet_NaN();
+    for (int i = 0; i < 7; ++i)
+        vertices.push_back(nan);
+}
+
+void GlLines::add_vertex(std::vector<float> &vertices, const Vertex &vertex)
+{
+    vertices.push_back(vertex.position.x);
+    vertices.push_back(vertex.position.y);
+    vertices.push_back(vertex.position.z);
+
+    vertices.push_back(vertex.color.r);
+    vertices.push_back(vertex.color.g);
+    vertices.push_back(vertex.color.b);
+    vertices.push_back(vertex.color.a);
+}
+
+std::unique_ptr<std::vector<float>>
+    GlLines::generate_vertex_buffer_data(const std::vector<Vertex> &lines_data)
+{
+    // Each line is represented by
+    // 4 vertices (4 * (3 + 4) floats), each of these vertices
+    // contain 3 floats for position and 4 floats for color,
+    // overall 28 floats.
+    std::unique_ptr<std::vector<float>> vertices =
+        std::make_unique<std::vector<float>>();
+    if (lines_data.size() < 2)
+        return vertices;
+
+    const int float_per_line = 4 * (3 + 4);
+    vertices->reserve(float_per_line * lines_data.size());
+
+    GlLines::add_empty_vertex(*vertices);
+
+    const auto end = lines_data.cend();
+    for (auto it = lines_data.cbegin(); it != (end - 2); ++it)
+    {
+        // These are the last 3 points (out of 4) for the current segment.
+        GlLines::add_vertex(*vertices, *(it + 0));
+        GlLines::add_vertex(*vertices, *(it + 1));
+        GlLines::add_vertex(*vertices, *(it + 2));
+
+        // This is for the 0th point (out of 4) for the next segment.
+        GlLines::add_vertex(*vertices, *(it + 0));
+    }
+
+    GlLines::add_vertex(*vertices, *(end - 2));
+    GlLines::add_vertex(*vertices, *(end - 1));
+    GlLines::add_empty_vertex(*vertices);
+
+    return vertices;
+}
 }
