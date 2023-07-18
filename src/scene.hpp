@@ -18,11 +18,15 @@ public:
     Impl(
         std::shared_ptr<Entity> entity,
         std::shared_ptr<GlFramebufferTexture> framebuffer_texture,
+        std::array<std::shared_ptr<GlTexture>, 1> depth_textures,
         const glm::vec4 &background_color
     );
 
     Impl(Impl &&other);
     Impl &operator=(Impl &&other);
+
+    void add_visual(std::shared_ptr<Visual> visual);
+    void remove_visual(std::shared_ptr<Visual> visual);
 
     std::shared_ptr<const GlTexture> render();
 
@@ -35,6 +39,8 @@ private:
 
     std::shared_ptr<Entity> entity;
     std::shared_ptr<GlFramebufferTexture> framebuffer_texture;
+    std::array<std::shared_ptr<GlTexture>, 1> depth_textures;
+    std::set<std::shared_ptr<Visual>> visuals;
 
 public:
 

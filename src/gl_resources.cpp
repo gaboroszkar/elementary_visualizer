@@ -3,7 +3,9 @@
 namespace elementary_visualizer
 {
 Expected<std::shared_ptr<GlTexture>, Error> GlTexture::create(
-    std::shared_ptr<WrappedGlfwWindow> glfw_window, const glm::ivec2 &size
+    std::shared_ptr<WrappedGlfwWindow> glfw_window,
+    const glm::ivec2 &size,
+    const bool depth
 )
 {
     if (!glfw_window)
@@ -22,14 +24,16 @@ Expected<std::shared_ptr<GlTexture>, Error> GlTexture::create(
     glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    const GLint internalformat = GlTexture::internalformat();
-    const GLenum format = GlTexture::format();
+    const GLint internalformat = GlTexture::internalformat(depth);
+    const GLenum format = GlTexture::format(depth);
 
     glTexImage2D(
         target, 0, internalformat, size.x, size.y, 0, format, GL_FLOAT, nullptr
     );
 
-    return std::shared_ptr<GlTexture>(new GlTexture(glfw_window, index, size));
+    return std::shared_ptr<GlTexture>(
+        new GlTexture(glfw_window, index, size, depth)
+    );
 }
 
 void GlTexture::bind(bool make_context) const
@@ -43,7 +47,8 @@ void GlTexture::framebuffer_texture(bool make_context) const
 {
     if (make_context)
         this->glfw_window->make_current_context();
-    const GLenum attachment = GL_COLOR_ATTACHMENT0;
+    const GLenum attachment =
+        this->depth ? GL_DEPTH_ATTACHMENT : GL_COLOR_ATTACHMENT0;
     glFramebufferTexture2D(
         GL_FRAMEBUFFER, attachment, this->target(), this->index, 0
     );
@@ -80,9 +85,10 @@ GlTexture::~GlTexture()
 GlTexture::GlTexture(
     std::shared_ptr<WrappedGlfwWindow> glfw_window,
     const GLuint index,
-    const glm::ivec2 &size
+    const glm::ivec2 &size,
+    const bool depth
 )
-    : glfw_window(glfw_window), index(index), size(size)
+    : glfw_window(glfw_window), index(index), size(size), depth(depth)
 {}
 
 GLenum GlTexture::target()
@@ -90,14 +96,24 @@ GLenum GlTexture::target()
     return GL_TEXTURE_2D;
 }
 
-GLint GlTexture::internalformat()
+GLint GlTexture::internalformat(bool depth)
 {
-    return GL_RGBA32F;
+    return depth ? GL_DEPTH_COMPONENT32F : GL_RGBA32F;
 }
 
-GLenum GlTexture::format()
+GLint GlTexture::internalformat() const
 {
-    return GL_RGBA;
+    return GlTexture::internalformat(this->depth);
+}
+
+GLenum GlTexture::format(bool depth)
+{
+    return depth ? GL_DEPTH_COMPONENT : GL_RGBA;
+}
+
+GLenum GlTexture::format() const
+{
+    return GlTexture::format(this->depth);
 }
 
 Expected<std::shared_ptr<GlFramebuffer>, Error>
@@ -330,4 +346,168 @@ GlQuad::GlQuad(
 )
     : vertex_array(vertex_array), vertex_buffer(vertex_buffer)
 {}
+
+Expected<std::shared_ptr<GlLinesegments>, Error> GlLinesegments::create(
+    std::shared_ptr<WrappedGlfwWindow> glfw_window,
+    const std::vector<Linesegment> &linesegments_data
+)
+{
+    Expected<std::shared_ptr<GlVertexArray>, Error> vertex_array =
+        GlVertexArray::create(glfw_window);
+    if (!vertex_array)
+        return Unexpected<Error>(Error());
+    vertex_array.value()->bind();
+
+    Expected<std::shared_ptr<GlVertexBuffer>, Error> vertex_buffer =
+        GlVertexBuffer::create(glfw_window);
+    if (!vertex_buffer)
+        return Unexpected<Error>(Error());
+    vertex_buffer.value()->bind();
+
+    std::unique_ptr<std::vector<float>> vertices =
+        GlLinesegments::generate_vertex_buffer_data(linesegments_data);
+    if (!vertices)
+        return Unexpected<Error>(Error());
+
+    glBufferData(
+        GL_ARRAY_BUFFER,
+        sizeof(float) * vertices->size(),
+        &(*vertices)[0],
+        GL_DYNAMIC_DRAW
+    );
+    const int number_of_linesegments = linesegments_data.size();
+
+    // Configure the vertex attribute so that OpenGL knows how to read the
+    // vertex buffer. 3 floats for start position; 4 floats for start color; 3
+    // floats for end position; 4 floats for end color; 1 float for width.
+    const int stride = 3 + 4 + 3 + 4 + 1;
+    glVertexAttribPointer(
+        0,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        stride * sizeof(float),
+        reinterpret_cast<void *>(0 * sizeof(float))
+    );
+    glVertexAttribPointer(
+        1,
+        4,
+        GL_FLOAT,
+        GL_FALSE,
+        stride * sizeof(float),
+        reinterpret_cast<void *>(3 * sizeof(float))
+    );
+    glVertexAttribPointer(
+        2,
+        3,
+        GL_FLOAT,
+        GL_FALSE,
+        stride * sizeof(float),
+        reinterpret_cast<void *>(7 * sizeof(float))
+    );
+    glVertexAttribPointer(
+        3,
+        4,
+        GL_FLOAT,
+        GL_FALSE,
+        stride * sizeof(float),
+        reinterpret_cast<void *>(10 * sizeof(float))
+    );
+    glVertexAttribPointer(
+        4,
+        1,
+        GL_FLOAT,
+        GL_FALSE,
+        stride * sizeof(float),
+        reinterpret_cast<void *>(14 * sizeof(float))
+    );
+
+    // Enable the vertex attribute.
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
+    glEnableVertexAttribArray(3);
+    glEnableVertexAttribArray(4);
+
+    return std::shared_ptr<GlLinesegments>(new GlLinesegments(
+        vertex_array.value(), vertex_buffer.value(), number_of_linesegments
+    ));
+}
+
+void GlLinesegments::render(bool make_context) const
+{
+    this->vertex_array->bind(make_context);
+    glDrawArrays(GL_POINTS, 0, this->number_of_linesegments);
+}
+
+void GlLinesegments::set_linesegments_data(
+    const std::vector<Linesegment> &linesegments_data
+)
+{
+    std::unique_ptr<std::vector<float>> vertices =
+        GlLinesegments::generate_vertex_buffer_data(linesegments_data);
+    if (!vertices)
+        return;
+
+    this->vertex_array->bind();
+    this->vertex_buffer->bind();
+
+    glBufferData(
+        GL_ARRAY_BUFFER,
+        sizeof(float) * vertices->size(),
+        &(*vertices)[0],
+        GL_DYNAMIC_DRAW
+    );
+    this->number_of_linesegments = linesegments_data.size();
+}
+
+GlLinesegments::~GlLinesegments() {}
+
+GlLinesegments::GlLinesegments(
+    std::shared_ptr<GlVertexArray> vertex_array,
+    std::shared_ptr<GlVertexBuffer> vertex_buffer,
+    const int number_of_linesegments
+)
+    : vertex_array(vertex_array),
+      vertex_buffer(vertex_buffer),
+      number_of_linesegments(number_of_linesegments)
+{}
+
+std::unique_ptr<std::vector<float>> GlLinesegments::generate_vertex_buffer_data(
+    const std::vector<Linesegment> &linesegments_data
+)
+{
+    // Each linesegment is represented by
+    // 2 points (2 * 3 floats), and 2 colors (2 * 4 floats), and one width (1
+    // float), overall 15 floats. This 15 floats is represented by one vertex in
+    // GLSL input.
+    std::unique_ptr<std::vector<float>> vertices =
+        std::make_unique<std::vector<float>>();
+    const int float_per_linesegment = 3 + 4 + 3 + 4 + 1;
+    vertices->reserve(float_per_linesegment * linesegments_data.size());
+    for (const auto linesegment : linesegments_data)
+    {
+        // Start position.
+        vertices->push_back(linesegment.start.position.x); // 0
+        vertices->push_back(linesegment.start.position.y); // 1
+        vertices->push_back(linesegment.start.position.z); // 2
+        // Start color.
+        vertices->push_back(linesegment.start.color.r); // 3
+        vertices->push_back(linesegment.start.color.g); // 4
+        vertices->push_back(linesegment.start.color.b); // 5
+        vertices->push_back(linesegment.start.color.a); // 6
+        // End position.
+        vertices->push_back(linesegment.end.position.x); // 7
+        vertices->push_back(linesegment.end.position.y); // 8
+        vertices->push_back(linesegment.end.position.z); // 9
+        // End color.
+        vertices->push_back(linesegment.end.color.r); // 10
+        vertices->push_back(linesegment.end.color.g); // 11
+        vertices->push_back(linesegment.end.color.b); // 12
+        vertices->push_back(linesegment.end.color.a); // 13
+        // Line width.
+        vertices->push_back(linesegment.width); // 14
+    }
+    return vertices;
+}
 }

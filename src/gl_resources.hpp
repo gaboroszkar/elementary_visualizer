@@ -15,7 +15,9 @@ class GlTexture
 public:
 
     static Expected<std::shared_ptr<GlTexture>, Error> create(
-        std::shared_ptr<WrappedGlfwWindow> glfw_window, const glm::ivec2 &size
+        std::shared_ptr<WrappedGlfwWindow> glfw_window,
+        const glm::ivec2 &size,
+        bool depth = false
     );
 
     void bind(bool make_context = true) const;
@@ -36,16 +38,20 @@ private:
     GlTexture(
         std::shared_ptr<WrappedGlfwWindow> glfw_window,
         const GLuint index,
-        const glm::ivec2 &size
+        const glm::ivec2 &size,
+        const bool depth
     );
 
     static GLenum target();
-    static GLint internalformat();
-    static GLenum format();
+    static GLint internalformat(bool depth);
+    GLint internalformat() const;
+    static GLenum format(bool depth);
+    GLenum format() const;
 
     std::shared_ptr<WrappedGlfwWindow> glfw_window;
     const GLuint index;
     glm::ivec2 size;
+    const bool depth;
 };
 
 class GlFramebuffer
@@ -177,6 +183,44 @@ private:
 
     const std::shared_ptr<GlVertexArray> vertex_array;
     const std::shared_ptr<GlVertexBuffer> vertex_buffer;
+};
+
+class GlLinesegments
+{
+public:
+
+    static Expected<std::shared_ptr<GlLinesegments>, Error> create(
+        std::shared_ptr<WrappedGlfwWindow> glfw_window,
+        const std::vector<Linesegment> &linesegments_data
+    );
+
+    void render(bool make_context = true) const;
+
+    void set_linesegments_data(const std::vector<Linesegment> &linesegments_data
+    );
+
+    ~GlLinesegments();
+
+    GlLinesegments(GlLinesegments &&other) = delete;
+    GlLinesegments &operator=(GlLinesegments &&other) = delete;
+    GlLinesegments(const GlLinesegments &other) = delete;
+    GlLinesegments &operator=(const GlLinesegments &other) = delete;
+
+private:
+
+    GlLinesegments(
+        std::shared_ptr<GlVertexArray> vertex_array,
+        std::shared_ptr<GlVertexBuffer> vertex_buffer,
+        const int number_of_linesegments
+    );
+
+    static std::unique_ptr<std::vector<float>> generate_vertex_buffer_data(
+        const std::vector<Linesegment> &linesegments_data
+    );
+
+    const std::shared_ptr<GlVertexArray> vertex_array;
+    const std::shared_ptr<GlVertexBuffer> vertex_buffer;
+    int number_of_linesegments;
 };
 }
 

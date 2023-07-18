@@ -23,6 +23,70 @@ public:
     operator std::string() const;
 };
 
+struct Vertex
+{
+    glm::vec3 position;
+    glm::vec4 color;
+
+    Vertex(
+        const glm::vec3 &position = glm::vec3(),
+        const glm::vec4 &color = glm::vec4()
+    )
+        : position(position), color(color)
+    {}
+};
+
+struct Linesegment
+{
+    Vertex start, end;
+    float width;
+    Linesegment(
+        const Vertex &start = Vertex(),
+        const Vertex &end = Vertex(),
+        const float width = 1.0f
+    )
+        : start(start), end(end), width(width)
+    {}
+};
+
+class Visual
+{
+public:
+
+    virtual void render(const glm::ivec2 &scene_size) const = 0;
+};
+
+class LinesegmentsVisual : public Visual
+{
+public:
+
+    static Expected<std::shared_ptr<LinesegmentsVisual>, Error>
+        create(const std::vector<Linesegment> &linesegments);
+
+    LinesegmentsVisual(LinesegmentsVisual &&other);
+    LinesegmentsVisual &operator=(LinesegmentsVisual &&other);
+
+    LinesegmentsVisual(LinesegmentsVisual &other);
+    LinesegmentsVisual &operator=(LinesegmentsVisual &other);
+
+    void render(const glm::ivec2 &scene_size) const;
+
+    void set_model(const glm::mat4 &model);
+    void set_view(const glm::mat4 &view);
+    void set_projection(const glm::mat4 &projection);
+    void set_linesegments_data(const std::vector<Linesegment> &linesegments_data
+    );
+
+    ~LinesegmentsVisual();
+
+private:
+
+    class Impl;
+    std::unique_ptr<Impl> impl;
+
+    LinesegmentsVisual(std::unique_ptr<Impl> impl);
+};
+
 class GlTexture;
 using RenderedScene = GlTexture;
 
@@ -40,6 +104,9 @@ public:
 
     void set_background_color(const glm::vec4 &color);
     Expected<glm::vec4, Error> get_background_color() const;
+
+    void add_visual(std::shared_ptr<Visual> visual);
+    void remove_visual(std::shared_ptr<Visual> visual);
 
     std::shared_ptr<const RenderedScene> render();
 

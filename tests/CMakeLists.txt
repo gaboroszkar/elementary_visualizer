@@ -1,5 +1,5 @@
 function(setup_test TEST_NAME SOURCE_FILE)
-    add_executable(${TEST_NAME} ${SOURCE_FILE})
+    add_executable(${TEST_NAME} ${SOURCE_FILE} test_utilities.cpp)
     set_property(TARGET ${TEST_NAME} PROPERTY CXX_STANDARD 20)
     target_compile_options(${TEST_NAME} PRIVATE -Werror -Wall -Wextra)
     target_include_directories(${TEST_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR})
@@ -13,6 +13,7 @@ setup_test(window_size_test window_size_test.cpp)
 setup_test(window_render_test window_render_test.cpp)
 setup_test(window_keyboard_event_test window_keyboard_event_test.cpp)
 setup_test(window_mouse_event_test window_mouse_event_test.cpp)
+setup_test(linesegments_test linesegments_test.cpp)
 
 if(BUILD_SHARED_LIBS)
     # By default the library search path for the executable is set

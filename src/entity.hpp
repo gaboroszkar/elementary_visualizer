@@ -22,9 +22,11 @@ public:
         const std::string &title, const glm::ivec2 &size, const bool resizable
     );
     Expected<std::shared_ptr<GlTexture>, Error>
-        create_texture(const glm::ivec2 &size);
+        create_texture(const glm::ivec2 &size, const bool depth);
     Expected<std::shared_ptr<GlFramebufferTexture>, Error>
         create_framebuffer_texture(const glm::ivec2 &size);
+    Expected<std::shared_ptr<GlLinesegments>, Error>
+        create_linesegments(const std::vector<Linesegment> &linesegments);
 
     void make_current_context();
 
@@ -41,7 +43,8 @@ private:
 
     Entity(
         std::shared_ptr<WrappedGlfwWindow> glfw_window,
-        std::shared_ptr<GlShaderProgram> quad_shader_program
+        std::shared_ptr<GlShaderProgram> quad_shader_program,
+        std::shared_ptr<GlShaderProgram> linesegments_shader_program
     );
 
     std::shared_ptr<WrappedGlfwWindow> glfw_window;
@@ -49,6 +52,7 @@ private:
 public:
 
     const std::shared_ptr<GlShaderProgram> quad_shader_program;
+    const std::shared_ptr<GlShaderProgram> linesegments_shader_program;
 };
 }
 

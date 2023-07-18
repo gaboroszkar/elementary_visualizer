@@ -59,6 +59,7 @@ set(SOURCES
     src/glfw_resources.cpp
     src/scene.cpp
     src/shader_sources.cpp
+    src/visuals.cpp
     src/window.cpp
 )
 add_library(${PROJECT_NAME} ${SOURCES})
