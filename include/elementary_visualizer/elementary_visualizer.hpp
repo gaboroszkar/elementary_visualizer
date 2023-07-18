@@ -23,6 +23,17 @@ public:
     operator std::string() const;
 };
 
+struct DepthPeelingData;
+
+class Visual
+{
+public:
+
+    virtual void render(
+        const glm::ivec2 &scene_size, const DepthPeelingData &depth_peeling_data
+    ) const = 0;
+};
+
 struct Vertex
 {
     glm::vec3 position;
@@ -49,13 +60,6 @@ struct Linesegment
     {}
 };
 
-class Visual
-{
-public:
-
-    virtual void render(const glm::ivec2 &scene_size) const = 0;
-};
-
 class LinesegmentsVisual : public Visual
 {
 public:
@@ -69,7 +73,9 @@ public:
     LinesegmentsVisual(LinesegmentsVisual &other);
     LinesegmentsVisual &operator=(LinesegmentsVisual &other);
 
-    void render(const glm::ivec2 &scene_size) const;
+    void render(
+        const glm::ivec2 &scene_size, const DepthPeelingData &depth_peeling_data
+    ) const;
 
     void set_model(const glm::mat4 &model);
     void set_view(const glm::mat4 &view);
@@ -97,7 +103,8 @@ public:
     static Expected<Scene, Error> create(
         const glm::ivec2 &size,
         const glm::vec4 &background_color = glm::vec4(1.0f),
-        std::optional<int> samples = 4
+        std::optional<int> samples = 4,
+        int depth_peeling_passes = 3
     );
 
     Scene(Scene &&other);

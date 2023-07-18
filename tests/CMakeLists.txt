@@ -15,6 +15,7 @@ setup_test(window_keyboard_event_test window_keyboard_event_test.cpp)
 setup_test(window_mouse_event_test window_mouse_event_test.cpp)
 setup_test(linesegments_test linesegments_test.cpp)
 setup_test(scene_anti_aliasing_test scene_anti_aliasing_test.cpp)
+setup_test(depth_peeling_test depth_peeling_test.cpp)
 
 if(BUILD_SHARED_LIBS)
     # By default the library search path for the executable is set

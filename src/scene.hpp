@@ -11,6 +11,20 @@
 
 namespace elementary_visualizer
 {
+struct DepthPeelingData
+{
+    bool first_pass;
+    std::shared_ptr<GlTexture> depth_texture;
+    DepthPeelingData(bool first_pass, std::shared_ptr<GlTexture> depth_texture)
+        : first_pass(first_pass), depth_texture(depth_texture)
+    {}
+};
+
+void depth_peeling_set_uniforms(
+    std::shared_ptr<GlShaderProgram> shader_program,
+    const DepthPeelingData &depth_peeling_data
+);
+
 class Scene::Impl
 {
 public:
@@ -20,7 +34,9 @@ public:
         std::shared_ptr<GlFramebufferTexture> framebuffer_texture,
         std::shared_ptr<GlFramebufferTexture>
             framebuffer_texture_possibly_multisampled,
-        std::array<std::shared_ptr<GlTexture>, 1> depth_textures,
+        std::array<std::shared_ptr<GlTexture>, 2> depth_textures,
+        std::vector<std::shared_ptr<GlFramebufferTexture>>
+            depth_peeling_render_textures,
         const glm::vec4 &background_color
     );
 
@@ -43,7 +59,9 @@ private:
     std::shared_ptr<GlFramebufferTexture> framebuffer_texture;
     std::shared_ptr<GlFramebufferTexture>
         framebuffer_texture_possibly_multisampled;
-    std::array<std::shared_ptr<GlTexture>, 1> depth_textures;
+    std::array<std::shared_ptr<GlTexture>, 2> depth_textures;
+    std::vector<std::shared_ptr<GlFramebufferTexture>>
+        depth_peeling_render_textures;
     std::set<std::shared_ptr<Visual>> visuals;
 
 public:

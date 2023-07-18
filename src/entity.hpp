@@ -48,7 +48,9 @@ private:
 
     Entity(
         std::shared_ptr<WrappedGlfwWindow> glfw_window,
+        std::shared_ptr<GlQuad> quad,
         std::shared_ptr<GlShaderProgram> quad_shader_program,
+        std::shared_ptr<GlShaderProgram> quad_multisampled_shader_program,
         std::shared_ptr<GlShaderProgram> linesegments_shader_program
     );
 
@@ -56,7 +58,9 @@ private:
 
 public:
 
+    const std::shared_ptr<GlQuad> quad;
     const std::shared_ptr<GlShaderProgram> quad_shader_program;
+    const std::shared_ptr<GlShaderProgram> quad_multisampled_shader_program;
     const std::shared_ptr<GlShaderProgram> linesegments_shader_program;
 };
 }

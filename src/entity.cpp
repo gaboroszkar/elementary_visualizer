@@ -57,6 +57,12 @@ Expected<std::shared_ptr<Entity>, Error> Entity::initialize()
         [](std::shared_ptr<WrappedGlfwWindow> glfw_window
         ) -> Expected<std::shared_ptr<Entity>, Error>
         {
+            Expected<std::shared_ptr<GlQuad>, Error> quad(
+                GlQuad::create(glfw_window)
+            );
+            if (!quad)
+                return Unexpected<Error>(Error());
+
             std::vector<GlShaderSource> quad_shader_sources;
             quad_shader_sources.push_back(quad_vertex_shader_source());
             quad_shader_sources.push_back(quad_fragment_shader_source());
@@ -67,7 +73,24 @@ Expected<std::shared_ptr<Entity>, Error> Entity::initialize()
             if (!quad_shader_program)
                 return Unexpected<Error>(Error());
 
+            std::vector<GlShaderSource> quad_multisampled_shader_sources;
+            quad_multisampled_shader_sources.push_back(
+                quad_vertex_shader_source()
+            );
+            quad_multisampled_shader_sources.push_back(
+                quad_multisampled_fragment_shader_source()
+            );
+            Expected<std::shared_ptr<GlShaderProgram>, Error>
+                quad_multisampled_shader_program(GlShaderProgram::create(
+                    glfw_window, quad_multisampled_shader_sources
+                ));
+            if (!quad_multisampled_shader_program)
+                return Unexpected<Error>(Error());
+
             std::vector<GlShaderSource> linesegments_shader_sources;
+            linesegments_shader_sources.push_back(
+                depth_peeling_fragment_shader_source()
+            );
             linesegments_shader_sources.push_back(
                 linesegments_vertex_shader_source()
             );
@@ -77,7 +100,6 @@ Expected<std::shared_ptr<Entity>, Error> Entity::initialize()
             linesegments_shader_sources.push_back(
                 linesegments_fragment_shader_source()
             );
-
             Expected<std::shared_ptr<GlShaderProgram>, Error>
                 linesegments_shader_program(GlShaderProgram::create(
                     glfw_window, linesegments_shader_sources
@@ -87,7 +109,9 @@ Expected<std::shared_ptr<Entity>, Error> Entity::initialize()
 
             return std::shared_ptr<Entity>(new Entity(
                 glfw_window,
+                quad.value(),
                 quad_shader_program.value(),
+                quad_multisampled_shader_program.value(),
                 linesegments_shader_program.value()
             ));
         }
@@ -96,11 +120,15 @@ Expected<std::shared_ptr<Entity>, Error> Entity::initialize()
 
 Entity::Entity(
     std::shared_ptr<WrappedGlfwWindow> glfw_window,
+    std::shared_ptr<GlQuad> quad,
     std::shared_ptr<GlShaderProgram> quad_shader_program,
+    std::shared_ptr<GlShaderProgram> quad_multisampled_shader_program,
     std::shared_ptr<GlShaderProgram> linesegments_shader_program
 )
     : glfw_window(glfw_window),
+      quad(quad),
       quad_shader_program(quad_shader_program),
+      quad_multisampled_shader_program(quad_multisampled_shader_program),
       linesegments_shader_program(linesegments_shader_program)
 {}
 }

@@ -31,11 +31,15 @@ LinesegmentsVisual::Impl &
     return *this;
 }
 
-void LinesegmentsVisual::Impl::render(const glm::ivec2 &scene_size) const
+void LinesegmentsVisual::Impl::render(
+    const glm::ivec2 &scene_size, const DepthPeelingData &depth_peeling_data
+) const
 {
     std::shared_ptr<GlShaderProgram> shader_program =
         this->entity->linesegments_shader_program;
     shader_program->use();
+
+    depth_peeling_set_uniforms(shader_program, depth_peeling_data);
 
     shader_program->set_uniform("model", this->model);
     shader_program->set_uniform("view", this->view);
@@ -103,9 +107,11 @@ LinesegmentsVisual &LinesegmentsVisual::operator=(LinesegmentsVisual &other)
     return *this;
 }
 
-void LinesegmentsVisual::render(const glm::ivec2 &scene_size) const
+void LinesegmentsVisual::render(
+    const glm::ivec2 &scene_size, const DepthPeelingData &depth_peeling_data
+) const
 {
-    this->impl->render(scene_size);
+    this->impl->render(scene_size, depth_peeling_data);
 }
 
 void LinesegmentsVisual::set_model(const glm::mat4 &model)
