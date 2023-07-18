@@ -53,6 +53,8 @@ This project makes use of the following open-source software.
 ## Todo
 
 * Add build requirements in readme.
+* Add noexcept to functions definitions/declarations.
+  Also, consider the `-fno-exceptions` option.
 * Features.
   * Lines.
     * Similar to linesegment, but it's made up of lots
