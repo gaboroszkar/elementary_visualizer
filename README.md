@@ -31,6 +31,9 @@ This project makes use of the following open-source software.
 - [GLFW](https://www.glfw.org/): GLFW is an Open Source, multi-platform library for OpenGL, OpenGL ES and Vulkan application development.
 - [glad](https://github.com/Dav1dde/glad.git): Vulkan/GL/GLES/EGL/GLX/WGL Loader-Generator based on the official specifications for multiple languages.
 - [glm](https://github.com/g-truc/glm.git): Header only C++ mathematics library for graphics software.
+- [FFmpeg](https://ffmpeg.org/): FFmpeg is a collection of libraries and tools to process multimedia content such as audio, video, subtitles and related metadata.
+
+Note, the implementation of video encoding is based on the following example by Fabrice Bellard: [mux.c](https://git.ffmpeg.org/gitweb/ffmpeg.git/blob/HEAD:/doc/examples/mux.c).
 
 ## Development guidelines
 

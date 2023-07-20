@@ -3,7 +3,7 @@ function(setup_test TEST_NAME SOURCE_FILE)
     set_property(TARGET ${TEST_NAME} PROPERTY CXX_STANDARD 20)
     target_compile_options(${TEST_NAME} PRIVATE -Werror -Wall -Wextra)
     target_include_directories(${TEST_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR})
-    target_link_libraries(${TEST_NAME} elementary_visualizer)
+    target_link_libraries(${TEST_NAME} PRIVATE elementary_visualizer)
     add_test(${TEST_NAME} ${TEST_NAME})
 endfunction()
 
