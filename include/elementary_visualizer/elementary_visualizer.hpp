@@ -223,6 +223,40 @@ private:
 };
 
 void poll_window_events();
+
+class Video
+{
+public:
+
+    static Expected<Video, Error> create(
+        const std::string &file_name,
+        const glm::ivec2 &size,
+        const int frame_rate = 30,
+        const int64_t bit_rate = 5000000
+    );
+
+    Video(Video &&other);
+    Video &operator=(Video &&other);
+
+    void render(
+        std::shared_ptr<const RenderedScene> rendered_scene,
+        const RenderMode = RenderMode::fill
+    );
+
+    ~Video();
+
+    Video(const Video &other) = delete;
+    Video &operator=(const Video &other) = delete;
+
+    Video() = delete;
+
+private:
+
+    class Impl;
+    std::unique_ptr<Impl> impl;
+
+    Video(std::unique_ptr<Impl> &&impl);
+};
 }
 
 #endif
