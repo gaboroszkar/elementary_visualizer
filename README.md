@@ -58,11 +58,15 @@ Note, the implementation of video encoding is based on the following example by 
 * Add build requirements in readme.
 * Add noexcept to functions definitions/declarations.
   Also, consider the `-fno-exceptions` option.
+* Documentation.
+  * Document how to use video.
+    * Document how to use x264 codec (enable in FFmpeg).
+    * Document how to create gifs.
+    * Document how to create series of images with `Video` (filename: '%d').
+  * Document the code, possibly with using doxygen.
+* Video features to be optional, and document it.
 * Features.
   * Lines.
-    * Similar to linesegment, but it's made up of lots
-      of linesegments and their connections, so that the line
-      is more or less continuous.
     * Texturing along the line; dashed lines.
   * Surface plot.
     * The x, y, z coordinates are specified
@@ -77,11 +81,14 @@ Note, the implementation of video encoding is based on the following example by 
         normals are not interpolated,
         they are constant for a half rectangle (triangle).
     * Possibly texturing.
-  * Rendering the rendered scene to `Image`.
-  * Rendering the rendered scene to `Video`.
+  * Make sure the `RenderMode` works for video.
+  * For video, user should be able to explictly specify
+    * codecs, and
+    * video format (the format context type mp4, gif, mkv, etc.).
   * Text.
     * Basic text.
     * Latex equations.
+  * Rendering the rendered scene to `Image`.
   * Volumetric plot.
 * Error handling.
   * Implement `Error` class correctly, and populate
@@ -95,7 +102,6 @@ Note, the implementation of video encoding is based on the following example by 
 * Tests.
   * Add tests for public class copy/move, and check their validity.
   * Check not only `add_visual` but also `remove_visual` in the tests.
-* Documentation; possibly use doxygen.
 * Use testing framework; possibly GoogleTest or Catch2.
 
 ## Licensing
