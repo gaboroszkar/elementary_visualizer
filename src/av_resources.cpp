@@ -4,28 +4,21 @@ namespace elementary_visualizer
 {
 WrappedAvDictionary::WrappedAvDictionary() : dictionary(nullptr) {}
 
-AVDictionary *WrappedAvDictionary::operator*()
+WrappedAvDictionary::WrappedAvDictionary(const WrappedAvDictionary &other)
+    : dictionary(nullptr)
 {
-    return this->dictionary;
+    av_dict_copy(&this->dictionary, other.dictionary, 0);
 }
 
-const AVDictionary *WrappedAvDictionary::operator*() const
+WrappedAvDictionary &WrappedAvDictionary::operator=(WrappedAvDictionary &&other)
 {
-    return this->dictionary;
+    av_dict_copy(&this->dictionary, other.dictionary, 0);
+    return *this;
 }
 
-void WrappedAvDictionary::set(
-    const std::string &key, const std::string &value, const int flags
-)
+void WrappedAvDictionary::set(const std::string &key, const std::string &value)
 {
-    av_dict_set(&this->dictionary, key.c_str(), value.c_str(), flags);
-}
-
-WrappedAvDictionary WrappedAvDictionary::copy() const
-{
-    WrappedAvDictionary other;
-    av_dict_copy(&other.dictionary, this->dictionary, 0);
-    return other;
+    av_dict_set(&this->dictionary, key.c_str(), value.c_str(), 0);
 }
 
 WrappedAvDictionary::~WrappedAvDictionary()
@@ -80,13 +73,6 @@ Expected<std::shared_ptr<WrappedAvFrame>, Error> WrappedAvFrame::create(
     std::shared_ptr<WrappedAvFrame> wrapped_frame =
         std::shared_ptr<WrappedAvFrame>(new WrappedAvFrame(frame));
 
-    // When we pass a frame to the encoder,
-    // it may keep a reference to it internally;
-    // make sure we do not overwrite it here.
-    result = av_frame_make_writable(wrapped_frame->frame);
-    if (result < 0)
-        return Unexpected<Error>(Error());
-
     return wrapped_frame;
 }
 
@@ -103,11 +89,17 @@ const AVFrame *WrappedAvFrame::operator*() const
 Expected<void, Error>
     WrappedAvFrame::convert_and_copy(const WrappedAvFrame &source)
 {
+    int result;
+
+    result = av_frame_make_writable(this->frame);
+    if (result < 0)
+        return Unexpected<Error>(Error());
+
     if ((source.frame->format == this->frame->format) &&
         (source.frame->width == this->frame->width) &&
         (source.frame->height == this->frame->height))
     {
-        int result = av_frame_copy(this->frame, source.frame);
+        result = av_frame_copy(this->frame, source.frame);
         if (result < 0)
             return Unexpected<Error>(Error());
     }
@@ -128,7 +120,7 @@ Expected<void, Error>
         if (!sws_context)
             return Unexpected<Error>(Error());
 
-        int result = sws_scale(
+        result = sws_scale(
             sws_context,
             (const uint8_t *const *)source.frame->data,
             source.frame->linesize,
@@ -160,7 +152,7 @@ Expected<std::shared_ptr<WrappedAvCodecContext>, Error>
         const int width,
         const int height,
         const int frame_rate,
-        const enum AVPixelFormat pixel_format,
+        const enum AVPixelFormat source_pixel_format,
         const int additional_flags,
         const WrappedAvDictionary &parameters
     )
@@ -171,6 +163,12 @@ Expected<std::shared_ptr<WrappedAvCodecContext>, Error>
         return Unexpected<Error>(Error());
 
     if (codec->type != AVMEDIA_TYPE_VIDEO)
+        return Unexpected<Error>(Error());
+
+    const enum AVPixelFormat pixel_format = avcodec_find_best_pix_fmt_of_list(
+        codec->pix_fmts, source_pixel_format, 0, nullptr
+    );
+    if (pixel_format == AV_PIX_FMT_NONE)
         return Unexpected<Error>(Error());
 
     AVCodecContext *codec_context = avcodec_alloc_context3(codec);
@@ -211,10 +209,14 @@ Expected<std::shared_ptr<WrappedAvCodecContext>, Error>
 
     codec_context->flags |= additional_flags;
 
-    WrappedAvDictionary copied_parameters = parameters.copy();
-    AVDictionary *p_copied_parameters = *copied_parameters;
-    // Open the codec.
+    WrappedAvDictionary copied_parameters(parameters);
+    AVDictionary *p_copied_parameters = copied_parameters.dictionary;
+    //  Open the codec.
     int result = avcodec_open2(codec_context, codec, &p_copied_parameters);
+    // avcodec_open2 frees up potentially the memory address of the parameters,
+    // and allocates a new dictionary. So we also make the change in our
+    // copied_parameters, so that it does not free up already freed memory.
+    copied_parameters.dictionary = p_copied_parameters;
     if (result < 0)
         return Unexpected<Error>(Error());
 
@@ -275,7 +277,7 @@ Expected<std::shared_ptr<WrappedOutputVideoAvFormatContext>, Error>
         const int width,
         const int height,
         const int frame_rate,
-        const enum AVPixelFormat pixel_format,
+        const enum AVPixelFormat source_pixel_format,
         const WrappedAvDictionary &parameters
     )
 {
@@ -301,7 +303,7 @@ Expected<std::shared_ptr<WrappedOutputVideoAvFormatContext>, Error>
             width,
             height,
             frame_rate,
-            pixel_format,
+            source_pixel_format,
             codec_additional_flags,
             parameters
         );
@@ -355,10 +357,14 @@ Expected<void, Error> WrappedOutputVideoAvFormatContext::open()
     }
 
     // Write the stream header, if any.
-    WrappedAvDictionary copied_parameters = this->parameters.copy();
-    AVDictionary *p_copied_parameters = *copied_parameters;
+    WrappedAvDictionary copied_parameters(this->parameters);
+    AVDictionary *p_copied_parameters = copied_parameters.dictionary;
     int result =
         avformat_write_header(this->format_context, &p_copied_parameters);
+    // avformat_write_header frees up potentially the memory address of the
+    // parameters, and allocates a new dictionary. So we also make the change in
+    // our copied_parameters, so that it does not free up already freed memory.
+    copied_parameters.dictionary = p_copied_parameters;
     if (result < 0)
     {
         if (!this->no_file())
@@ -462,11 +468,16 @@ Expected<void, Error>
     if (!this->format_context->is_opened())
         return Unexpected<Error>(Error());
 
+    int result;
+
+    result = av_frame_make_writable(**this->frame);
+    if (result < 0)
+        return Unexpected<Error>(Error());
+
     this->frame->convert_and_copy(*frame_in);
 
     (**(this->frame))->pts = this->timestamp;
 
-    int result = 0;
     AVCodecContext *codec_context = **(this->format_context->codec_context);
     AVPacket *packet = **(this->packet);
 

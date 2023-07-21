@@ -24,19 +24,12 @@ public:
 
     WrappedAvDictionary();
 
-    AVDictionary *operator*();
-    const AVDictionary *operator*() const;
+    WrappedAvDictionary(const WrappedAvDictionary &other);
+    WrappedAvDictionary &operator=(WrappedAvDictionary &&other);
 
-    void
-        set(const std::string &key,
-            const std::string &value,
-            const int flags = 0);
-
-    WrappedAvDictionary copy() const;
+    void set(const std::string &key, const std::string &value);
 
     ~WrappedAvDictionary();
-
-private:
 
     AVDictionary *dictionary;
 };
@@ -91,7 +84,7 @@ public:
         const int width,
         const int height,
         const int frame_rate,
-        const enum AVPixelFormat pixel_format,
+        const enum AVPixelFormat source_pixel_format,
         const int additional_flags,
         const WrappedAvDictionary &parameters
     );
@@ -156,7 +149,7 @@ public:
             const int width,
             const int height,
             const int frame_rate,
-            const enum AVPixelFormat pixel_format,
+            const enum AVPixelFormat source_pixel_format,
             const WrappedAvDictionary &parameters
         );
 

@@ -31,7 +31,12 @@ void Video::Impl::render(
     if (!rendered_scene)
         return;
 
-    std::vector<float> rendered_scene_data(4 * size.x * size.y);
+    // TODO: implement `RenderMode` correctly instead of
+    // not rendering when there is a size mismatch.
+    if (this->size != rendered_scene->get_size())
+        return;
+
+    std::vector<float> rendered_scene_data(4 * this->size.x * this->size.y);
     rendered_scene->bind();
     glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, &rendered_scene_data[0]);
 
@@ -39,17 +44,17 @@ void Video::Impl::render(
     const int linesize = av_frame->linesize[0];
     uint8_t *data = av_frame->data[0];
 
-    for (int y = 0; y < size.y; ++y)
+    for (int y = 0; y < this->size.y; ++y)
     {
-        for (int x = 0; x < size.x; ++x)
+        for (int x = 0; x < this->size.x; ++x)
         {
             uint8_t r =
-                int(255 * rendered_scene_data[4 * (size.x * y + x) + 0]);
+                int(255 * rendered_scene_data[4 * (this->size.x * y + x) + 0]);
             uint8_t g =
-                int(255 * rendered_scene_data[4 * (size.x * y + x) + 1]);
+                int(255 * rendered_scene_data[4 * (this->size.x * y + x) + 1]);
             uint8_t b =
-                int(255 * rendered_scene_data[4 * (size.x * y + x) + 2]);
-            const int y_mirrored = (size.y - 1) - y;
+                int(255 * rendered_scene_data[4 * (this->size.x * y + x) + 2]);
+            const int y_mirrored = (this->size.y - 1) - y;
             data[(y_mirrored * linesize + 3 * x) + 0] = r;
             data[(y_mirrored * linesize + 3 * x) + 1] = g;
             data[(y_mirrored * linesize + 3 * x) + 2] = b;
@@ -68,6 +73,8 @@ Expected<Video, Error> Video::create(
     const int64_t bit_rate
 )
 {
+    const enum AVPixelFormat source_pixel_format = AV_PIX_FMT_RGB24;
+
     Expected<std::shared_ptr<WrappedOutputVideoAvFormatContext>, Error>
         format_context = WrappedOutputVideoAvFormatContext::create(
             filename,
@@ -76,7 +83,7 @@ Expected<Video, Error> Video::create(
             size.x,
             size.y,
             frame_rate,
-            AV_PIX_FMT_YUV420P,
+            source_pixel_format,
             WrappedAvDictionary()
         );
     if (!format_context)
@@ -90,7 +97,7 @@ Expected<Video, Error> Video::create(
         return Unexpected<Error>(Error());
 
     Expected<std::shared_ptr<WrappedAvFrame>, Error> frame =
-        WrappedAvFrame::create(AV_PIX_FMT_RGB24, size.x, size.y);
+        WrappedAvFrame::create(source_pixel_format, size.x, size.y);
     if (!frame)
         return Unexpected<Error>(Error());
 
