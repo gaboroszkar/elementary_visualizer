@@ -42,6 +42,7 @@ public:
     void set_uniform(const std::string &name, const bool value);
     void set_uniform(const std::string &name, const float value);
     void set_uniform(const std::string &name, const glm::uvec2 &value);
+    void set_uniform(const std::string &name, const glm::vec3 &value);
     void set_uniform(const std::string &name, const glm::mat4 &value);
 
     ~GlShaderProgram();

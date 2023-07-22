@@ -164,6 +164,16 @@ void GlShaderProgram::set_uniform(
 }
 
 void GlShaderProgram::set_uniform(
+    const std::string &name, const glm::vec3 &value
+)
+{
+    if (this->uniform_locations.contains(name))
+        glUniform3f(
+            this->uniform_locations.at(name), value.x, value.y, value.z
+        );
+}
+
+void GlShaderProgram::set_uniform(
     const std::string &name, const glm::mat4 &value
 )
 {

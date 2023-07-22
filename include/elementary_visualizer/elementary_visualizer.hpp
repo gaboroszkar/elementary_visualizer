@@ -126,6 +126,150 @@ private:
     LinesVisual(std::unique_ptr<Impl> impl);
 };
 
+/**
+ * @brief Container to hold all data for a Surface.
+ *
+ * This container holds all vertices to the surface.
+ * The surface is a 2-dimensional object, a rectangular
+ * shape indexed by u, v coordinates. The u, v coordinates
+ * are integers, and the neighboring coordinates of a u, v
+ * coordinate are the four points:
+ * u - 1, v and u + 1, v and u, v - 1 and u, v + 1,
+ * if u, v is not on the edge.
+ *
+ * The u, v coordinates are represented by the
+ * `vertices[v * u_size + u]`. This means, that to get a rectangular
+ * shape, you need to have `u_size * v_size` elements in `vertices`.
+ *
+ * @note Size of `vertices` must be greater than `u_size + 1` to render any
+ * surface.
+ */
+struct SurfaceData
+{
+    /**
+     * @brief Mode to specify how data is rendered.
+     */
+    enum class Mode
+    {
+        smooth, /**< Smooth mode.
+                 * Each vertex has it's own inherent color and normal,
+                 * and the colors and normals between vertices are interpolated.
+                 */
+        flat    /**< Flat mode.
+                 * Each surface segment enclosed by 4 coordinates
+                 * has it's inherent color.
+                 * The color of a point enclosed by the 4 coordinates
+                 * u, v and u + 1, v and u, v + 1 and u + 1, v + 1
+                 * will be `vertices[u * v_size + v].color`.
+                 * The normal will be calculated based on the 3 vertices
+                 * enclosing a triangle.
+                 */
+    };
+
+    SurfaceData(
+        std::vector<Vertex> &&vertices,
+        const size_t u_size,
+        const Mode mode = Mode::smooth
+    )
+        : vertices(std::move(vertices)), u_size(u_size), mode(mode)
+    {}
+
+    SurfaceData(
+        const std::vector<Vertex> &vertices,
+        const size_t u_size,
+        const Mode mode = Mode::smooth
+    )
+        : vertices(vertices), u_size(u_size), mode(mode)
+    {}
+
+    Vertex &operator()(size_t u, size_t v)
+    {
+        return this->vertices[this->index(u, v)];
+    }
+
+    const Vertex &operator()(size_t u, size_t v) const
+    {
+        return this->vertices[this->index(u, v)];
+    }
+
+    Vertex &operator()(const glm::uvec2 &uv)
+    {
+        return this->vertices[this->index(uv)];
+    }
+
+    const Vertex &operator()(const glm::uvec2 &uv) const
+    {
+        return this->vertices[this->index(uv)];
+    }
+
+    size_t index(const glm::uvec2 &uv) const
+    {
+        return this->index(uv.x, uv.y);
+    }
+
+    size_t index(size_t u, size_t v) const
+    {
+        return v * this->u_size + u;
+    }
+
+    glm::uvec2 uv(size_t index) const
+    {
+        size_t u = index % this->u_size;
+        return glm::uvec2(u, (index - u) / this->u_size);
+    }
+
+    std::vector<Vertex> vertices;
+    size_t u_size;
+    Mode mode;
+};
+
+class SurfaceVisual : public Visual
+{
+public:
+
+    static Expected<std::shared_ptr<SurfaceVisual>, Error>
+        create(const SurfaceData &surface_data);
+
+    SurfaceVisual(SurfaceVisual &&other);
+    SurfaceVisual &operator=(SurfaceVisual &&other);
+
+    SurfaceVisual(SurfaceVisual &other);
+    SurfaceVisual &operator=(SurfaceVisual &other);
+
+    void render(
+        const glm::uvec2 &scene_size, const DepthPeelingData &depth_peeling_data
+    ) const;
+
+    void set_model(const glm::mat4 &model);
+    void set_view(const glm::mat4 &view);
+    void set_projection(const glm::mat4 &projection);
+
+    void set_surface_data(const SurfaceData &surface_data);
+
+    /**
+     * @brief Sets the light position.
+     *
+     * @param light_position The optional light position.
+     * If it's std::nullopt, then the light position
+     * is the same as the camera eye position.
+     */
+    void set_light_position(const std::optional<glm::vec3> &light_position);
+
+    void set_ambient_color(const glm::vec3 &ambient_color);
+    void set_diffuse_color(const glm::vec3 &diffuse_color);
+    void set_specular_color(const glm::vec3 &specular_color);
+    void set_shininess(const float shininess);
+
+    ~SurfaceVisual();
+
+private:
+
+    class Impl;
+    std::unique_ptr<Impl> impl;
+
+    SurfaceVisual(std::unique_ptr<Impl> impl);
+};
+
 class GlTexture;
 using RenderedScene = GlTexture;
 

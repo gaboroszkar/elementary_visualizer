@@ -47,6 +47,12 @@ Expected<std::shared_ptr<GlLines>, Error>
     return GlLines::create(this->glfw_window, lines_data);
 }
 
+Expected<std::shared_ptr<GlSurface>, Error>
+    Entity::create_surface(const SurfaceData &surface_data)
+{
+    return GlSurface::create(this->glfw_window, surface_data);
+}
+
 void Entity::make_current_context()
 {
     this->glfw_window->make_current_context();
@@ -127,13 +133,27 @@ Expected<std::shared_ptr<Entity>, Error> Entity::initialize()
             if (!lines_shader_program)
                 return Unexpected<Error>(Error());
 
+            std::vector<GlShaderSource> surface_shader_sources;
+            surface_shader_sources.push_back(
+                depth_peeling_fragment_shader_source()
+            );
+            surface_shader_sources.push_back(surface_vertex_shader_source());
+            surface_shader_sources.push_back(surface_fragment_shader_source());
+            Expected<std::shared_ptr<GlShaderProgram>, Error>
+                surface_shader_program(
+                    GlShaderProgram::create(glfw_window, surface_shader_sources)
+                );
+            if (!surface_shader_program)
+                return Unexpected<Error>(Error());
+
             return std::shared_ptr<Entity>(new Entity(
                 glfw_window,
                 quad.value(),
                 quad_shader_program.value(),
                 quad_multisampled_shader_program.value(),
                 linesegments_shader_program.value(),
-                lines_shader_program.value()
+                lines_shader_program.value(),
+                surface_shader_program.value()
             ));
         }
     );
@@ -145,13 +165,15 @@ Entity::Entity(
     std::shared_ptr<GlShaderProgram> quad_shader_program,
     std::shared_ptr<GlShaderProgram> quad_multisampled_shader_program,
     std::shared_ptr<GlShaderProgram> linesegments_shader_program,
-    std::shared_ptr<GlShaderProgram> lines_shader_program
+    std::shared_ptr<GlShaderProgram> lines_shader_program,
+    std::shared_ptr<GlShaderProgram> surface_shader_program
 )
     : glfw_window(glfw_window),
       quad(quad),
       quad_shader_program(quad_shader_program),
       quad_multisampled_shader_program(quad_multisampled_shader_program),
       linesegments_shader_program(linesegments_shader_program),
-      lines_shader_program(lines_shader_program)
+      lines_shader_program(lines_shader_program),
+      surface_shader_program(surface_shader_program)
 {}
 }

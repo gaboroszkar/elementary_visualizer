@@ -280,6 +280,56 @@ private:
     const std::shared_ptr<GlVertexBuffer> vertex_buffer;
     int number_of_lines;
 };
+
+class GlSurface
+{
+public:
+
+    static Expected<std::shared_ptr<GlSurface>, Error> create(
+        std::shared_ptr<WrappedGlfwWindow> glfw_window,
+        const SurfaceData &surface_data
+    );
+
+    void render(bool make_context = true) const;
+
+    void set_surface_data(const SurfaceData &surface_data);
+
+    ~GlSurface();
+
+    GlSurface(GlSurface &&other) = delete;
+    GlSurface &operator=(GlSurface &&other) = delete;
+    GlSurface(const GlSurface &other) = delete;
+    GlSurface &operator=(const GlSurface &other) = delete;
+
+private:
+
+    GlSurface(
+        std::shared_ptr<GlVertexArray> vertex_array,
+        std::shared_ptr<GlVertexBuffer> vertex_buffer,
+        const int number_of_vertices
+    );
+
+    static void add_vertex(
+        std::vector<float> &vertices,
+        const glm::vec3 &position,
+        const glm::vec4 &color,
+        const glm::vec3 &normal
+    );
+    static void add_triangle_vertex(
+        std::vector<float> &vertices,
+        const SurfaceData &data,
+        const glm::uvec2 &ref,
+        const glm::uvec2 &uv,
+        const bool upper_triangle
+    );
+    static unsigned int generate_vertex_buffer_data(
+        std::vector<float> &vertices, const SurfaceData &surface_data
+    );
+
+    const std::shared_ptr<GlVertexArray> vertex_array;
+    const std::shared_ptr<GlVertexBuffer> vertex_buffer;
+    unsigned int number_of_triangles;
+};
 }
 
 #endif

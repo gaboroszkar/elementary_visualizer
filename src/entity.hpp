@@ -34,6 +34,8 @@ public:
         create_linesegments(const std::vector<Linesegment> &linesegments_data);
     Expected<std::shared_ptr<GlLines>, Error>
         create_lines(const std::vector<Vertex> &lines_data);
+    Expected<std::shared_ptr<GlSurface>, Error>
+        create_surface(const SurfaceData &surface_data);
 
     void make_current_context();
 
@@ -54,7 +56,8 @@ private:
         std::shared_ptr<GlShaderProgram> quad_shader_program,
         std::shared_ptr<GlShaderProgram> quad_multisampled_shader_program,
         std::shared_ptr<GlShaderProgram> linesegments_shader_program,
-        std::shared_ptr<GlShaderProgram> lines_shader_program
+        std::shared_ptr<GlShaderProgram> lines_shader_program,
+        std::shared_ptr<GlShaderProgram> surface_shader_program
     );
 
     std::shared_ptr<WrappedGlfwWindow> glfw_window;
@@ -66,6 +69,7 @@ public:
     const std::shared_ptr<GlShaderProgram> quad_multisampled_shader_program;
     const std::shared_ptr<GlShaderProgram> linesegments_shader_program;
     const std::shared_ptr<GlShaderProgram> lines_shader_program;
+    const std::shared_ptr<GlShaderProgram> surface_shader_program;
 };
 }
 

@@ -71,6 +71,10 @@ Note, the implementation of video encoding is based on the following example by 
     * Document how to create series of images with `Video` (filename: '%d').
   * Document the code, possibly with using doxygen.
 * Video features to be optional, and document it.
+* `Visual` could be improved: the `Visual::render()`
+  could implement all the mandatory parts: setting the depth peeling data,
+  and setting the model, view, projection matrices. And after that's done,
+  it could call the current visual type's rendering implementation.
 * Features.
   * Lines.
     * Texturing along the line; dashed lines.

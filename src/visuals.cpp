@@ -1,5 +1,8 @@
+#include <glm/gtc/matrix_inverse.hpp>
 #include <scene.hpp>
 #include <visuals.hpp>
+
+#include <iostream>
 
 namespace elementary_visualizer
 {
@@ -282,6 +285,196 @@ void LinesVisual::set_width(const float width)
 LinesVisual::~LinesVisual() {}
 
 LinesVisual::LinesVisual(std::unique_ptr<LinesVisual::Impl> impl)
+    : impl(std::move(impl))
+{}
+
+SurfaceVisual::Impl::Impl(
+    std::shared_ptr<Entity> entity, std::shared_ptr<GlSurface> surface
+)
+    : entity(entity),
+      surface(surface),
+      model(1.0f),
+      view(1.0f),
+      projection(1.0f),
+      light_position(std::nullopt),
+      ambient_color(0.25f, 0.25f, 0.25f),
+      diffuse_color(0.5f, 0.5f, 0.5f),
+      specular_color(0.5f, 0.5f, 0.5f),
+      shininess(32.0f)
+{}
+
+SurfaceVisual::Impl::Impl(SurfaceVisual::Impl &&other)
+    : entity(other.entity),
+      surface(other.surface),
+      model(other.model),
+      view(other.view),
+      projection(other.projection),
+      light_position(other.light_position),
+      ambient_color(other.ambient_color),
+      diffuse_color(other.diffuse_color),
+      specular_color(other.specular_color),
+      shininess(other.shininess)
+{}
+SurfaceVisual::Impl &SurfaceVisual::Impl::operator=(SurfaceVisual::Impl &&other)
+{
+    this->entity = other.entity;
+    this->surface = other.surface;
+    this->model = other.model;
+    this->view = other.view;
+    this->projection = other.projection;
+    this->light_position = other.light_position;
+    this->ambient_color = other.ambient_color;
+    this->diffuse_color = other.diffuse_color;
+    this->specular_color = other.specular_color;
+    this->shininess = other.shininess;
+    return *this;
+}
+
+void SurfaceVisual::Impl::render(
+    const glm::uvec2 &scene_size, const DepthPeelingData &depth_peeling_data
+) const
+{
+    std::shared_ptr<GlShaderProgram> shader_program =
+        this->entity->surface_shader_program;
+    shader_program->use();
+
+    depth_peeling_set_uniforms(shader_program, depth_peeling_data);
+
+    shader_program->set_uniform("scene_size", scene_size);
+
+    shader_program->set_uniform("model", this->model);
+    shader_program->set_uniform("view", this->view);
+
+    glm::mat4 projection = this->projection;
+    const float aspect =
+        static_cast<float>(scene_size.x) / static_cast<float>(scene_size.y);
+    projection[0][0] = projection[0][0] / aspect;
+    shader_program->set_uniform("projection", projection);
+
+    const glm::mat4 inverse_view = glm::affineInverse(view);
+    glm::vec3 eye = glm::vec3(inverse_view[3]);
+    shader_program->set_uniform("eye", eye);
+
+    if (this->light_position)
+        shader_program->set_uniform(
+            "light_position", this->light_position.value()
+        );
+    else
+    {
+        shader_program->set_uniform("light_position", eye);
+    }
+
+    shader_program->set_uniform("ambient_color", this->ambient_color);
+    shader_program->set_uniform("diffuse_color", this->diffuse_color);
+    shader_program->set_uniform("specular_color", this->specular_color);
+    shader_program->set_uniform("shininess", this->shininess);
+
+    this->surface->render(false);
+}
+
+void SurfaceVisual::Impl::set_surface_data(const SurfaceData &surface_data)
+{
+    this->surface->set_surface_data(surface_data);
+}
+
+SurfaceVisual::Impl::~Impl(){};
+
+Expected<std::shared_ptr<SurfaceVisual>, Error>
+    SurfaceVisual::create(const SurfaceData &surface_data)
+{
+    return Entity::ensure_initialized_and_get().and_then(
+        [&surface_data](std::shared_ptr<Entity> entity
+        ) -> Expected<std::shared_ptr<SurfaceVisual>, Error>
+        {
+            Expected<std::shared_ptr<GlSurface>, Error> surface =
+                entity->create_surface(surface_data);
+            if (!surface)
+                return Unexpected<Error>(Error());
+
+            std::unique_ptr<SurfaceVisual::Impl> impl(
+                std::make_unique<SurfaceVisual::Impl>(entity, surface.value())
+            );
+            return std::shared_ptr<SurfaceVisual>(
+                new SurfaceVisual(std::move(impl))
+            );
+        }
+    );
+}
+
+SurfaceVisual::SurfaceVisual(SurfaceVisual &&other)
+    : impl(std::move(other.impl))
+{}
+SurfaceVisual &SurfaceVisual::operator=(SurfaceVisual &&other)
+{
+    this->impl = std::move(other.impl);
+    return *this;
+}
+
+SurfaceVisual::SurfaceVisual(SurfaceVisual &other) : impl(std::move(other.impl))
+{}
+SurfaceVisual &SurfaceVisual::operator=(SurfaceVisual &other)
+{
+    this->impl = std::move(other.impl);
+    return *this;
+}
+
+void SurfaceVisual::render(
+    const glm::uvec2 &scene_size, const DepthPeelingData &depth_peeling_data
+) const
+{
+    this->impl->render(scene_size, depth_peeling_data);
+}
+
+void SurfaceVisual::set_model(const glm::mat4 &model)
+{
+    this->impl->model = model;
+}
+
+void SurfaceVisual::set_view(const glm::mat4 &view)
+{
+    this->impl->view = view;
+}
+
+void SurfaceVisual::set_projection(const glm::mat4 &projection)
+{
+    this->impl->projection = projection;
+}
+
+void SurfaceVisual::set_surface_data(const SurfaceData &surface_data)
+{
+    this->impl->set_surface_data(surface_data);
+}
+
+void SurfaceVisual::set_light_position(
+    const std::optional<glm::vec3> &light_position
+)
+{
+    this->impl->light_position = light_position;
+}
+
+void SurfaceVisual::set_ambient_color(const glm::vec3 &ambient_color)
+{
+    this->impl->ambient_color = ambient_color;
+}
+
+void SurfaceVisual::set_diffuse_color(const glm::vec3 &diffuse_color)
+{
+    this->impl->diffuse_color = diffuse_color;
+}
+
+void SurfaceVisual::set_specular_color(const glm::vec3 &specular_color)
+{
+    this->impl->specular_color = specular_color;
+}
+
+void SurfaceVisual::set_shininess(const float shininess)
+{
+    this->impl->shininess = shininess;
+}
+
+SurfaceVisual::~SurfaceVisual() {}
+
+SurfaceVisual::SurfaceVisual(std::unique_ptr<SurfaceVisual::Impl> impl)
     : impl(std::move(impl))
 {}
 }

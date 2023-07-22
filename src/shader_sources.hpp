@@ -18,6 +18,9 @@ const GlShaderSource &linesegments_fragment_shader_source();
 const GlShaderSource &lines_vertex_shader_source();
 const GlShaderSource &lines_geometry_shader_source();
 const GlShaderSource &lines_fragment_shader_source();
+
+const GlShaderSource &surface_vertex_shader_source();
+const GlShaderSource &surface_fragment_shader_source();
 }
 
 #endif
