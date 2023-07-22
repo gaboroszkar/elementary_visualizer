@@ -13,14 +13,14 @@ Expected<std::shared_ptr<Entity>, Error> Entity::ensure_initialized_and_get()
 }
 
 Expected<std::shared_ptr<WrappedGlfwWindow>, Error> Entity::create_window(
-    const std::string &title, const glm::ivec2 &size, const bool resizable
+    const std::string &title, const glm::uvec2 &size, const bool resizable
 )
 {
     return WrappedGlfwWindow::create(title, size, resizable, this->glfw_window);
 }
 
 Expected<std::shared_ptr<GlTexture>, Error> Entity::create_texture(
-    const glm::ivec2 &size, const bool depth, const std::optional<int> samples
+    const glm::uvec2 &size, const bool depth, const std::optional<int> samples
 )
 {
     return GlTexture::create(this->glfw_window, size, depth, samples);
@@ -28,7 +28,7 @@ Expected<std::shared_ptr<GlTexture>, Error> Entity::create_texture(
 
 Expected<std::shared_ptr<GlFramebufferTexture>, Error>
     Entity::create_framebuffer_texture(
-        const glm::ivec2 &size, const std::optional<int> samples
+        const glm::uvec2 &size, const std::optional<int> samples
     )
 {
     return GlFramebufferTexture::create(this->glfw_window, size, samples);
@@ -58,7 +58,7 @@ Expected<std::shared_ptr<Entity>, Error> Entity::initialize()
 {
     Expected<std::shared_ptr<WrappedGlfwWindow>, Error> window_creation_result =
         WrappedGlfwWindow::create(
-            "Entity", glm::ivec2(1, 1), false, nullptr, false
+            "Entity", glm::uvec2(1, 1), false, nullptr, false
         );
     return window_creation_result.and_then(
         [](std::shared_ptr<WrappedGlfwWindow> glfw_window

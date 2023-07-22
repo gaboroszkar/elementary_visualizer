@@ -5,7 +5,7 @@ namespace ev = elementary_visualizer;
 
 std::size_t rendered_scene_hash(
     const std::shared_ptr<const ev::GlTexture> &rendered_scene,
-    const glm::ivec2 &size,
+    const glm::uvec2 &size,
     const bool debug
 )
 {

@@ -14,7 +14,7 @@ bool compare_data(
 
 int main(int, char **)
 {
-    const glm::ivec2 scene_size_0(1280, 720);
+    const glm::uvec2 scene_size_0(1280, 720);
     std::vector<float> rendered_scene_data_0(4 * 1280 * 720);
     auto scene_0 = ev::Scene::create(
         scene_size_0, glm::vec4(0.25f, 0.5f, 0.75f, 1.0f), std::nullopt
@@ -22,7 +22,7 @@ int main(int, char **)
     if (!scene_0)
         return EXIT_FAILURE;
 
-    const glm::ivec2 scene_size_1(500, 500);
+    const glm::uvec2 scene_size_1(500, 500);
     std::vector<float> rendered_scene_data_1(4 * 500 * 500);
     auto scene_1 = ev::Scene::create(
         scene_size_1, glm::vec4(0.1f, 0.2f, 0.3f, 0.4f), std::nullopt

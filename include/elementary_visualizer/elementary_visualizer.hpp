@@ -30,7 +30,7 @@ class Visual
 public:
 
     virtual void render(
-        const glm::ivec2 &scene_size, const DepthPeelingData &depth_peeling_data
+        const glm::uvec2 &scene_size, const DepthPeelingData &depth_peeling_data
     ) const = 0;
 };
 
@@ -74,7 +74,7 @@ public:
     LinesegmentsVisual &operator=(LinesegmentsVisual &other);
 
     void render(
-        const glm::ivec2 &scene_size, const DepthPeelingData &depth_peeling_data
+        const glm::uvec2 &scene_size, const DepthPeelingData &depth_peeling_data
     ) const;
 
     void set_model(const glm::mat4 &model);
@@ -107,7 +107,7 @@ public:
     LinesVisual &operator=(LinesVisual &other);
 
     void render(
-        const glm::ivec2 &scene_size, const DepthPeelingData &depth_peeling_data
+        const glm::uvec2 &scene_size, const DepthPeelingData &depth_peeling_data
     ) const;
 
     void set_model(const glm::mat4 &model);
@@ -134,7 +134,7 @@ class Scene
 public:
 
     static Expected<Scene, Error> create(
-        const glm::ivec2 &size,
+        const glm::uvec2 &size,
         const glm::vec4 &background_color = glm::vec4(1.0f),
         std::optional<int> samples = 4,
         int depth_peeling_passes = 3
@@ -177,7 +177,7 @@ public:
 
     static Expected<Window, Error> create(
         const std::string &title,
-        const glm::ivec2 &size,
+        const glm::uvec2 &size,
         const bool resizable = true
     );
 
@@ -228,31 +228,38 @@ class Video
 {
 public:
 
+    /**
+     * @brief Creates a Video.
+     *
+     * @param file_name Output filename.
+     * The file format will be figured out from the extension.
+     *
+     * @param size Width and height in pixels.
+     *
+     * @param frame_rate Frame rate in frames per second.
+     *
+     * @param bit_rate Bit rate in bits per second.
+     *
+     * @param intermediate_yuv420p_conversion
+     * Whether to insert an additional conversion step for each frame creation.
+     * Intermediate YUV420P conversion is necessary for
+     * correct gif creation. Without it, gifs have strange colors.
+     * The rendered texture is always converted to a pixel format
+     * which is the best (and supported) for the current video format.
+     * This option introduces an intermedia conversion between
+     * the conversion from the rendered texture to video frame.
+     * This option is not necessary for regular mp4, where the
+     * destination pixel format will be YUV420P anyway.
+     * In these cases, this argument has no effect.
+     * This can be turned off for more performant video creation.
+     *
+     * @return A Video object if it is successful, an Error otherwise.
+     */
     static Expected<Video, Error> create(
-        // Output filename.
-        // By default, the library will try to figure out
-        // what is the output format by it's extension.
         const std::string &file_name,
-
-        // Width and height in pixels.
-        const glm::ivec2 &size,
-
-        // Frame rate in frames per second.
-        const int frame_rate = 30,
-
-        // Bit rate in bits per second.
+        const glm::uvec2 &size,
+        const unsigned int frame_rate = 30,
         const int64_t bit_rate = 5000000,
-
-        // Intermediate YUV420P conversion is necessary for
-        // correct gif creation. Without it, gifs have strange colors.
-        // The rendered texture is always converted to a pixel format
-        // which is the best (and supported) for the current video format.
-        // This option introduces an intermedia conversion between
-        // the conversion from the rendered texture to video frame.
-        // This option is not necessary for regular mp4, where the
-        // destination pixel format will be YUV420P anyway.
-        // In these cases, this argument has no effect.
-        // This can be turned off for more performant video creation.
         const bool intermediate_yuv420p_conversion = true
     );
 

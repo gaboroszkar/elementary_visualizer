@@ -79,7 +79,7 @@ bool test_anti_aliasing_level(
     std::shared_ptr<ev::LinesegmentsVisual> linesegments
 )
 {
-    const glm::ivec2 scene_size(1280, 720);
+    const glm::uvec2 scene_size(1280, 720);
     std::vector<float> rendered_scene_data(4 * 1280 * 720);
     auto scene = ev::Scene::create(
         scene_size, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), samples

@@ -57,7 +57,9 @@ class WrappedAvFrame
 public:
 
     static Expected<std::shared_ptr<WrappedAvFrame>, Error> create(
-        const enum AVPixelFormat pixel_format, const int width, const int height
+        const enum AVPixelFormat pixel_format,
+        const unsigned int width,
+        const unsigned int height
     );
 
     AVFrame *operator*();
@@ -81,9 +83,9 @@ public:
     static Expected<std::shared_ptr<WrappedAvCodecContext>, Error> create(
         const enum AVCodecID codec_id,
         const int64_t bit_rate,
-        const int width,
-        const int height,
-        const int frame_rate,
+        const unsigned int width,
+        const unsigned int height,
+        const unsigned int frame_rate,
         const enum AVPixelFormat source_pixel_format,
         const int additional_flags,
         const WrappedAvDictionary &parameters
@@ -146,9 +148,9 @@ public:
             const std::string &filename,
             const std::optional<std::string> &format_name,
             const int64_t bit_rate,
-            const int width,
-            const int height,
-            const int frame_rate,
+            const unsigned int width,
+            const unsigned int height,
+            const unsigned int frame_rate,
             const enum AVPixelFormat source_pixel_format,
             const WrappedAvDictionary &parameters,
             const bool intermediate_yuv420p_conversion = true

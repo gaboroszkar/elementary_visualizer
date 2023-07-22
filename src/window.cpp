@@ -47,9 +47,9 @@ void Window::Impl::render(
     {
         glDisable(GL_DEPTH_TEST);
 
-        const glm::ivec2 window_size =
+        const glm::uvec2 window_size =
             this->glfw_window->get_framebuffer_size();
-        const glm::ivec2 scene_size = rendered_scene->get_size();
+        const glm::uvec2 scene_size = rendered_scene->get_size();
 
         this->glfw_window->make_current_context();
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -174,7 +174,7 @@ void Window::Impl::on_mouse_move_event(
 Window::Impl::~Impl(){};
 
 Expected<Window, Error> Window::create(
-    const std::string &title, const glm::ivec2 &size, const bool resizable
+    const std::string &title, const glm::uvec2 &size, const bool resizable
 )
 {
     Expected<std::shared_ptr<Entity>, Error> entity =

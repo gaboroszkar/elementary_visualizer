@@ -32,7 +32,7 @@ LinesegmentsVisual::Impl &
 }
 
 void LinesegmentsVisual::Impl::render(
-    const glm::ivec2 &scene_size, const DepthPeelingData &depth_peeling_data
+    const glm::uvec2 &scene_size, const DepthPeelingData &depth_peeling_data
 ) const
 {
     std::shared_ptr<GlShaderProgram> shader_program =
@@ -108,7 +108,7 @@ LinesegmentsVisual &LinesegmentsVisual::operator=(LinesegmentsVisual &other)
 }
 
 void LinesegmentsVisual::render(
-    const glm::ivec2 &scene_size, const DepthPeelingData &depth_peeling_data
+    const glm::uvec2 &scene_size, const DepthPeelingData &depth_peeling_data
 ) const
 {
     this->impl->render(scene_size, depth_peeling_data);
@@ -177,7 +177,7 @@ LinesVisual::Impl &LinesVisual::Impl::operator=(LinesVisual::Impl &&other)
 }
 
 void LinesVisual::Impl::render(
-    const glm::ivec2 &scene_size, const DepthPeelingData &depth_peeling_data
+    const glm::uvec2 &scene_size, const DepthPeelingData &depth_peeling_data
 ) const
 {
     std::shared_ptr<GlShaderProgram> shader_program =
@@ -248,7 +248,7 @@ LinesVisual &LinesVisual::operator=(LinesVisual &other)
 }
 
 void LinesVisual::render(
-    const glm::ivec2 &scene_size, const DepthPeelingData &depth_peeling_data
+    const glm::uvec2 &scene_size, const DepthPeelingData &depth_peeling_data
 ) const
 {
     this->impl->render(scene_size, depth_peeling_data);

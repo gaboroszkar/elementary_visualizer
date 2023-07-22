@@ -19,16 +19,16 @@ public:
         ensure_initialized_and_get();
 
     Expected<std::shared_ptr<WrappedGlfwWindow>, Error> create_window(
-        const std::string &title, const glm::ivec2 &size, const bool resizable
+        const std::string &title, const glm::uvec2 &size, const bool resizable
     );
     Expected<std::shared_ptr<GlTexture>, Error> create_texture(
-        const glm::ivec2 &size,
+        const glm::uvec2 &size,
         const bool depth,
         const std::optional<int> samples
     );
     Expected<std::shared_ptr<GlFramebufferTexture>, Error>
         create_framebuffer_texture(
-            const glm::ivec2 &size, const std::optional<int> samples
+            const glm::uvec2 &size, const std::optional<int> samples
         );
     Expected<std::shared_ptr<GlLinesegments>, Error>
         create_linesegments(const std::vector<Linesegment> &linesegments_data);

@@ -59,7 +59,7 @@ const GlShaderSource &quad_multisampled_fragment_shader_source()
         std::string(SHADER_HEADER
                     R"(
 
-uniform ivec2 scene_size;
+uniform uvec2 scene_size;
 uniform sampler2DMS texture_slot;
 
 layout (location = 0) in vec2 texture_coordinate_in;

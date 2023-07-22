@@ -16,7 +16,7 @@ public:
 
     static Expected<std::shared_ptr<GlTexture>, Error> create(
         std::shared_ptr<WrappedGlfwWindow> glfw_window,
-        const glm::ivec2 &size,
+        const glm::uvec2 &size,
         bool depth,
         const std::optional<int> samples
     );
@@ -24,8 +24,8 @@ public:
     void bind(bool make_context = true) const;
     void framebuffer_texture(bool make_context = true) const;
 
-    glm::ivec2 get_size() const;
-    void set_size(const glm::ivec2 &size);
+    glm::uvec2 get_size() const;
+    void set_size(const glm::uvec2 &size);
 
     ~GlTexture();
 
@@ -39,7 +39,7 @@ private:
     GlTexture(
         std::shared_ptr<WrappedGlfwWindow> glfw_window,
         const GLuint index,
-        const glm::ivec2 &size,
+        const glm::uvec2 &size,
         const bool depth,
         const std::optional<int> samples
     );
@@ -53,7 +53,7 @@ private:
 
     std::shared_ptr<WrappedGlfwWindow> glfw_window;
     const GLuint index;
-    glm::ivec2 size;
+    glm::uvec2 size;
     const bool depth;
 
 public:
@@ -104,7 +104,7 @@ public:
 
     static Expected<std::shared_ptr<GlFramebufferTexture>, Error> create(
         std::shared_ptr<WrappedGlfwWindow> glfw_window,
-        const glm::ivec2 &size,
+        const glm::uvec2 &size,
         const std::optional<int> samples
     );
 

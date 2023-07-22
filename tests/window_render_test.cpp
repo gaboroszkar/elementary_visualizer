@@ -9,19 +9,19 @@
 
 namespace ev = elementary_visualizer;
 
-std::vector<float> generate_data(const glm::ivec2 &size);
-std::vector<float> generate_incorrect_data(const glm::ivec2 &size);
+std::vector<float> generate_data(const glm::uvec2 &size);
+std::vector<float> generate_incorrect_data(const glm::uvec2 &size);
 bool compare_data(
     const std::vector<float> &window_data,
-    const glm::ivec2 &window_size,
+    const glm::uvec2 &window_size,
     const std::vector<float> &scene_data,
-    const glm::ivec2 &scene_size,
+    const glm::uvec2 &scene_size,
     const ev::RenderMode render_mode
 );
 
 int main(int, char **)
 {
-    const glm::ivec2 window_size(1280, 720);
+    const glm::uvec2 window_size(1280, 720);
     std::vector<float> window_data(4 * 1280 * 720);
     auto window = ev::Window::create("Window", window_size, false);
     if (!window)
@@ -47,9 +47,9 @@ int main(int, char **)
          {ev::RenderMode::fit, ev::RenderMode::fill, ev::RenderMode::absolute})
     {
         for (auto scene_size :
-             {glm::ivec2(100, 200),
-              glm::ivec2(400, 150),
-              glm::ivec2(2000, 1500)})
+             {glm::uvec2(100, 200),
+              glm::uvec2(400, 150),
+              glm::uvec2(2000, 1500)})
         {
             auto rendered_scene = ev::GlTexture::create(
                 wrapped_glfw_window, scene_size, false, std::nullopt
@@ -106,12 +106,12 @@ int main(int, char **)
     return EXIT_SUCCESS;
 }
 
-std::vector<float> generate_data(const glm::ivec2 &size)
+std::vector<float> generate_data(const glm::uvec2 &size)
 {
     std::vector<float> data(4 * size.x * size.y);
-    for (int x = 0; x < size.x; ++x)
+    for (unsigned int x = 0; x < size.x; ++x)
     {
-        for (int y = 0; y < size.y; ++y)
+        for (unsigned int y = 0; y < size.y; ++y)
         {
             data[4 * (size.x * y + x) + 0] = static_cast<float>(x) / size.x;
             data[4 * (size.x * y + x) + 1] = static_cast<float>(y) / size.y;
@@ -124,31 +124,32 @@ std::vector<float> generate_data(const glm::ivec2 &size)
     return data;
 }
 
-std::vector<float> generate_incorrect_data(const glm::ivec2 &size)
+std::vector<float> generate_incorrect_data(const glm::uvec2 &size)
 {
     std::vector<float> data(4 * size.x * size.y);
-    for (int x = 0; x < size.x; ++x)
-        for (int y = 0; y < size.y; ++y)
-            for (int z = 0; z < 4; ++z)
+    for (unsigned int x = 0; x < size.x; ++x)
+        for (unsigned int y = 0; y < size.y; ++y)
+            for (unsigned int z = 0; z < 4; ++z)
                 data[4 * (size.x * y + x) + z] = 0.0f;
     return data;
 }
 
-glm::ivec3 calculate_window_coordinate(
-    const int window_coordinate_index, const glm::ivec2 &window_size
+glm::uvec3 calculate_window_coordinate(
+    const unsigned int window_coordinate_index, const glm::uvec2 &window_size
 )
 {
-    int color = window_coordinate_index % 4;
-    int position = (window_coordinate_index - color) / 4;
-    int window_coordinate_x = position % window_size.x;
-    int window_coordinate_y = (position - window_coordinate_x) / window_size.x;
-    return glm::ivec3(window_coordinate_x, window_coordinate_y, color);
+    unsigned int color = window_coordinate_index % 4;
+    unsigned int position = (window_coordinate_index - color) / 4;
+    unsigned int window_coordinate_x = position % window_size.x;
+    unsigned int window_coordinate_y =
+        (position - window_coordinate_x) / window_size.x;
+    return glm::uvec3(window_coordinate_x, window_coordinate_y, color);
 }
 
 glm::ivec3 calculate_scene_coordinate(
-    const glm::ivec3 &window_coordinate,
-    const glm::ivec2 &window_size,
-    const glm::ivec2 &scene_size,
+    const glm::uvec3 &window_coordinate,
+    const glm::uvec2 &window_size,
+    const glm::uvec2 &scene_size,
     const ev::RenderMode render_mode
 )
 {
@@ -190,16 +191,18 @@ glm::ivec3 calculate_scene_coordinate(
             return scene_fill_horizontal;
     case ev::RenderMode::absolute:
         return glm::ivec3(
-            window_coordinate.x + 0.5f * (scene_size.x - window_size.x),
-            window_coordinate.y + 0.5f * (scene_size.y - window_size.y),
+            window_coordinate.x + 0.5f * (static_cast<int>(scene_size.x) -
+                                          static_cast<int>(window_size.x)),
+            window_coordinate.y + 0.5f * (static_cast<int>(scene_size.y) -
+                                          static_cast<int>(window_size.y)),
             window_coordinate.z
         );
     }
     return glm::ivec3();
 }
 
-int calculate_scene_coordinate_index(
-    const glm::ivec3 &scene_coordinate, const glm::ivec2 &scene_size
+unsigned int calculate_scene_coordinate_index(
+    const glm::uvec3 &scene_coordinate, const glm::uvec2 &scene_size
 )
 {
     return 4 * (scene_size.x * scene_coordinate.y + scene_coordinate.x) +
@@ -208,9 +211,9 @@ int calculate_scene_coordinate_index(
 
 bool compare_data(
     const std::vector<float> &window_data,
-    const glm::ivec2 &window_size,
+    const glm::uvec2 &window_size,
     const std::vector<float> &scene_data,
-    const glm::ivec2 &scene_size,
+    const glm::uvec2 &scene_size,
     const ev::RenderMode render_mode
 )
 {
@@ -224,24 +227,24 @@ bool compare_data(
          window_coordinate_index != window_data.size();
          ++window_coordinate_index)
     {
-        glm::ivec3 window_coordinate(
+        glm::uvec3 window_coordinate(
             calculate_window_coordinate(window_coordinate_index, window_size)
         );
         glm::ivec3 scene_coordinate(calculate_scene_coordinate(
             window_coordinate, window_size, scene_size, render_mode
         ));
-        int scene_coordinate_index(
-            calculate_scene_coordinate_index(scene_coordinate, scene_size)
-        );
         if (window_coordinate.x > border &&
             window_coordinate.x < (window_size.x - border) &&
             window_coordinate.y > border &&
             window_coordinate.y < (window_size.y - border) &&
             scene_coordinate.x > border &&
-            scene_coordinate.x < (scene_size.x - border) &&
+            scene_coordinate.x < (static_cast<int>(scene_size.x) - border) &&
             scene_coordinate.y > border &&
-            scene_coordinate.y < (scene_size.y - border))
+            scene_coordinate.y < (static_cast<int>(scene_size.y) - border))
         {
+            unsigned int scene_coordinate_index(
+                calculate_scene_coordinate_index(scene_coordinate, scene_size)
+            );
             if (std::fabs(
                     scene_data[scene_coordinate_index] -
                     window_data[window_coordinate_index]

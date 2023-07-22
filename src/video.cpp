@@ -4,7 +4,7 @@
 namespace elementary_visualizer
 {
 Video::Impl::Impl(
-    const glm::ivec2 size,
+    const glm::uvec2 size,
     std::shared_ptr<WrappedAvFrame> frame,
     std::shared_ptr<WrappedVideoAvStream> stream
 )
@@ -44,9 +44,9 @@ void Video::Impl::render(
     const int linesize = av_frame->linesize[0];
     uint8_t *data = av_frame->data[0];
 
-    for (int y = 0; y < this->size.y; ++y)
+    for (unsigned int y = 0; y < this->size.y; ++y)
     {
-        for (int x = 0; x < this->size.x; ++x)
+        for (unsigned int x = 0; x < this->size.x; ++x)
         {
             uint8_t r =
                 int(255 * rendered_scene_data[4 * (this->size.x * y + x) + 0]);
@@ -68,8 +68,8 @@ Video::Impl::~Impl(){};
 
 Expected<Video, Error> Video::create(
     const std::string &filename,
-    const glm::ivec2 &size,
-    const int frame_rate,
+    const glm::uvec2 &size,
+    const unsigned int frame_rate,
     const int64_t bit_rate,
     const bool intermediate_yuv420p_conversion
 )

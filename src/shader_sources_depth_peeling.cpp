@@ -13,7 +13,7 @@ uniform bool depth_peeling_first_pass;
 uniform bool depth_peeling_multisampled;
 uniform sampler2D depth_peeling_texture_slot;
 uniform sampler2DMS depth_peeling_texture_slot_multisampled;
-uniform ivec2 scene_size;
+uniform uvec2 scene_size;
 
 void discard_if_close_fragment(float peeled_depth)
 {

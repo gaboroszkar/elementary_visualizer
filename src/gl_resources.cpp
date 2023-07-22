@@ -4,7 +4,7 @@ namespace elementary_visualizer
 {
 Expected<std::shared_ptr<GlTexture>, Error> GlTexture::create(
     std::shared_ptr<WrappedGlfwWindow> glfw_window,
-    const glm::ivec2 &size,
+    const glm::uvec2 &size,
     const bool depth,
     const std::optional<int> samples
 )
@@ -68,12 +68,12 @@ void GlTexture::framebuffer_texture(bool make_context) const
     );
 }
 
-glm::ivec2 GlTexture::get_size() const
+glm::uvec2 GlTexture::get_size() const
 {
     return this->size;
 }
 
-void GlTexture::set_size(const glm::ivec2 &size)
+void GlTexture::set_size(const glm::uvec2 &size)
 {
     this->bind();
     if (this->samples)
@@ -109,7 +109,7 @@ GlTexture::~GlTexture()
 GlTexture::GlTexture(
     std::shared_ptr<WrappedGlfwWindow> glfw_window,
     const GLuint index,
-    const glm::ivec2 &size,
+    const glm::uvec2 &size,
     bool depth,
     const std::optional<int> samples
 )
@@ -200,7 +200,7 @@ GlFramebuffer::GlFramebuffer(
 Expected<std::shared_ptr<GlFramebufferTexture>, Error>
     GlFramebufferTexture::create(
         std::shared_ptr<WrappedGlfwWindow> glfw_window,
-        const glm::ivec2 &size,
+        const glm::uvec2 &size,
         const std::optional<int> samples
     )
 {

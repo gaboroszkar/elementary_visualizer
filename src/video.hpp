@@ -12,7 +12,7 @@ class Video::Impl
 public:
 
     Impl(
-        const glm::ivec2 size,
+        const glm::uvec2 size,
         std::shared_ptr<WrappedAvFrame> frame,
         std::shared_ptr<WrappedVideoAvStream> stream
     );
@@ -32,7 +32,7 @@ public:
 
 private:
 
-    glm::ivec2 size;
+    glm::uvec2 size;
     std::shared_ptr<WrappedAvFrame> frame;
     std::shared_ptr<WrappedVideoAvStream> stream;
 };

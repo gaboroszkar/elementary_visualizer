@@ -35,7 +35,7 @@ public:
 
     static Expected<std::shared_ptr<WrappedGlfwWindow>, Error> create(
         const std::string &title,
-        const glm::ivec2 &size,
+        const glm::uvec2 &size,
         const bool resizable,
         std::shared_ptr<WrappedGlfwWindow> parent = nullptr,
         const bool visible = true
@@ -43,7 +43,7 @@ public:
 
     void make_current_context();
     void swap_buffers();
-    glm::ivec2 get_framebuffer_size() const;
+    glm::uvec2 get_framebuffer_size() const;
     int should_close() const;
 
     std::optional<std::function<void(int, int, int, int)>> key_callback;

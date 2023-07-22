@@ -26,7 +26,7 @@ Glfw::Glfw() {}
 
 Expected<std::shared_ptr<WrappedGlfwWindow>, Error> WrappedGlfwWindow::create(
     const std::string &title,
-    const glm::ivec2 &size,
+    const glm::uvec2 &size,
     const bool resizable,
     std::shared_ptr<WrappedGlfwWindow> parent,
     const bool visible
@@ -131,12 +131,12 @@ void WrappedGlfwWindow::swap_buffers()
     glfwSwapBuffers(this->glfw_window);
 }
 
-glm::ivec2 WrappedGlfwWindow::get_framebuffer_size() const
+glm::uvec2 WrappedGlfwWindow::get_framebuffer_size() const
 {
     int width = 0;
     int height = 0;
     glfwGetFramebufferSize(this->glfw_window, &width, &height);
-    return glm::ivec2(width, height);
+    return glm::uvec2(width, height);
 }
 
 int WrappedGlfwWindow::should_close() const

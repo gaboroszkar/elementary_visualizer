@@ -156,11 +156,11 @@ void GlShaderProgram::set_uniform(const std::string &name, const float value)
 }
 
 void GlShaderProgram::set_uniform(
-    const std::string &name, const glm::ivec2 &value
+    const std::string &name, const glm::uvec2 &value
 )
 {
     if (this->uniform_locations.contains(name))
-        glUniform2i(this->uniform_locations.at(name), value.x, value.y);
+        glUniform2ui(this->uniform_locations.at(name), value.x, value.y);
 }
 
 void GlShaderProgram::set_uniform(

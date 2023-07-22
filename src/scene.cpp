@@ -104,7 +104,7 @@ std::shared_ptr<const GlTexture> Scene::Impl::render()
 {
     this->entity->make_current_context();
 
-    const glm::ivec2 scene_size =
+    const glm::uvec2 scene_size =
         this->framebuffer_texture_possibly_multisampled->texture->get_size();
 
     // We implement here the depth peeling method. See
@@ -246,7 +246,7 @@ std::shared_ptr<const GlTexture> Scene::Impl::render()
 Scene::Impl::~Impl(){};
 
 Expected<Scene, Error> Scene::create(
-    const glm::ivec2 &size,
+    const glm::uvec2 &size,
     const glm::vec4 &background_color,
     const std::optional<int> samples,
     const int depth_peeling_passes

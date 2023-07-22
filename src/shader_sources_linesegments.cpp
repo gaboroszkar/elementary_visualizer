@@ -46,7 +46,7 @@ const GlShaderSource &linesegments_geometry_shader_source()
         std::string(SHADER_HEADER
                     R"(
 
-uniform ivec2 scene_size;
+uniform uvec2 scene_size;
 
 layout (points) in;
 layout (triangle_strip, max_vertices = 4) out;

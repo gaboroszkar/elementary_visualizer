@@ -23,7 +23,7 @@ public:
     Impl &operator=(Impl &&other);
 
     void render(
-        const glm::ivec2 &scene_size, const DepthPeelingData &depth_peeling_data
+        const glm::uvec2 &scene_size, const DepthPeelingData &depth_peeling_data
     ) const;
 
     void set_linesegments_data(const std::vector<Linesegment> &linesegments_data
@@ -60,7 +60,7 @@ public:
     Impl &operator=(Impl &&other);
 
     void render(
-        const glm::ivec2 &scene_size, const DepthPeelingData &depth_peeling_data
+        const glm::uvec2 &scene_size, const DepthPeelingData &depth_peeling_data
     ) const;
 
     void set_lines_data(const std::vector<Vertex> &lines_data);

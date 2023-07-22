@@ -7,13 +7,13 @@ namespace ev = elementary_visualizer;
 
 int main(int, char **)
 {
-    const glm::ivec2 scene_size_0(1280, 720);
+    const glm::uvec2 scene_size_0(1280, 720);
     auto window_0 = ev::Window::create("Window 0", scene_size_0, false);
     if (!window_0)
         return EXIT_FAILURE;
     GLFWwindow *glfw_window_0 = glfwGetCurrentContext();
 
-    const glm::ivec2 scene_size_1(500, 500);
+    const glm::uvec2 scene_size_1(500, 500);
     auto window_1 = ev::Window::create("Window 1", scene_size_1, true);
     if (!window_1)
         return EXIT_FAILURE;
