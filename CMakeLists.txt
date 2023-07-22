@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.22)
 project(elementary_visualizer)
 
 option(BUILD_TESTING "Build testing" ON)
+option(ELEMENTARY_VISUALIZER_BUILD_EXAMPLES "Build examples" ON)
 
 # Generate compile_commands.json.
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -150,6 +151,10 @@ target_include_directories(${PROJECT_NAME} INTERFACE
 if(BUILD_TESTING)
     enable_testing()
     add_subdirectory(tests)
+endif()
+
+if(ELEMENTARY_VISUALIZER_BUILD_EXAMPLES)
+    add_subdirectory(examples)
 endif()
 
 # Make formatting run before we build the project.
