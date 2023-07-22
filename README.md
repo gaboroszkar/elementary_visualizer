@@ -2,6 +2,12 @@
 
 Simple visualization library.
 
+<p align="center">
+  <img src="./examples/lorenz_attractor.gif" alt="Lorenz attractor example"/>
+</p>
+
+For examples, see the [./examples](examples) directory.
+
 ## Building
 
 In the project root directory, run the following commands to build the project.

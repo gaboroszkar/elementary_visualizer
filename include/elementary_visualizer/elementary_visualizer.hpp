@@ -229,10 +229,31 @@ class Video
 public:
 
     static Expected<Video, Error> create(
+        // Output filename.
+        // By default, the library will try to figure out
+        // what is the output format by it's extension.
         const std::string &file_name,
+
+        // Width and height in pixels.
         const glm::ivec2 &size,
+
+        // Frame rate in frames per second.
         const int frame_rate = 30,
-        const int64_t bit_rate = 5000000
+
+        // Bit rate in bits per second.
+        const int64_t bit_rate = 5000000,
+
+        // Intermediate YUV420P conversion is necessary for
+        // correct gif creation. Without it, gifs have strange colors.
+        // The rendered texture is always converted to a pixel format
+        // which is the best (and supported) for the current video format.
+        // This option introduces an intermedia conversion between
+        // the conversion from the rendered texture to video frame.
+        // This option is not necessary for regular mp4, where the
+        // destination pixel format will be YUV420P anyway.
+        // In these cases, this argument has no effect.
+        // This can be turned off for more performant video creation.
+        const bool intermediate_yuv420p_conversion = true
     );
 
     Video(Video &&other);

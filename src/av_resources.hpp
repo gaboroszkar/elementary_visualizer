@@ -150,10 +150,12 @@ public:
             const int height,
             const int frame_rate,
             const enum AVPixelFormat source_pixel_format,
-            const WrappedAvDictionary &parameters
+            const WrappedAvDictionary &parameters,
+            const bool intermediate_yuv420p_conversion = true
         );
 
-    bool is_opened();
+    bool is_opened() const;
+    bool is_intermediate_yuv420p_conversion() const;
 
     AVFormatContext *operator*();
     const AVFormatContext *operator*() const;
@@ -170,13 +172,15 @@ private:
     WrappedOutputVideoAvFormatContext(
         AVFormatContext *format_context,
         WrappedAvDictionary parameters,
-        std::shared_ptr<WrappedAvCodecContext> codec_context
+        std::shared_ptr<WrappedAvCodecContext> codec_context,
+        const bool intermediate_yuv420p_conversion
     );
 
     AVFormatContext *format_context;
     const WrappedAvDictionary parameters;
     std::shared_ptr<WrappedAvCodecContext> codec_context;
     bool opened;
+    const bool intermediate_yuv420p_conversion;
 
     friend class WrappedVideoAvStream;
 };

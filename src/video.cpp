@@ -70,7 +70,8 @@ Expected<Video, Error> Video::create(
     const std::string &filename,
     const glm::ivec2 &size,
     const int frame_rate,
-    const int64_t bit_rate
+    const int64_t bit_rate,
+    const bool intermediate_yuv420p_conversion
 )
 {
     const enum AVPixelFormat source_pixel_format = AV_PIX_FMT_RGB24;
@@ -84,7 +85,8 @@ Expected<Video, Error> Video::create(
             size.y,
             frame_rate,
             source_pixel_format,
-            WrappedAvDictionary()
+            WrappedAvDictionary(),
+            intermediate_yuv420p_conversion
         );
     if (!format_context)
         return Unexpected<Error>(Error());

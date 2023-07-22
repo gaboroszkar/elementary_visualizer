@@ -65,6 +65,7 @@ function(add_external_ffmpeg)
             --enable-shared          #build shared libraries [no]
             --disable-programs       #do not build command line programs
             --disable-doc            #do not build documentation
+            #
             --disable-avdevice       #disable libavdevice build
             #--disable-avcodec        #disable libavcodec build
             #--disable-avformat       #disable libavformat build
@@ -85,6 +86,10 @@ function(add_external_ffmpeg)
             #--disable-fft            #disable FFT code
             #--disable-faan           #disable floating point AAN (I)DCT code
             #--disable-pixelutils     #disable pixel utils in libavutil
+            #
+            #--enable-gpl             #allow use of GPL code, the resulting libs
+            #                         #and binaries will be under GPL [no]
+            #--enable-libx264         #enable H.264 encoding via x264 [no]
         BUILD_COMMAND make
         INSTALL_COMMAND ""
     )

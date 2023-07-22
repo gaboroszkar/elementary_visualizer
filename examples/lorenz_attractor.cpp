@@ -23,8 +23,8 @@ glm::vec3 lorenz_step(glm::vec3 l)
 
 void update_lorenz_points(std::vector<ev::Vertex> &lines_data)
 {
-    const int points_to_add = 40;
-    const int max_points = 3000;
+    const int points_to_add = 80;
+    const int max_points = 4000;
 
     // Add new points.
     for (int i = 0; i < points_to_add; ++i)
@@ -66,7 +66,8 @@ int main(int, char **)
     if (!scene)
         return EXIT_FAILURE;
 
-    auto video = ev::Video::create("video.mp4", scene_size);
+    auto video =
+        ev::Video::create("lorenz_attractor.gif", scene_size, 15, 2500000);
     if (!video)
         return EXIT_FAILURE;
 
@@ -159,7 +160,7 @@ int main(int, char **)
         lines.value()->set_lines_data(lines_data);
 
         if (!rotation_delta)
-            rotation.x += 0.01f;
+            rotation.x += 0.02f;
         glm::mat4 model = glm::rotate(
             glm::rotate(glm::identity<glm::mat4>(), rotation.y, x_axis),
             rotation.x,

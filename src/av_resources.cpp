@@ -211,7 +211,7 @@ Expected<std::shared_ptr<WrappedAvCodecContext>, Error>
 
     WrappedAvDictionary copied_parameters(parameters);
     AVDictionary *p_copied_parameters = copied_parameters.dictionary;
-    //  Open the codec.
+    // Open the codec.
     int result = avcodec_open2(codec_context, codec, &p_copied_parameters);
     // avcodec_open2 frees up potentially the memory address of the parameters,
     // and allocates a new dictionary. So we also make the change in our
@@ -278,7 +278,8 @@ Expected<std::shared_ptr<WrappedOutputVideoAvFormatContext>, Error>
         const int height,
         const int frame_rate,
         const enum AVPixelFormat source_pixel_format,
-        const WrappedAvDictionary &parameters
+        const WrappedAvDictionary &parameters,
+        const bool intermediate_yuv420p_conversion
     )
 {
     AVFormatContext *format_context;
@@ -312,14 +313,23 @@ Expected<std::shared_ptr<WrappedOutputVideoAvFormatContext>, Error>
 
     return std::shared_ptr<WrappedOutputVideoAvFormatContext>(
         new WrappedOutputVideoAvFormatContext(
-            format_context, parameters, codec_context.value()
+            format_context,
+            parameters,
+            codec_context.value(),
+            intermediate_yuv420p_conversion
         )
     );
 }
 
-bool WrappedOutputVideoAvFormatContext::is_opened()
+bool WrappedOutputVideoAvFormatContext::is_opened() const
 {
     return this->opened;
+}
+
+bool WrappedOutputVideoAvFormatContext::is_intermediate_yuv420p_conversion(
+) const
+{
+    return this->intermediate_yuv420p_conversion;
 }
 
 AVFormatContext *WrappedOutputVideoAvFormatContext::operator*()
@@ -399,12 +409,14 @@ bool WrappedOutputVideoAvFormatContext::no_file()
 WrappedOutputVideoAvFormatContext::WrappedOutputVideoAvFormatContext(
     AVFormatContext *format_context,
     WrappedAvDictionary parameters,
-    std::shared_ptr<WrappedAvCodecContext> codec_context
+    std::shared_ptr<WrappedAvCodecContext> codec_context,
+    const bool intermediate_yuv420p_conversion
 )
     : format_context(format_context),
       parameters(parameters),
       codec_context(codec_context),
-      opened(false)
+      opened(false),
+      intermediate_yuv420p_conversion(intermediate_yuv420p_conversion)
 {}
 
 Expected<std::shared_ptr<WrappedVideoAvStream>, Error>
@@ -465,6 +477,9 @@ Expected<std::shared_ptr<WrappedVideoAvStream>, Error>
 Expected<void, Error>
     WrappedVideoAvStream::write_frame(std::shared_ptr<WrappedAvFrame> frame_in)
 {
+    if (!frame_in)
+        return Unexpected<Error>(Error());
+
     if (!this->format_context->is_opened())
         return Unexpected<Error>(Error());
 
@@ -474,7 +489,23 @@ Expected<void, Error>
     if (result < 0)
         return Unexpected<Error>(Error());
 
-    this->frame->convert_and_copy(*frame_in);
+    const enum AVPixelFormat pixel_format_yuv420p = AV_PIX_FMT_YUV420P;
+    if (this->format_context->is_intermediate_yuv420p_conversion() &&
+        (**this->frame)->format != pixel_format_yuv420p)
+    {
+        Expected<std::shared_ptr<WrappedAvFrame>, Error> tmp_frame_yuv420p =
+            WrappedAvFrame::create(
+                pixel_format_yuv420p, (**frame_in)->width, (**frame_in)->height
+            );
+        if (!tmp_frame_yuv420p)
+            return Unexpected<Error>(Error());
+        (tmp_frame_yuv420p.value())->convert_and_copy(*frame_in);
+        this->frame->convert_and_copy(*tmp_frame_yuv420p.value());
+    }
+    else
+    {
+        this->frame->convert_and_copy(*frame_in);
+    }
 
     (**(this->frame))->pts = this->timestamp;
 
