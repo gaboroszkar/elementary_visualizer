@@ -29,6 +29,10 @@ int main(int, char **)
     if (!scene)
         return EXIT_FAILURE;
 
+    auto video = ev::Video::create("video.mp4", scene_size);
+    if (!video)
+        return EXIT_FAILURE;
+
     auto window = ev::Window::create("Window", scene_size, false);
     if (!window)
         return EXIT_FAILURE;
@@ -125,7 +129,9 @@ int main(int, char **)
         glm::mat4 projection = glm::perspective(fov, 1.0f, near, far);
         lines.value()->set_projection(projection);
 
-        window->render(scene->render());
+        auto rendered_scene = scene->render();
+        video->render(rendered_scene);
+        window->render(rendered_scene);
         ev::poll_window_events();
     }
 
