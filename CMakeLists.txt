@@ -175,6 +175,10 @@ file(
     tests/*.cpp
     tests/*.h
     tests/*.hpp
+    examples/*.c
+    examples/*.cpp
+    examples/*.h
+    examples/*.hpp
 )
 add_custom_target(
     clangformat

@@ -6,7 +6,7 @@ namespace ev = elementary_visualizer;
 
 glm::vec3 lorenz_step(glm::vec3 l)
 {
-    float dt = 0.01f;
+    float dt = 0.005f;
     float sigma = 10.0f;
     float rho = 28.0f;
     float beta = 2.66f;
@@ -21,9 +21,46 @@ glm::vec3 lorenz_step(glm::vec3 l)
     return l;
 }
 
+void update_lorenz_points(std::vector<ev::Vertex> &lines_data)
+{
+    const int points_to_add = 40;
+    const int max_points = 3000;
+
+    // Add new points.
+    for (int i = 0; i < points_to_add; ++i)
+    {
+        glm::vec3 new_lorenz_point = lorenz_step(lines_data.back().position);
+        lines_data.push_back(ev::Vertex(new_lorenz_point, glm::vec4()));
+    }
+
+    // Remove some points.
+    while (lines_data.size() > max_points)
+        lines_data.erase(lines_data.begin());
+
+    // Update color of each point,
+    // because new points have been added,
+    // and maybe some removed.
+    for (unsigned int i = 0; i < lines_data.size(); ++i)
+    {
+        float t = static_cast<float>(i) / (lines_data.size() - 1);
+        lines_data[i].color.r = 1.0f - t;
+        lines_data[i].color.g = 0.0f;
+        lines_data[i].color.b = 0.5f + 0.5f * t;
+        lines_data[i].color.a = t;
+    }
+}
+
+ev::Vertex square_vertex(glm::vec2 position)
+{
+    return ev::Vertex(
+        glm::vec3(position.x, position.y, 0.0f),
+        glm::vec4(0.7f, 0.7f, 0.7f, 1.0f)
+    );
+}
+
 int main(int, char **)
 {
-    const glm::ivec2 scene_size(1280, 720);
+    const glm::ivec2 scene_size(500, 500);
     auto scene =
         ev::Scene::create(scene_size, glm::vec4(1.0f, 1.0f, 1.0f, 1.0f), 4, 2);
     if (!scene)
@@ -59,7 +96,8 @@ int main(int, char **)
             if (button == ev::MouseButton::left)
             {
                 if (action == ev::EventAction::press)
-                    rotation_delta = rotation - mouse_to_rotation * mouse_position;
+                    rotation_delta =
+                        rotation - mouse_to_rotation * mouse_position;
                 else if (action == ev::EventAction::release)
                     rotation_delta = std::nullopt;
             }
@@ -70,42 +108,54 @@ int main(int, char **)
         {
             mouse_position = mouse_position_in;
             if (rotation_delta)
-                rotation = mouse_to_rotation * mouse_position + rotation_delta.value();
+                rotation =
+                    mouse_to_rotation * mouse_position + rotation_delta.value();
         }
     );
 
+    std::vector<ev::Linesegment> square_linesegments_data;
+    const float square_length = 30.0f;
+    for (int x = -1; x != 3; x += 2)
+        square_linesegments_data.push_back(ev::Linesegment(
+            square_vertex(glm::vec2(square_length * x, -square_length)),
+            square_vertex(glm::vec2(square_length * x, square_length))
+        ));
+    for (int y = -1; y != 3; y += 2)
+        square_linesegments_data.push_back(ev::Linesegment(
+            square_vertex(glm::vec2(-square_length, square_length * y)),
+            square_vertex(glm::vec2(square_length, square_length * y))
+        ));
+    auto square = ev::LinesegmentsVisual::create(square_linesegments_data);
+    if (!square)
+        return EXIT_FAILURE;
+    scene->add_visual(square.value());
+
     std::vector<ev::Vertex> lines_data;
+    lines_data.push_back(ev::Vertex(glm::vec3(1.0f, 1.0f, 1.0f)));
     auto lines = ev::LinesVisual::create(lines_data, 2.0f);
     if (!lines)
         return EXIT_FAILURE;
     scene->add_visual(lines.value());
 
-    glm::vec3 lorenz_point(1.0f, 1.0f, 1.0f);
+    const glm::vec3 eye = glm::vec3(0.0f, -90.0f, 50.0f);
+    const glm::vec3 center = glm::vec3(0.0f, 0.0f, 20.0f);
+    const glm::vec3 up(0.0f, 0.0f, 1.0f);
+    const glm::mat4 view = glm::lookAt(eye, center, up);
+    lines.value()->set_view(view);
+    square.value()->set_view(view);
+
+    const float fov = 45.0f;
+    const float near = 0.01f;
+    const float far = 200.0f;
+    glm::mat4 projection = glm::perspective(fov, 1.0f, near, far);
+    lines.value()->set_projection(projection);
+    square.value()->set_projection(projection);
 
     glm::vec3 z_axis(0.0f, 0.0f, 1.0f);
     glm::vec3 x_axis(1.0f, 0.0f, 0.0f);
     while (!window.value().should_close_or_invalid())
     {
-        const int lorenz_steps_per_frame = 5;
-        for (int i = 0; i < lorenz_steps_per_frame; ++i)
-        {
-            lorenz_point = lorenz_step(lorenz_point);
-            lines_data.push_back(ev::Vertex(
-                lorenz_point - glm::vec3(0.0f, 0.0f, 30.0f),
-                glm::vec4(0.0f, 0.0f, 0.0f, 1.0f)
-            ));
-            if (lines_data.size() > 2000)
-                lines_data.erase(lines_data.begin());
-            for (unsigned int j = 0; j < lines_data.size(); ++j)
-            {
-                float f = 1.0f / lines_data.size();
-                lines_data[j].color.r = 1.0f - (f * j);
-                lines_data[j].color.g = 0.0f;
-                lines_data[j].color.b = 0.5f + 0.5f * (f * j);
-                lines_data[j].color.a = (f * j);
-            }
-        }
-
+        update_lorenz_points(lines_data);
         lines.value()->set_lines_data(lines_data);
 
         if (!rotation_delta)
@@ -116,18 +166,7 @@ int main(int, char **)
             z_axis
         );
         lines.value()->set_model(model);
-
-        glm::vec3 eye(0.0f, -50.0f, 50.0f);
-        glm::vec3 center(0.0f, 0.0f, 0.0f);
-        glm::vec3 up(0.0f, 0.0f, 1.0f);
-        glm::mat4 view = glm::lookAt(eye, center, up);
-        lines.value()->set_view(view);
-
-        float fov = 45.0f;
-        float near = 0.01f;
-        float far = 200.0f;
-        glm::mat4 projection = glm::perspective(fov, 1.0f, near, far);
-        lines.value()->set_projection(projection);
+        square.value()->set_model(model);
 
         auto rendered_scene = scene->render();
         video->render(rendered_scene);
