@@ -23,6 +23,8 @@ For examples, see the [./examples](examples) directory or the [./tests](tests).
       <a href="./examples/wireframe.cpp">wireframe.cpp</a>
     </td>
     <td align="center">
+      <img src="./examples/game_of_life.gif" alt="Game of life example"/>
+      <a href="./examples/game_of_life.cpp">game_of_life.cpp</a>
     </td>
   </tr>
 </table>
