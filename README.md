@@ -8,6 +8,9 @@ Simple visualization library.
 <p align="center">
   <img src="./examples/wave.gif" alt="Wave example"/>
 </p>
+<p align="center">
+  <img src="./examples/wireframe.gif" alt="Wireframe example"/>
+</p>
 
 For examples, see the [./examples](examples) directory.
 
