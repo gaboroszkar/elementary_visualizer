@@ -7,6 +7,7 @@ function(setup_example EXAMPLE_NAME SOURCE_FILE)
 endfunction()
 
 setup_example(lorenz_attractor lorenz_attractor.cpp)
+setup_example(wave wave.cpp)
 
 if(BUILD_SHARED_LIBS)
     # By default the library search path for the executable is set

@@ -5,6 +5,9 @@ Simple visualization library.
 <p align="center">
   <img src="./examples/lorenz_attractor.gif" alt="Lorenz attractor example"/>
 </p>
+<p align="center">
+  <img src="./examples/wave.gif" alt="Wave example"/>
+</p>
 
 For examples, see the [./examples](examples) directory.
 
