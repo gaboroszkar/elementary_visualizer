@@ -82,6 +82,7 @@ Note, the implementation of video encoding is based on the following example by 
 
 ## Todo
 
+* Performance optimizations.
 * Add build requirements in readme.
 * Add noexcept to functions definitions/declarations.
   Also, consider the `-fno-exceptions` option.
