@@ -2,17 +2,30 @@
 
 Simple visualization library.
 
-<p align="center">
-  <img src="./examples/lorenz_attractor.gif" alt="Lorenz attractor example"/>
-</p>
-<p align="center">
-  <img src="./examples/wave.gif" alt="Wave example"/>
-</p>
-<p align="center">
-  <img src="./examples/wireframe.gif" alt="Wireframe example"/>
-</p>
+## Examples
 
-For examples, see the [./examples](examples) directory.
+For examples, see the [./examples](examples) directory or the [./tests](tests).
+
+<table>
+  <tr>
+    <td align="center">
+      <img src="./examples/lorenz_attractor.gif" alt="Lorenz attractor example"/>
+      <a href="./examples/lorenz_attractor.cpp">lorenz_attractor.cpp</a>
+    </td>
+    <td align="center">
+      <img src="./examples/wave.gif" alt="Wave example"/>
+      <a href="./examples/wave.cpp">wave.cpp</a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="./examples/wireframe.gif" alt="Wireframe example"/>
+      <a href="./examples/wireframe.cpp">wireframe.cpp</a>
+    </td>
+    <td align="center">
+    </td>
+  </tr>
+</table>
 
 ## Building
 
