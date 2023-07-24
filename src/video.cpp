@@ -24,6 +24,11 @@ Video::Impl &Video::Impl::operator=(Video::Impl &&other)
     return *this;
 }
 
+uint8_t to_8_bit(float color)
+{
+    return std::clamp(int(255 * color), 0, 255);
+}
+
 void Video::Impl::render(
     std::shared_ptr<const GlTexture> rendered_scene, const RenderMode
 )
@@ -49,11 +54,11 @@ void Video::Impl::render(
         for (unsigned int x = 0; x < this->size.x; ++x)
         {
             uint8_t r =
-                int(255 * rendered_scene_data[4 * (this->size.x * y + x) + 0]);
+                to_8_bit(rendered_scene_data[4 * (this->size.x * y + x) + 0]);
             uint8_t g =
-                int(255 * rendered_scene_data[4 * (this->size.x * y + x) + 1]);
+                to_8_bit(rendered_scene_data[4 * (this->size.x * y + x) + 1]);
             uint8_t b =
-                int(255 * rendered_scene_data[4 * (this->size.x * y + x) + 2]);
+                to_8_bit(rendered_scene_data[4 * (this->size.x * y + x) + 2]);
             const int y_mirrored = (this->size.y - 1) - y;
             data[(y_mirrored * linesize + 3 * x) + 0] = r;
             data[(y_mirrored * linesize + 3 * x) + 1] = g;
