@@ -155,6 +155,87 @@ tip calculate_tip(vec4 p0, vec4 p1, vec4 p2, float line_width)
     return tip(tip_left, tip_right, tip_miter, tip_outer);
 }
 
+// Each part of the whole lines is made up of
+// segments defined by 4 points. The middle 2 points
+// define from which two points we would like to draw the line,
+// and the first points is the ending point of the previous
+// line, and the last point is the beginning point of the next line.
+// We draw the segment between (1) and (2) points.
+//
+// ... (0) ... (1) --- (2) ... (3) ...
+//
+// The ending point of the last line, and the beginning point
+// of the next lines are needed to draw the corners and
+// the joints/tips of the current line properly.
+//
+// The current linesegment is made up of 6 triangles.
+// On the figure below, the letters are chosen as follows.
+// * (m), (M) as miter,
+// * (l), (L) as left,
+// * (r), (R) as right.
+// This is the same convention as the variable names in the code.
+//
+// The triangles are the followings.
+// (This follows the same order as the code
+// if the layout is the same as in the figure.)
+//
+// - (c)-(1)-(a) - single triangle,
+// - (1)-(l)-(r)-(R)-(L)-(2) - triangle strip,
+// - (M)-(2)-(R) - single triangle.
+//
+//        (l)-----------------------------------(R)        //
+//       / |\                                   /| \       //
+//     (m) | \                                 / | (M)     //
+//       \ |  \                               /  | /       //
+//        (1)  \                             /  (2)        //
+//         .\   \                           /   /.         //
+//         .  \  \                         /  /  .         //
+//         .    \ \                       / /    .         //
+//         .      (r)-------------------(L)      .         //
+//         .                                     .         //
+//         .                                     .         //
+//         .                                     .         //
+//         .                                     .         //
+//         .                                     .         //
+//         .                                     .         //
+//         .                                     .         //
+//         .                                     .         //
+//        (0)                                   (3)        //
+//
+//
+//
+// Let's explain how these points are chosen with the figure above.
+// (0), (1), (2), (3) are given, and the width of the line.
+//
+// The (m) miter point is calculated by adding
+// the (0)-(1) and (1)-(2) direction together, and getting the
+// perpendicular to it, and adding this vector to (1).
+// The direction is chosen so theat it's on
+// the outer part of the curvature. The length is such that
+// (1)-(m)'s length is the half width length.
+// Note, this is not exactly the same as the "miter" in the
+// literature. This kind of calculation makes sure the outer
+// edge does not extend infinitely like the regular miter
+// known in the literature.
+//
+// (l) is calculated simply by getting the perpendicular to
+// the (1)-(2) direction, such that it is to the left, and
+// the length of (1)-(l) is half width. Then this vector
+// is added to (1) to get (l).
+//
+// (r) is chosen, so that it lies on the line exactly halfway between
+// the (0)-(1) and (1)-(2). To be more precise, we add directions
+// (0)-(1) and (1)-(2) together, and normalize it to the appropriate
+// length, and add this vector to (1). The appropriate normalization
+// is chosen, so that the line width is correct, which means, that
+// the distance of (r) from the line (1)-(2) is half width.
+// Note: there is an edge case: if (r)'s distance would be greater
+// than it's distance from (2), (r) will be moved back to it's halfway point.
+//
+// The same logic applies to calculations for (M), (R) and (L).
+// The outer point in the tip struct will be (l), (r), (R) or (L)
+// depending on the layout, but it will always be on the outer part of the curvature.
+
 void main()
 {
     vec4 p0 = to_scene(position_in[0]);
@@ -162,9 +243,16 @@ void main()
     vec4 p2 = to_scene(position_in[2]);
     vec4 p3 = to_scene(position_in[3]);
 
+    // If nan, that means the current segment is the first.
     if (!isnan(position_in[0].x))
     {
         tip tip0 = calculate_tip(p0, p1, p2, line_width);
+
+        // Note: tip0.outer can mean
+        // tip0.right or tip.left, depending on
+        // which one is the "outer",
+        // which is the outer edge of the curve.
+        // The same applies to tip1.
 
         emit_vertex(p1 + tip0.miter, color_in[1]);
         emit_vertex(p1, color_in[1]);
@@ -182,6 +270,7 @@ void main()
         emit_vertex(p1 - normal_outer, color_in[1]);
     }
 
+    // If nan, that means the current segment is the last.
     if (!isnan(position_in[3].x))
     {
         tip tip1 = calculate_tip(p3, p2, p1, line_width);
