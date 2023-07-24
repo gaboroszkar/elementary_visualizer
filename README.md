@@ -51,9 +51,13 @@ For examples, see the [./examples](examples) directory or the [./tests](tests).
 
 ## Building
 
-In the project root directory, run the following commands to build the project.
+Make sure you have the following packages installed: `cmake`, `jinja2`, `xorg-dev`, `yasm`, `clang-format`.
+
+Clone the repository and configure and build the project with the following commands.
 
 ```
+git clone --recursive https://github.com/gaboroszkar/elementary_visualizer.git
+cd elementary_visualizer
 cmake -S . -B build
 cmake --build build
 ```
@@ -69,6 +73,10 @@ To automatically reformat the code, run the following command.
 ```
 cmake --build build --target clangformat
 ```
+
+## OS support
+
+Currently only Linux is supported. Windows is not supported. If you still would like to build the binaries to Windows, please modify the CMakeLists.txt. Pull requests are welcomed for Windows support.
 
 ## Credits
 
