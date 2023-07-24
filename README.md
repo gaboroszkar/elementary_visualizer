@@ -33,6 +33,8 @@ For examples, see the [./examples](examples) directory or the [./tests](tests).
       <a href="./examples/cassini_oval.cpp">cassini_oval.cpp</a>
     </td>
     <td align="center">
+      <img src="./examples/translucent_helix.gif" alt="Translucent helix example"/>
+      <a href="./examples/translucent_helix.cpp">translucent_helix.cpp</a>
     </td>
   </tr>
 </table>
@@ -91,8 +93,6 @@ Note, the implementation of video encoding is based on the following example by 
 ## Todo
 
 * More examples.
-  * Transparent helix with lines with huge width,
-    to showcase thick lines and depth peeling.
   * Low-poly surface, To showcase the flat mode in 3D.
     Just simple (maybe blue) low poly, waving surface.
   * Parametric surface. Maybe Gabriel's horn.
