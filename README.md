@@ -27,6 +27,14 @@ For examples, see the [./examples](examples) directory or the [./tests](tests).
       <a href="./examples/game_of_life.cpp">game_of_life.cpp</a>
     </td>
   </tr>
+  <tr>
+    <td align="center">
+      <img src="./examples/cassini_oval.gif" alt="Cassini oval example"/>
+      <a href="./examples/cassini_oval.cpp">cassini_oval.cpp</a>
+    </td>
+    <td align="center">
+    </td>
+  </tr>
 </table>
 
 ## Building
@@ -82,6 +90,12 @@ Note, the implementation of video encoding is based on the following example by 
 
 ## Todo
 
+* More examples.
+  * Transparent helix with lines with huge width,
+    to showcase thick lines and depth peeling.
+  * Low-poly surface, To showcase the flat mode in 3D.
+    Just simple (maybe blue) low poly, waving surface.
+  * Parametric surface. Maybe Gabriel's horn.
 * Performance optimizations.
 * Add build requirements in readme.
 * Add noexcept to functions definitions/declarations.
