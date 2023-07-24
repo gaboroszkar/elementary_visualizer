@@ -13,6 +13,7 @@ setup_example(game_of_life game_of_life.cpp)
 setup_example(cassini_oval cassini_oval.cpp)
 setup_example(translucent_helix translucent_helix.cpp)
 setup_example(surface_mode surface_mode.cpp)
+setup_example(gabriels_horn gabriels_horn.cpp)
 
 if(BUILD_SHARED_LIBS)
     # By default the library search path for the executable is set

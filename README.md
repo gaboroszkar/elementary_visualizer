@@ -43,6 +43,8 @@ For examples, see the [./examples](examples) directory or the [./tests](tests).
       <a href="./examples/surface_mode.cpp">surface_mode.cpp</a>
     </td>
     <td align="center">
+      <img src="./examples/gabriels_horn.gif" alt="Gabriel's horn example"/>
+      <a href="./examples/gabriels_horn.cpp">gabriels_horn.cpp</a>
     </td>
   </tr>
 </table>
@@ -100,8 +102,6 @@ Note, the implementation of video encoding is based on the following example by 
 
 ## Todo
 
-* More examples.
-  * Parametric surface. Maybe Gabriel's horn.
 * Performance optimizations.
 * Add build requirements in readme.
 * Add noexcept to functions definitions/declarations.
