@@ -80,6 +80,10 @@ public:
     void set_model(const glm::mat4 &model);
     void set_view(const glm::mat4 &view);
     void set_projection(const glm::mat4 &projection);
+    void
+        set_projection_aspect_correction(const bool projection_aspect_correction
+        );
+
     void set_linesegments_data(const std::vector<Linesegment> &linesegments_data
     );
 
@@ -113,6 +117,10 @@ public:
     void set_model(const glm::mat4 &model);
     void set_view(const glm::mat4 &view);
     void set_projection(const glm::mat4 &projection);
+    void
+        set_projection_aspect_correction(const bool projection_aspect_correction
+        );
+
     void set_lines_data(const std::vector<Vertex> &lines_data);
     void set_width(const float width);
 
@@ -243,6 +251,9 @@ public:
     void set_model(const glm::mat4 &model);
     void set_view(const glm::mat4 &view);
     void set_projection(const glm::mat4 &projection);
+    void
+        set_projection_aspect_correction(const bool projection_aspect_correction
+        );
 
     void set_surface_data(const SurfaceData &surface_data);
 

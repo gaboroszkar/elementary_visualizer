@@ -44,6 +44,7 @@ public:
     glm::mat4 model;
     glm::mat4 view;
     glm::mat4 projection;
+    bool projection_aspect_correction;
 };
 
 class LinesVisual::Impl
@@ -81,6 +82,7 @@ public:
     glm::mat4 model;
     glm::mat4 view;
     glm::mat4 projection;
+    bool projection_aspect_correction;
 };
 
 class SurfaceVisual::Impl
@@ -113,6 +115,7 @@ public:
     glm::mat4 model;
     glm::mat4 view;
     glm::mat4 projection;
+    bool projection_aspect_correction;
 
     std::optional<glm::vec3> light_position;
     glm::vec3 ambient_color;

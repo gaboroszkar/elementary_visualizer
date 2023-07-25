@@ -6,6 +6,24 @@
 
 namespace elementary_visualizer
 {
+
+glm::mat4 make_projection(
+    const glm::mat4 &projection_in,
+    const bool projection_aspect_correction,
+    const glm::uvec2 &scene_size
+)
+{
+    glm::mat4 projection = projection_in;
+    if (projection_aspect_correction)
+    {
+        const float aspect =
+            static_cast<float>(scene_size.x) / static_cast<float>(scene_size.y);
+        projection[0][0] = projection[0][0] / aspect;
+    }
+
+    return projection;
+}
+
 LinesegmentsVisual::Impl::Impl(
     std::shared_ptr<Entity> entity, std::shared_ptr<GlLinesegments> linesegments
 )
@@ -13,7 +31,8 @@ LinesegmentsVisual::Impl::Impl(
       linesegments(linesegments),
       model(1.0f),
       view(1.0f),
-      projection(1.0f)
+      projection(1.0f),
+      projection_aspect_correction(true)
 {}
 
 LinesegmentsVisual::Impl::Impl(LinesegmentsVisual::Impl &&other)
@@ -21,7 +40,8 @@ LinesegmentsVisual::Impl::Impl(LinesegmentsVisual::Impl &&other)
       linesegments(other.linesegments),
       model(other.model),
       view(other.view),
-      projection(other.projection)
+      projection(other.projection),
+      projection_aspect_correction(other.projection_aspect_correction)
 {}
 LinesegmentsVisual::Impl &
     LinesegmentsVisual::Impl::operator=(LinesegmentsVisual::Impl &&other)
@@ -31,6 +51,7 @@ LinesegmentsVisual::Impl &
     this->model = other.model;
     this->view = other.view;
     this->projection = other.projection;
+    this->projection_aspect_correction = other.projection_aspect_correction;
     return *this;
 }
 
@@ -46,12 +67,12 @@ void LinesegmentsVisual::Impl::render(
 
     shader_program->set_uniform("model", this->model);
     shader_program->set_uniform("view", this->view);
-
-    glm::mat4 projection = this->projection;
-    const float aspect =
-        static_cast<float>(scene_size.x) / static_cast<float>(scene_size.y);
-    projection[0][0] = projection[0][0] / aspect;
-    shader_program->set_uniform("projection", projection);
+    shader_program->set_uniform(
+        "projection",
+        make_projection(
+            this->projection, this->projection_aspect_correction, scene_size
+        )
+    );
 
     shader_program->set_uniform("scene_size", scene_size);
 
@@ -132,6 +153,13 @@ void LinesegmentsVisual::set_projection(const glm::mat4 &projection)
     this->impl->projection = projection;
 }
 
+void LinesegmentsVisual::set_projection_aspect_correction(
+    const bool projection_aspect_correction
+)
+{
+    this->impl->projection_aspect_correction = projection_aspect_correction;
+}
+
 void LinesegmentsVisual::set_linesegments_data(
     const std::vector<Linesegment> &linesegments_data
 )
@@ -157,7 +185,8 @@ LinesVisual::Impl::Impl(
       width(width),
       model(1.0f),
       view(1.0f),
-      projection(1.0f)
+      projection(1.0f),
+      projection_aspect_correction(true)
 {}
 
 LinesVisual::Impl::Impl(LinesVisual::Impl &&other)
@@ -166,7 +195,8 @@ LinesVisual::Impl::Impl(LinesVisual::Impl &&other)
       width(other.width),
       model(other.model),
       view(other.view),
-      projection(other.projection)
+      projection(other.projection),
+      projection_aspect_correction(true)
 {}
 LinesVisual::Impl &LinesVisual::Impl::operator=(LinesVisual::Impl &&other)
 {
@@ -176,6 +206,7 @@ LinesVisual::Impl &LinesVisual::Impl::operator=(LinesVisual::Impl &&other)
     this->model = other.model;
     this->view = other.view;
     this->projection = other.projection;
+    this->projection_aspect_correction = other.projection_aspect_correction;
     return *this;
 }
 
@@ -193,12 +224,12 @@ void LinesVisual::Impl::render(
 
     shader_program->set_uniform("model", this->model);
     shader_program->set_uniform("view", this->view);
-
-    glm::mat4 projection = this->projection;
-    const float aspect =
-        static_cast<float>(scene_size.x) / static_cast<float>(scene_size.y);
-    projection[0][0] = projection[0][0] / aspect;
-    shader_program->set_uniform("projection", projection);
+    shader_program->set_uniform(
+        "projection",
+        make_projection(
+            this->projection, this->projection_aspect_correction, scene_size
+        )
+    );
 
     shader_program->set_uniform("scene_size", scene_size);
 
@@ -272,6 +303,13 @@ void LinesVisual::set_projection(const glm::mat4 &projection)
     this->impl->projection = projection;
 }
 
+void LinesVisual::set_projection_aspect_correction(
+    const bool projection_aspect_correction
+)
+{
+    this->impl->projection_aspect_correction = projection_aspect_correction;
+}
+
 void LinesVisual::set_lines_data(const std::vector<Vertex> &lines_data)
 {
     this->impl->set_lines_data(lines_data);
@@ -296,6 +334,7 @@ SurfaceVisual::Impl::Impl(
       model(1.0f),
       view(1.0f),
       projection(1.0f),
+      projection_aspect_correction(true),
       light_position(std::nullopt),
       ambient_color(0.25f, 0.25f, 0.25f),
       diffuse_color(0.5f, 0.5f, 0.5f),
@@ -309,6 +348,7 @@ SurfaceVisual::Impl::Impl(SurfaceVisual::Impl &&other)
       model(other.model),
       view(other.view),
       projection(other.projection),
+      projection_aspect_correction(other.projection_aspect_correction),
       light_position(other.light_position),
       ambient_color(other.ambient_color),
       diffuse_color(other.diffuse_color),
@@ -322,6 +362,7 @@ SurfaceVisual::Impl &SurfaceVisual::Impl::operator=(SurfaceVisual::Impl &&other)
     this->model = other.model;
     this->view = other.view;
     this->projection = other.projection;
+    this->projection_aspect_correction = other.projection_aspect_correction;
     this->light_position = other.light_position;
     this->ambient_color = other.ambient_color;
     this->diffuse_color = other.diffuse_color;
@@ -344,12 +385,12 @@ void SurfaceVisual::Impl::render(
 
     shader_program->set_uniform("model", this->model);
     shader_program->set_uniform("view", this->view);
-
-    glm::mat4 projection = this->projection;
-    const float aspect =
-        static_cast<float>(scene_size.x) / static_cast<float>(scene_size.y);
-    projection[0][0] = projection[0][0] / aspect;
-    shader_program->set_uniform("projection", projection);
+    shader_program->set_uniform(
+        "projection",
+        make_projection(
+            this->projection, this->projection_aspect_correction, scene_size
+        )
+    );
 
     const glm::mat4 inverse_view = glm::affineInverse(view);
     glm::vec3 eye = glm::vec3(inverse_view[3]);
@@ -438,6 +479,13 @@ void SurfaceVisual::set_view(const glm::mat4 &view)
 void SurfaceVisual::set_projection(const glm::mat4 &projection)
 {
     this->impl->projection = projection;
+}
+
+void SurfaceVisual::set_projection_aspect_correction(
+    const bool projection_aspect_correction
+)
+{
+    this->impl->projection_aspect_correction = projection_aspect_correction;
 }
 
 void SurfaceVisual::set_surface_data(const SurfaceData &surface_data)
