@@ -40,9 +40,6 @@ public:
         const glm::vec4 &background_color
     );
 
-    Impl(Impl &&other);
-    Impl &operator=(Impl &&other);
-
     void add_visual(std::shared_ptr<Visual> visual);
     void remove_visual(std::shared_ptr<Visual> visual);
 
@@ -50,6 +47,8 @@ public:
 
     ~Impl();
 
+    Impl(Impl &&other) = delete;
+    Impl &operator=(Impl &&other) = delete;
     Impl(const Impl &) = delete;
     Impl &operator=(const Impl &) = delete;
 

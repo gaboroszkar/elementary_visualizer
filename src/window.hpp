@@ -20,9 +20,6 @@ public:
         std::shared_ptr<GlQuad> quad
     );
 
-    Impl(Impl &&other);
-    Impl &operator=(Impl &&other);
-
     operator bool() const;
 
     bool should_close_or_invalid() const;
@@ -50,6 +47,8 @@ public:
 
     ~Impl();
 
+    Impl(Impl &&other) = delete;
+    Impl &operator=(Impl &&other) = delete;
     Impl(const Impl &) = delete;
     Impl &operator=(const Impl &) = delete;
 

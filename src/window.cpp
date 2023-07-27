@@ -13,16 +13,6 @@ Window::Impl::Impl(
     : entity(entity), glfw_window(glfw_window), quad(quad)
 {}
 
-Window::Impl::Impl(Window::Impl &&other)
-    : entity(std::move(other.entity)), glfw_window(std::move(other.glfw_window))
-{}
-Window::Impl &Window::Impl::operator=(Window::Impl &&other)
-{
-    this->entity = std::move(other.entity);
-    this->glfw_window = std::move(other.glfw_window);
-    return *this;
-}
-
 Window::Impl::operator bool() const
 {
     return static_cast<bool>(this->glfw_window);

@@ -17,9 +17,6 @@ public:
         std::shared_ptr<WrappedVideoAvStream> stream
     );
 
-    Impl(Impl &&other);
-    Impl &operator=(Impl &&other);
-
     void render(
         std::shared_ptr<const GlTexture> rendered_scene,
         const RenderMode render_mode
@@ -27,6 +24,8 @@ public:
 
     ~Impl();
 
+    Impl(Impl &&other) = delete;
+    Impl &operator=(Impl &&other) = delete;
     Impl(const Impl &) = delete;
     Impl &operator=(const Impl &) = delete;
 

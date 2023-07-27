@@ -62,34 +62,6 @@ Scene::Impl::Impl(
       background_color(background_color)
 {}
 
-Scene::Impl::Impl(Scene::Impl &&other)
-    : entity(std::move(other.entity)),
-      framebuffer_texture(std::move(other.framebuffer_texture)),
-      framebuffer_texture_possibly_multisampled(
-          std::move(other.framebuffer_texture_possibly_multisampled)
-      ),
-      depth_textures(std::move(other.depth_textures)),
-      depth_peeling_render_textures(
-          std::move(other.depth_peeling_render_textures)
-      ),
-      visuals(other.visuals),
-      background_color(other.background_color)
-{}
-
-Scene::Impl &Scene::Impl::operator=(Scene::Impl &&other)
-{
-    this->entity = std::move(other.entity);
-    this->framebuffer_texture = std::move(other.framebuffer_texture);
-    this->framebuffer_texture_possibly_multisampled =
-        std::move(other.framebuffer_texture_possibly_multisampled);
-    this->depth_textures = std::move(other.depth_textures);
-    this->depth_peeling_render_textures =
-        std::move(other.depth_peeling_render_textures);
-    this->background_color = other.background_color;
-    this->visuals = other.visuals;
-    return *this;
-}
-
 void Scene::Impl::add_visual(std::shared_ptr<Visual> visual)
 {
     this->visuals.insert(visual);

@@ -35,26 +35,6 @@ LinesegmentsVisual::Impl::Impl(
       projection_aspect_correction(true)
 {}
 
-LinesegmentsVisual::Impl::Impl(LinesegmentsVisual::Impl &&other)
-    : entity(other.entity),
-      linesegments(other.linesegments),
-      model(other.model),
-      view(other.view),
-      projection(other.projection),
-      projection_aspect_correction(other.projection_aspect_correction)
-{}
-LinesegmentsVisual::Impl &
-    LinesegmentsVisual::Impl::operator=(LinesegmentsVisual::Impl &&other)
-{
-    this->entity = other.entity;
-    this->linesegments = other.linesegments;
-    this->model = other.model;
-    this->view = other.view;
-    this->projection = other.projection;
-    this->projection_aspect_correction = other.projection_aspect_correction;
-    return *this;
-}
-
 void LinesegmentsVisual::Impl::render(
     const glm::uvec2 &scene_size, const DepthPeelingData &depth_peeling_data
 ) const
@@ -189,27 +169,6 @@ LinesVisual::Impl::Impl(
       projection_aspect_correction(true)
 {}
 
-LinesVisual::Impl::Impl(LinesVisual::Impl &&other)
-    : entity(other.entity),
-      lines(other.lines),
-      width(other.width),
-      model(other.model),
-      view(other.view),
-      projection(other.projection),
-      projection_aspect_correction(true)
-{}
-LinesVisual::Impl &LinesVisual::Impl::operator=(LinesVisual::Impl &&other)
-{
-    this->entity = other.entity;
-    this->lines = other.lines;
-    this->width = other.width;
-    this->model = other.model;
-    this->view = other.view;
-    this->projection = other.projection;
-    this->projection_aspect_correction = other.projection_aspect_correction;
-    return *this;
-}
-
 void LinesVisual::Impl::render(
     const glm::uvec2 &scene_size, const DepthPeelingData &depth_peeling_data
 ) const
@@ -341,35 +300,6 @@ SurfaceVisual::Impl::Impl(
       specular_color(0.5f, 0.5f, 0.5f),
       shininess(32.0f)
 {}
-
-SurfaceVisual::Impl::Impl(SurfaceVisual::Impl &&other)
-    : entity(other.entity),
-      surface(other.surface),
-      model(other.model),
-      view(other.view),
-      projection(other.projection),
-      projection_aspect_correction(other.projection_aspect_correction),
-      light_position(other.light_position),
-      ambient_color(other.ambient_color),
-      diffuse_color(other.diffuse_color),
-      specular_color(other.specular_color),
-      shininess(other.shininess)
-{}
-SurfaceVisual::Impl &SurfaceVisual::Impl::operator=(SurfaceVisual::Impl &&other)
-{
-    this->entity = other.entity;
-    this->surface = other.surface;
-    this->model = other.model;
-    this->view = other.view;
-    this->projection = other.projection;
-    this->projection_aspect_correction = other.projection_aspect_correction;
-    this->light_position = other.light_position;
-    this->ambient_color = other.ambient_color;
-    this->diffuse_color = other.diffuse_color;
-    this->specular_color = other.specular_color;
-    this->shininess = other.shininess;
-    return *this;
-}
 
 void SurfaceVisual::Impl::render(
     const glm::uvec2 &scene_size, const DepthPeelingData &depth_peeling_data

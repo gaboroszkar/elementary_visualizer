@@ -11,19 +11,6 @@ Video::Impl::Impl(
     : size(size), frame(frame), stream(stream)
 {}
 
-Video::Impl::Impl(Video::Impl &&other)
-    : size(std::move(other.size)),
-      frame(std::move(other.frame)),
-      stream(std::move(other.stream))
-{}
-Video::Impl &Video::Impl::operator=(Video::Impl &&other)
-{
-    this->size = other.size;
-    this->frame = std::move(other.frame);
-    this->stream = std::move(other.stream);
-    return *this;
-}
-
 uint8_t to_8_bit(float color)
 {
     return std::clamp(int(255 * color), 0, 255);

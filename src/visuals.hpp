@@ -19,9 +19,6 @@ public:
         std::shared_ptr<GlLinesegments> linesegments
     );
 
-    Impl(Impl &&other);
-    Impl &operator=(Impl &&other);
-
     void render(
         const glm::uvec2 &scene_size, const DepthPeelingData &depth_peeling_data
     ) const;
@@ -29,6 +26,8 @@ public:
     void set_linesegments_data(const std::vector<Linesegment> &linesegments_data
     );
 
+    Impl(Impl &&other) = delete;
+    Impl &operator=(Impl &&other) = delete;
     Impl(const Impl &) = delete;
     Impl &operator=(const Impl &) = delete;
 
@@ -57,15 +56,14 @@ public:
         const float width
     );
 
-    Impl(Impl &&other);
-    Impl &operator=(Impl &&other);
-
     void render(
         const glm::uvec2 &scene_size, const DepthPeelingData &depth_peeling_data
     ) const;
 
     void set_lines_data(const std::vector<Vertex> &lines_data);
 
+    Impl(Impl &&other) = delete;
+    Impl &operator=(Impl &&other) = delete;
     Impl(const Impl &) = delete;
     Impl &operator=(const Impl &) = delete;
 
@@ -91,15 +89,14 @@ public:
 
     Impl(std::shared_ptr<Entity> entity, std::shared_ptr<GlSurface> surface);
 
-    Impl(Impl &&other);
-    Impl &operator=(Impl &&other);
-
     void render(
         const glm::uvec2 &scene_size, const DepthPeelingData &depth_peeling_data
     ) const;
 
     void set_surface_data(const SurfaceData &surface_data);
 
+    Impl(Impl &&other) = delete;
+    Impl &operator=(Impl &&other) = delete;
     Impl(const Impl &) = delete;
     Impl &operator=(const Impl &) = delete;
 
