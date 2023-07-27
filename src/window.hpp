@@ -46,6 +46,8 @@ public:
         std::optional<std::function<void(glm::vec2)>> function
     );
 
+    glm::uvec2 get_size() const;
+
     ~Impl();
 
     Impl(const Impl &) = delete;

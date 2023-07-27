@@ -171,6 +171,11 @@ void Window::Impl::on_mouse_move_event(
     }
 }
 
+glm::uvec2 Window::Impl::get_size() const
+{
+    return this->glfw_window->get_window_size();
+}
+
 Window::Impl::~Impl(){};
 
 Expected<Window, Error> Window::create(
@@ -250,6 +255,11 @@ void Window::on_mouse_move_event(
 )
 {
     this->impl->on_mouse_move_event(function);
+}
+
+glm::uvec2 Window::get_size() const
+{
+    return this->impl->get_size();
 }
 
 Window::~Window() {}

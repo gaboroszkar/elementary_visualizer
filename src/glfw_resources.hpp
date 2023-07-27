@@ -44,6 +44,7 @@ public:
     void make_current_context();
     void swap_buffers();
     glm::uvec2 get_framebuffer_size() const;
+    glm::uvec2 get_window_size() const;
     int should_close() const;
 
     std::optional<std::function<void(int, int, int, int)>> key_callback;

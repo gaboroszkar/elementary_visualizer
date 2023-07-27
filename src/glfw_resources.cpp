@@ -139,6 +139,14 @@ glm::uvec2 WrappedGlfwWindow::get_framebuffer_size() const
     return glm::uvec2(width, height);
 }
 
+glm::uvec2 WrappedGlfwWindow::get_window_size() const
+{
+    int width = 0;
+    int height = 0;
+    glfwGetWindowSize(this->glfw_window, &width, &height);
+    return glm::uvec2(width, height);
+}
+
 int WrappedGlfwWindow::should_close() const
 {
     return glfwWindowShouldClose(this->glfw_window);

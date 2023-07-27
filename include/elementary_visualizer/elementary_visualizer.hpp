@@ -362,6 +362,8 @@ public:
         std::optional<std::function<void(glm::vec2)>> function = std::nullopt
     );
 
+    glm::uvec2 get_size() const;
+
     ~Window();
 
     Window(const Window &other) = delete;
