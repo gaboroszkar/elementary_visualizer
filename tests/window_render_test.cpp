@@ -71,7 +71,7 @@ int main(int, char **)
                 GL_FLOAT,
                 &scene_data[0]
             );
-            window->render(rendered_scene.value(), render_mode);
+            window.value()->render(rendered_scene.value(), render_mode);
 
             // Wait until rendering is done.
             std::this_thread::sleep_for(std::chrono::milliseconds(50));

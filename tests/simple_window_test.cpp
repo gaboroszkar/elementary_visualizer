@@ -41,9 +41,9 @@ int main(int, char **)
     if (glfwGetWindowAttrib(glfw_window_1, GLFW_RESIZABLE) != GLFW_TRUE)
         return EXIT_FAILURE;
 
-    if (window_0->should_close_or_invalid())
+    if (window_0.value()->should_close_or_invalid())
         return EXIT_FAILURE;
-    if (window_1->should_close_or_invalid())
+    if (window_1.value()->should_close_or_invalid())
         return EXIT_FAILURE;
 
     auto scene_0 = ev::Scene::create(
@@ -57,9 +57,9 @@ int main(int, char **)
     if (!scene_1)
         return EXIT_FAILURE;
 
-    scene_0.value().render();
-    window_0->render(scene_0.value().render());
-    window_1->render(scene_1.value().render());
+    scene_0.value()->render();
+    window_0.value()->render(scene_0.value()->render());
+    window_1.value()->render(scene_1.value()->render());
 
     // Wait until rendering is done.
     std::this_thread::sleep_for(std::chrono::milliseconds(100));
@@ -79,16 +79,16 @@ int main(int, char **)
     if (compare_data(pixel_data_1, 0.0f, 0.0f, 0.0f, 0.0f))
         return EXIT_FAILURE;
 
-    if (window_0->should_close_or_invalid())
+    if (window_0.value()->should_close_or_invalid())
         return EXIT_FAILURE;
-    window_0->destroy();
-    if (!window_0->should_close_or_invalid())
+    window_0.value()->destroy();
+    if (!window_0.value()->should_close_or_invalid())
         return EXIT_FAILURE;
 
-    if (window_1->should_close_or_invalid())
+    if (window_1.value()->should_close_or_invalid())
         return EXIT_FAILURE;
-    window_1->destroy();
-    if (!window_1->should_close_or_invalid())
+    window_1.value()->destroy();
+    if (!window_1.value()->should_close_or_invalid())
         return EXIT_FAILURE;
 
     return EXIT_SUCCESS;

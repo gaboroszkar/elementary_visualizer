@@ -40,13 +40,13 @@ int main(int, char **)
     if (!window)
         return EXIT_FAILURE;
 
-    window->on_keyboard_event(
+    window.value()->on_keyboard_event(
         [&](const ev::EventAction action,
             const ev::Key key,
             const ev::ModifierKey)
         {
             if (action == ev::EventAction::press && key == ev::Key::q)
-                window->destroy();
+                window.value()->destroy();
         }
     );
 
@@ -54,7 +54,7 @@ int main(int, char **)
     std::optional<glm::vec2> rotation_delta;
     glm::vec2 mouse_position;
     glm::vec2 rotation(0.0f, 0.0f);
-    window->on_mouse_button_event(
+    window.value()->on_mouse_button_event(
         [&](const ev::EventAction action,
             const ev::MouseButton button,
             const ev::ModifierKey)
@@ -69,7 +69,7 @@ int main(int, char **)
             }
         }
     );
-    window->on_mouse_move_event(
+    window.value()->on_mouse_move_event(
         [&](const glm::vec2 mouse_position_in)
         {
             mouse_position = mouse_position_in;
@@ -90,7 +90,7 @@ int main(int, char **)
     auto surface = ev::SurfaceVisual::create(surface_data);
     if (!surface)
         return EXIT_FAILURE;
-    scene->add_visual(surface.value());
+    scene.value()->add_visual(surface.value());
 
     const glm::vec3 eye = glm::vec3(0.0f, -2.0f, 2.0f);
     const glm::vec3 center = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -107,7 +107,7 @@ int main(int, char **)
     glm::vec3 z_axis(0.0f, 0.0f, 1.0f);
     glm::vec3 x_axis(1.0f, 0.0f, 0.0f);
     float t = 0.0f;
-    while (!window.value().should_close_or_invalid())
+    while (!window.value()->should_close_or_invalid())
     {
         glm::mat4 model = glm::rotate(
             glm::rotate(glm::identity<glm::mat4>(), rotation.y, x_axis),
@@ -120,9 +120,9 @@ int main(int, char **)
         surface.value()->set_surface_data(surface_data);
         t += 0.2f;
 
-        auto rendered_scene = scene->render();
-        window->render(rendered_scene);
-        video->render(rendered_scene);
+        auto rendered_scene = scene.value()->render();
+        window.value()->render(rendered_scene);
+        video.value()->render(rendered_scene);
         ev::poll_window_events();
     }
 

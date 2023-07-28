@@ -61,11 +61,11 @@ int main(int, char **)
         linesegments.value()->set_projection(projection);
     }
 
-    scene->add_visual(linesegments.value());
+    scene.value()->add_visual(linesegments.value());
 
     std::shared_ptr<const ev::GlTexture> rendered_scene;
 
-    rendered_scene = scene.value().render();
+    rendered_scene = scene.value()->render();
 
     if (rendered_scene_hash(rendered_scene, scene_size) != 2762834654632811456U)
         return EXIT_FAILURE;
@@ -97,7 +97,7 @@ int main(int, char **)
         linesegments.value()->set_projection(projection);
     }
 
-    rendered_scene = scene.value().render();
+    rendered_scene = scene.value()->render();
 
     if (rendered_scene_hash(rendered_scene, scene_size) != 8076035020585418323U)
         return EXIT_FAILURE;

@@ -341,7 +341,7 @@ class Scene
 {
 public:
 
-    static Expected<Scene, Error> create(
+    static Expected<std::shared_ptr<Scene>, Error> create(
         const glm::uvec2 &size,
         const glm::vec4 &background_color = glm::vec4(1.0f),
         std::optional<int> samples = 4,
@@ -383,7 +383,7 @@ class Window
 {
 public:
 
-    static Expected<Window, Error> create(
+    static Expected<std::shared_ptr<Window>, Error> create(
         const std::string &title,
         const glm::uvec2 &size,
         const bool resizable = true
@@ -465,7 +465,7 @@ public:
      *
      * @return A Video object if it is successful, an Error otherwise.
      */
-    static Expected<Video, Error> create(
+    static Expected<std::shared_ptr<Video>, Error> create(
         const std::string &file_name,
         const glm::uvec2 &size,
         const unsigned int frame_rate = 30,

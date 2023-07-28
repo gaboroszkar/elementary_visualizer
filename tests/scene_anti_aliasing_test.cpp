@@ -87,10 +87,10 @@ bool test_anti_aliasing_level(
     if (!scene)
         return false;
 
-    scene->add_visual(linesegments);
+    scene.value()->add_visual(linesegments);
 
     std::shared_ptr<const ev::GlTexture> rendered_scene =
-        scene.value().render();
+        scene.value()->render();
     if (rendered_scene_hash(rendered_scene, scene_size) != expected_scene_hash)
         return false;
 

@@ -98,13 +98,13 @@ int main(int, char **)
     if (!window)
         return EXIT_FAILURE;
 
-    window->on_keyboard_event(
+    window.value()->on_keyboard_event(
         [&](const ev::EventAction action,
             const ev::Key key,
             const ev::ModifierKey)
         {
             if (action == ev::EventAction::press && key == ev::Key::q)
-                window->destroy();
+                window.value()->destroy();
         }
     );
 
@@ -166,17 +166,17 @@ int main(int, char **)
     surface.value()->set_diffuse_color(glm::vec3(0.0f));
     surface.value()->set_specular_color(glm::vec3(0.0f));
     surface.value()->set_shininess(0.0f);
-    scene->add_visual(surface.value());
+    scene.value()->add_visual(surface.value());
 
     surface.value()->set_view(glm::mat4(1.0f));
     glm::mat4 projection = glm::ortho(-1.0f, +1.0f, -1.0f, +1.0f);
     surface.value()->set_projection(projection);
 
-    while (!window.value().should_close_or_invalid())
+    while (!window.value()->should_close_or_invalid())
     {
-        auto rendered_scene = scene->render();
-        window->render(rendered_scene);
-        video->render(rendered_scene);
+        auto rendered_scene = scene.value()->render();
+        window.value()->render(rendered_scene);
+        video.value()->render(rendered_scene);
 
         state = update_state(width, state);
         surface.value()->set_surface_data(state_to_surface_data(width, state));

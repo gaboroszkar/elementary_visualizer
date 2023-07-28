@@ -26,8 +26,8 @@ std::size_t rendered_scene_hash(
         auto window = ev::Window::create("Window", size, false);
         if (!window)
             return EXIT_FAILURE;
-        window.value().render(rendered_scene);
-        while (!window.value().should_close_or_invalid())
+        window.value()->render(rendered_scene);
+        while (!window.value()->should_close_or_invalid())
             ev::poll_window_events();
     }
 

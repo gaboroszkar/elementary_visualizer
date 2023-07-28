@@ -217,7 +217,7 @@ std::shared_ptr<const GlTexture> Scene::Impl::render()
 
 Scene::Impl::~Impl(){};
 
-Expected<Scene, Error> Scene::create(
+Expected<std::shared_ptr<Scene>, Error> Scene::create(
     const glm::uvec2 &size,
     const glm::vec4 &background_color,
     const std::optional<int> samples,
@@ -227,7 +227,7 @@ Expected<Scene, Error> Scene::create(
     return Entity::ensure_initialized_and_get().and_then(
         [&size, &background_color, &samples, &depth_peeling_passes](
             std::shared_ptr<Entity> entity
-        ) -> Expected<Scene, Error>
+        ) -> Expected<std::shared_ptr<Scene>, Error>
         {
             Expected<std::shared_ptr<GlFramebufferTexture>, Error>
                 framebuffer_texture =
@@ -264,7 +264,7 @@ Expected<Scene, Error> Scene::create(
                 depth_peeling_render_textures.push_back(render_texture.value());
             }
 
-            return Scene(std::make_unique<Impl>(
+            std::unique_ptr<Scene::Impl> impl(std::make_unique<Impl>(
                 entity,
                 framebuffer_texture.value(),
                 framebuffer_texture_possibly_multisampled.value(),
@@ -274,6 +274,8 @@ Expected<Scene, Error> Scene::create(
                 depth_peeling_render_textures,
                 background_color
             ));
+
+            return std::shared_ptr<Scene>(new Scene(std::move(impl)));
         }
     );
 }

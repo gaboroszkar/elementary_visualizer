@@ -19,10 +19,10 @@ int main(int, char **)
         return EXIT_FAILURE;
     GLFWwindow *glfw_window_1 = glfwGetCurrentContext();
 
-    if (scene_size_0 != window_0.value().get_size())
+    if (scene_size_0 != window_0.value()->get_size())
         return EXIT_FAILURE;
 
-    if (scene_size_1 != window_1.value().get_size())
+    if (scene_size_1 != window_1.value()->get_size())
         return EXIT_FAILURE;
 
     int width, height;

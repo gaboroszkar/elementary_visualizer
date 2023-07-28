@@ -30,16 +30,18 @@ int main(int, char **)
     if (!scene_1)
         return EXIT_FAILURE;
 
-    if (scene_0->get_background_color() != glm::vec4(0.25f, 0.5f, 0.75f, 1.0f))
+    if (scene_0.value()->get_background_color() !=
+        glm::vec4(0.25f, 0.5f, 0.75f, 1.0f))
         return EXIT_FAILURE;
 
-    if (scene_1->get_background_color() != glm::vec4(0.1f, 0.2f, 0.3f, 0.4f))
+    if (scene_1.value()->get_background_color() !=
+        glm::vec4(0.1f, 0.2f, 0.3f, 0.4f))
         return EXIT_FAILURE;
 
     std::shared_ptr<const ev::GlTexture> rendered_scene_0 =
-        scene_0.value().render();
+        scene_0.value()->render();
     std::shared_ptr<const ev::GlTexture> rendered_scene_1 =
-        scene_1.value().render();
+        scene_1.value()->render();
 
     rendered_scene_0->bind();
     glGetTexImage(
@@ -55,19 +57,19 @@ int main(int, char **)
     if (!compare_data(rendered_scene_data_1, 0.1f, 0.2f, 0.3f, 0.4f))
         return EXIT_FAILURE;
 
-    scene_0->set_background_color(glm::vec4(1.0f, 0.8f, 0.6f, 0.4f));
-    scene_1->set_background_color(glm::vec4(0.9f, 0.7f, 0.5f, 0.3f));
+    scene_0.value()->set_background_color(glm::vec4(1.0f, 0.8f, 0.6f, 0.4f));
+    scene_1.value()->set_background_color(glm::vec4(0.9f, 0.7f, 0.5f, 0.3f));
 
-    if (scene_0->get_background_color().value() !=
+    if (scene_0.value()->get_background_color().value() !=
         glm::vec4(1.0f, 0.8f, 0.6f, 0.4f))
         return EXIT_FAILURE;
 
-    if (scene_1->get_background_color().value() !=
+    if (scene_1.value()->get_background_color().value() !=
         glm::vec4(0.9f, 0.7f, 0.5f, 0.3f))
         return EXIT_FAILURE;
 
-    rendered_scene_0 = scene_0.value().render();
-    rendered_scene_1 = scene_1.value().render();
+    rendered_scene_0 = scene_0.value()->render();
+    rendered_scene_1 = scene_1.value()->render();
 
     rendered_scene_0->bind();
     glGetTexImage(

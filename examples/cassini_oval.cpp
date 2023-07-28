@@ -82,13 +82,13 @@ int main(int, char **)
     if (!window)
         return EXIT_FAILURE;
 
-    window->on_keyboard_event(
+    window.value()->on_keyboard_event(
         [&](const ev::EventAction action,
             const ev::Key key,
             const ev::ModifierKey)
         {
             if (action == ev::EventAction::press && key == ev::Key::q)
-                window->destroy();
+                window.value()->destroy();
         }
     );
 
@@ -102,7 +102,7 @@ int main(int, char **)
                 ev::LinesVisual::create(std::vector<ev::Vertex>(), 1.5f);
             if (!lines)
                 return EXIT_FAILURE;
-            scene->add_visual(lines.value());
+            scene.value()->add_visual(lines.value());
             lines.value()->set_view(glm::mat4(1.0f));
             glm::mat4 projection = glm::ortho(-9.0f, 9.0f, -6.0f, 6.0f);
             lines.value()->set_projection(projection);
@@ -118,7 +118,7 @@ int main(int, char **)
     const float max_b = 3.5f;
 
     float t = 0.0f;
-    while (!window.value().should_close_or_invalid())
+    while (!window.value()->should_close_or_invalid())
     {
         for (size_t i = 0; i != all_lines.size(); ++i)
         {
@@ -147,9 +147,9 @@ int main(int, char **)
             }
         }
 
-        auto rendered_scene = scene->render();
-        video->render(rendered_scene);
-        window->render(rendered_scene);
+        auto rendered_scene = scene.value()->render();
+        video.value()->render(rendered_scene);
+        window.value()->render(rendered_scene);
         ev::poll_window_events();
 
         t += 0.005f;

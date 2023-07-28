@@ -168,7 +168,7 @@ glm::uvec2 Window::Impl::get_size() const
 
 Window::Impl::~Impl(){};
 
-Expected<Window, Error> Window::create(
+Expected<std::shared_ptr<Window>, Error> Window::create(
     const std::string &title, const glm::uvec2 &size, const bool resizable
 )
 {
@@ -189,9 +189,11 @@ Expected<Window, Error> Window::create(
     if (!quad)
         return Unexpected<Error>(Error());
 
-    return Window(std::make_unique<Impl>(
+    std::unique_ptr<Window::Impl> impl(std::make_unique<Impl>(
         entity.value(), glfw_window.value(), quad.value()
     ));
+
+    return std::shared_ptr<Window>(new Window(std::move(impl)));
 }
 
 Window::Window(Window &&other) : impl(std::move(other.impl)) {}

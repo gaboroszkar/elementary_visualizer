@@ -20,13 +20,13 @@ int main(int, char **)
     if (!window)
         return EXIT_FAILURE;
 
-    window->on_keyboard_event(
+    window.value()->on_keyboard_event(
         [&](const ev::EventAction action,
             const ev::Key key,
             const ev::ModifierKey)
         {
             if (action == ev::EventAction::press && key == ev::Key::q)
-                window->destroy();
+                window.value()->destroy();
         }
     );
 
@@ -51,7 +51,7 @@ int main(int, char **)
         );
         if (!lines)
             return EXIT_FAILURE;
-        scene.value().add_visual(lines.value());
+        scene.value()->add_visual(lines.value());
 
         const float r = 0.0f;
         const float g = 0.5f * (1.0f * sinf(phi));
@@ -60,7 +60,7 @@ int main(int, char **)
         auto circle = ev::CircleVisual::create(glm::vec4(r, g, b, 1.0f));
         if (!circle)
             return EXIT_FAILURE;
-        scene.value().add_visual(circle.value());
+        scene.value()->add_visual(circle.value());
 
         circle.value()->set_view(glm::mat4(1.0f));
         glm::mat4 projection = glm::ortho(-1.0f, +1.0f, -1.0f, +1.0f);
@@ -70,7 +70,7 @@ int main(int, char **)
     }
 
     float t = 0.0f;
-    while (!window.value().should_close_or_invalid())
+    while (!window.value()->should_close_or_invalid())
     {
         for (unsigned int i = 0; i != circles.size(); ++i)
         {
@@ -84,9 +84,9 @@ int main(int, char **)
             circles[i]->set_model(model_1);
         }
 
-        auto rendered_scene = scene->render();
-        window->render(rendered_scene);
-        video->render(rendered_scene);
+        auto rendered_scene = scene.value()->render();
+        window.value()->render(rendered_scene);
+        video.value()->render(rendered_scene);
 
         ev::poll_window_events();
 

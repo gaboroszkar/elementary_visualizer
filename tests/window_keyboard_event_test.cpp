@@ -24,7 +24,7 @@ int main(int, char **)
     ev::EventAction key_action_0;
     ev::Key key_state_0;
     ev::ModifierKey modifier_key_state_0;
-    window_0->on_keyboard_event(
+    window_0.value()->on_keyboard_event(
         [&](const ev::EventAction action,
             const ev::Key key,
             const ev::ModifierKey modifier_key)
@@ -38,7 +38,7 @@ int main(int, char **)
     ev::EventAction key_action_1;
     ev::Key key_state_1;
     ev::ModifierKey modifier_key_state_1;
-    window_1->on_keyboard_event(
+    window_1.value()->on_keyboard_event(
         [&](const ev::EventAction action,
             const ev::Key key,
             const ev::ModifierKey modifier_key)

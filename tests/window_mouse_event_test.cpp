@@ -27,7 +27,7 @@ int main(int, char **)
     ev::EventAction button_action_0;
     ev::MouseButton button_state_0;
     ev::ModifierKey modifier_key_state_0;
-    window_0->on_mouse_button_event(
+    window_0.value()->on_mouse_button_event(
         [&](const ev::EventAction action,
             const ev::MouseButton button,
             const ev::ModifierKey modifier_key)
@@ -38,13 +38,13 @@ int main(int, char **)
         }
     );
     glm::vec2 mouse_pos_0;
-    window_0->on_mouse_move_event([&](const glm::vec2 mouse_pos)
-                                  { mouse_pos_0 = mouse_pos; });
+    window_0.value()->on_mouse_move_event([&](const glm::vec2 mouse_pos)
+                                          { mouse_pos_0 = mouse_pos; });
 
     ev::EventAction button_action_1;
     ev::MouseButton button_state_1;
     ev::ModifierKey modifier_key_state_1;
-    window_1->on_mouse_button_event(
+    window_1.value()->on_mouse_button_event(
         [&](const ev::EventAction action,
             const ev::MouseButton button,
             const ev::ModifierKey modifier_key)
@@ -55,8 +55,8 @@ int main(int, char **)
         }
     );
     glm::vec2 mouse_pos_1;
-    window_1->on_mouse_move_event([&](const glm::vec2 mouse_pos)
-                                  { mouse_pos_1 = mouse_pos; });
+    window_1.value()->on_mouse_move_event([&](const glm::vec2 mouse_pos)
+                                          { mouse_pos_1 = mouse_pos; });
 
     emulate_mouse_button_event(
         glfw_window_0, GLFW_MOUSE_BUTTON_LEFT, GLFW_PRESS, 0

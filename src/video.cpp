@@ -58,7 +58,7 @@ void Video::Impl::render(
 
 Video::Impl::~Impl(){};
 
-Expected<Video, Error> Video::create(
+Expected<std::shared_ptr<Video>, Error> Video::create(
     const std::string &filename,
     const glm::uvec2 &size,
     const unsigned int frame_rate,
@@ -95,7 +95,11 @@ Expected<Video, Error> Video::create(
     if (!frame)
         return Unexpected<Error>(Error());
 
-    return Video(std::make_unique<Impl>(size, frame.value(), stream.value()));
+    std::unique_ptr<Video::Impl> impl(
+        std::make_unique<Impl>(size, frame.value(), stream.value())
+    );
+
+    return std::shared_ptr<Video>(new Video(std::move(impl)));
 }
 
 Video::Video(Video &&other) : impl(std::move(other.impl)) {}

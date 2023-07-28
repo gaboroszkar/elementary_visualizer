@@ -21,13 +21,13 @@ int main(int, char **)
     if (!window)
         return EXIT_FAILURE;
 
-    window->on_keyboard_event(
+    window.value()->on_keyboard_event(
         [&](const ev::EventAction action,
             const ev::Key key,
             const ev::ModifierKey)
         {
             if (action == ev::EventAction::press && key == ev::Key::q)
-                window->destroy();
+                window.value()->destroy();
         }
     );
 
@@ -35,7 +35,7 @@ int main(int, char **)
     std::optional<glm::vec2> rotation_delta;
     glm::vec2 mouse_position;
     glm::vec2 rotation(0.0f, 0.0f);
-    window->on_mouse_button_event(
+    window.value()->on_mouse_button_event(
         [&](const ev::EventAction action,
             const ev::MouseButton button,
             const ev::ModifierKey)
@@ -50,7 +50,7 @@ int main(int, char **)
             }
         }
     );
-    window->on_mouse_move_event(
+    window.value()->on_mouse_move_event(
         [&](const glm::vec2 mouse_position_in)
         {
             mouse_position = mouse_position_in;
@@ -81,7 +81,7 @@ int main(int, char **)
     auto lines = ev::LinesVisual::create(lines_data, 40.0f);
     if (!lines)
         return EXIT_FAILURE;
-    scene->add_visual(lines.value());
+    scene.value()->add_visual(lines.value());
 
     const glm::vec3 eye = glm::vec3(0.0f, -2.0f, 2.0f);
     const glm::vec3 center = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -97,7 +97,7 @@ int main(int, char **)
 
     glm::vec3 z_axis(0.0f, 0.0f, 1.0f);
     glm::vec3 x_axis(1.0f, 0.0f, 0.0f);
-    while (!window.value().should_close_or_invalid())
+    while (!window.value()->should_close_or_invalid())
     {
         if (!rotation_delta)
             rotation.y += 0.05f;
@@ -108,9 +108,9 @@ int main(int, char **)
         );
         lines.value()->set_model(model);
 
-        auto rendered_scene = scene->render();
-        video->render(rendered_scene);
-        window->render(rendered_scene);
+        auto rendered_scene = scene.value()->render();
+        video.value()->render(rendered_scene);
+        window.value()->render(rendered_scene);
         ev::poll_window_events();
     }
 
