@@ -151,6 +151,11 @@ void LinesegmentsVisual::set_linesegments_data(
     this->impl->set_linesegments_data(linesegments_data);
 }
 
+void LinesegmentsVisual::set_cap(const LineCap cap)
+{
+    this->impl->cap = cap;
+}
+
 LinesegmentsVisual::~LinesegmentsVisual() {}
 
 LinesegmentsVisual::LinesegmentsVisual(
@@ -284,6 +289,11 @@ void LinesVisual::set_lines_data(const std::vector<Vertex> &lines_data)
 void LinesVisual::set_width(const float width)
 {
     this->impl->width = width;
+}
+
+void LinesVisual::set_cap(const LineCap cap)
+{
+    this->impl->cap = cap;
 }
 
 LinesVisual::~LinesVisual() {}

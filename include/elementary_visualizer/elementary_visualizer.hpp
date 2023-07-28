@@ -100,6 +100,7 @@ public:
 
     void set_linesegments_data(const std::vector<Linesegment> &linesegments_data
     );
+    void set_cap(const LineCap);
 
     ~LinesegmentsVisual();
 
