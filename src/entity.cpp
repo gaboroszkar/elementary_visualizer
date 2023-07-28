@@ -76,6 +76,12 @@ Expected<std::shared_ptr<Entity>, Error> Entity::initialize()
             if (!quad)
                 return Unexpected<Error>(Error());
 
+            Expected<std::shared_ptr<GlCircle>, Error> circle(
+                GlCircle::create(glfw_window)
+            );
+            if (!circle)
+                return Unexpected<Error>(Error());
+
             std::vector<GlShaderSource> quad_shader_sources;
             quad_shader_sources.push_back(quad_vertex_shader_source());
             quad_shader_sources.push_back(quad_fragment_shader_source());
@@ -98,6 +104,19 @@ Expected<std::shared_ptr<Entity>, Error> Entity::initialize()
                     glfw_window, quad_multisampled_shader_sources
                 ));
             if (!quad_multisampled_shader_program)
+                return Unexpected<Error>(Error());
+
+            std::vector<GlShaderSource> circle_shader_sources;
+            circle_shader_sources.push_back(
+                depth_peeling_fragment_shader_source()
+            );
+            circle_shader_sources.push_back(circle_vertex_shader_source());
+            circle_shader_sources.push_back(circle_fragment_shader_source());
+            Expected<std::shared_ptr<GlShaderProgram>, Error>
+                circle_shader_program(
+                    GlShaderProgram::create(glfw_window, circle_shader_sources)
+                );
+            if (!circle_shader_program)
                 return Unexpected<Error>(Error());
 
             std::vector<GlShaderSource> linesegments_shader_sources;
@@ -149,8 +168,10 @@ Expected<std::shared_ptr<Entity>, Error> Entity::initialize()
             return std::shared_ptr<Entity>(new Entity(
                 glfw_window,
                 quad.value(),
+                circle.value(),
                 quad_shader_program.value(),
                 quad_multisampled_shader_program.value(),
+                circle_shader_program.value(),
                 linesegments_shader_program.value(),
                 lines_shader_program.value(),
                 surface_shader_program.value()
@@ -162,16 +183,20 @@ Expected<std::shared_ptr<Entity>, Error> Entity::initialize()
 Entity::Entity(
     std::shared_ptr<WrappedGlfwWindow> glfw_window,
     std::shared_ptr<GlQuad> quad,
+    std::shared_ptr<GlCircle> circle,
     std::shared_ptr<GlShaderProgram> quad_shader_program,
     std::shared_ptr<GlShaderProgram> quad_multisampled_shader_program,
+    std::shared_ptr<GlShaderProgram> circle_shader_program,
     std::shared_ptr<GlShaderProgram> linesegments_shader_program,
     std::shared_ptr<GlShaderProgram> lines_shader_program,
     std::shared_ptr<GlShaderProgram> surface_shader_program
 )
     : glfw_window(glfw_window),
       quad(quad),
+      circle(circle),
       quad_shader_program(quad_shader_program),
       quad_multisampled_shader_program(quad_multisampled_shader_program),
+      circle_shader_program(circle_shader_program),
       linesegments_shader_program(linesegments_shader_program),
       lines_shader_program(lines_shader_program),
       surface_shader_program(surface_shader_program)

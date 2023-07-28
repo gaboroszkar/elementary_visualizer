@@ -94,6 +94,7 @@ Note, the implementation of video encoding is based on the following example by 
 
 * Before each commit, use the automatic code formatter.
 * Use the `this->` strictly when referring to member function or variable.
+* For static members, always use the class name: `ClassName::member`.
 * Do not check for the validity of (smart) pointers of the type
   `Expected<P, E>`, because if this returns successfully,
   assume that the pointer is also valid.
@@ -111,6 +112,7 @@ Note, the implementation of video encoding is based on the following example by 
 ## Todo
 
 * Performance optimizations.
+* Caching of calculations.
 * Add build requirements in readme.
 * Add noexcept to functions definitions/declarations.
   Also, consider the `-fno-exceptions` option.

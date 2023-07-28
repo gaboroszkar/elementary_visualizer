@@ -455,4 +455,113 @@ SurfaceVisual::~SurfaceVisual() {}
 SurfaceVisual::SurfaceVisual(std::unique_ptr<SurfaceVisual::Impl> impl)
     : impl(std::move(impl))
 {}
+
+CircleVisual::Impl::Impl(std::shared_ptr<Entity> entity, const glm::vec4 &color)
+    : entity(entity),
+      model(1.0f),
+      view(1.0f),
+      projection(1.0f),
+      projection_aspect_correction(true),
+      color(color)
+{}
+
+void CircleVisual::Impl::render(
+    const glm::uvec2 &scene_size, const DepthPeelingData &depth_peeling_data
+) const
+{
+    std::shared_ptr<GlShaderProgram> shader_program =
+        this->entity->circle_shader_program;
+    shader_program->use();
+
+    depth_peeling_set_uniforms(shader_program, depth_peeling_data);
+
+    shader_program->set_uniform("model", this->model);
+    shader_program->set_uniform("view", this->view);
+    shader_program->set_uniform(
+        "projection",
+        make_projection(
+            this->projection, this->projection_aspect_correction, scene_size
+        )
+    );
+
+    shader_program->set_uniform("scene_size", scene_size);
+
+    shader_program->set_uniform("color", this->color);
+
+    this->entity->circle->render(false);
+}
+
+CircleVisual::Impl::~Impl(){};
+
+Expected<std::shared_ptr<CircleVisual>, Error>
+    CircleVisual::create(const glm::vec4 &color)
+{
+    return Entity::ensure_initialized_and_get().and_then(
+        [&color](std::shared_ptr<Entity> entity
+        ) -> Expected<std::shared_ptr<CircleVisual>, Error>
+        {
+            std::unique_ptr<CircleVisual::Impl> impl(
+                std::make_unique<CircleVisual::Impl>(entity, color)
+            );
+            return std::shared_ptr<CircleVisual>(new CircleVisual(std::move(impl
+            )));
+        }
+    );
+}
+
+CircleVisual::CircleVisual(CircleVisual &&other) : impl(std::move(other.impl))
+{}
+CircleVisual &CircleVisual::operator=(CircleVisual &&other)
+{
+    this->impl = std::move(other.impl);
+    return *this;
+}
+
+CircleVisual::CircleVisual(CircleVisual &other) : impl(std::move(other.impl)) {}
+CircleVisual &CircleVisual::operator=(CircleVisual &other)
+{
+    this->impl = std::move(other.impl);
+    return *this;
+}
+
+void CircleVisual::render(
+    const glm::uvec2 &scene_size, const DepthPeelingData &depth_peeling_data
+) const
+{
+    this->impl->render(scene_size, depth_peeling_data);
+}
+
+void CircleVisual::set_model(const glm::mat4 &model)
+{
+    this->impl->model = model;
+}
+
+void CircleVisual::set_view(const glm::mat4 &view)
+{
+    this->impl->view = view;
+}
+
+void CircleVisual::set_projection(const glm::mat4 &projection)
+{
+    this->impl->projection = projection;
+}
+
+void CircleVisual::set_projection_aspect_correction(
+    const bool projection_aspect_correction
+)
+{
+    this->impl->projection_aspect_correction = projection_aspect_correction;
+}
+
+void CircleVisual::set_color(const glm::vec4 &color)
+{
+    this->impl->color = color;
+}
+
+CircleVisual::~CircleVisual() {}
+
+CircleVisual::CircleVisual(std::unique_ptr<CircleVisual::Impl> impl)
+    : impl(std::move(impl))
+{}
+
 }

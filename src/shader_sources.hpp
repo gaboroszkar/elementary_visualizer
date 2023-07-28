@@ -9,6 +9,9 @@ const GlShaderSource &quad_vertex_shader_source();
 const GlShaderSource &quad_fragment_shader_source();
 const GlShaderSource &quad_multisampled_fragment_shader_source();
 
+const GlShaderSource &circle_vertex_shader_source();
+const GlShaderSource &circle_fragment_shader_source();
+
 const GlShaderSource &depth_peeling_fragment_shader_source();
 
 const GlShaderSource &linesegments_vertex_shader_source();

@@ -396,6 +396,72 @@ GlQuad::GlQuad(
     : vertex_array(vertex_array), vertex_buffer(vertex_buffer)
 {}
 
+Expected<std::shared_ptr<GlCircle>, Error>
+    GlCircle::create(std::shared_ptr<WrappedGlfwWindow> glfw_window)
+{
+    Expected<std::shared_ptr<GlVertexArray>, Error> vertex_array =
+        GlVertexArray::create(glfw_window);
+    if (!vertex_array)
+        return Unexpected<Error>(Error());
+    vertex_array.value()->bind();
+
+    Expected<std::shared_ptr<GlVertexBuffer>, Error> vertex_buffer =
+        GlVertexBuffer::create(glfw_window);
+    if (!vertex_buffer)
+        return Unexpected<Error>(Error());
+    vertex_buffer.value()->bind();
+
+    // Position 3 coordinates.
+    std::vector<float> vertices(3 * (GlCircle::number_of_sides + 2));
+
+    // Center point.
+    vertices[0] = vertices[1] = vertices[2] = 0.0f;
+
+    for (unsigned int i = 0; i != GlCircle::number_of_sides + 1; ++i)
+    {
+        const float t = 2.0f * std::numbers::pi * static_cast<float>(i) /
+                        (GlCircle::number_of_sides);
+        vertices[3 * (i + 1) + 0] = cosf(t);
+        vertices[3 * (i + 1) + 1] = sinf(t);
+        vertices[3 * (i + 1) + 2] = 0.0f;
+    }
+
+    glBufferData(
+        GL_ARRAY_BUFFER,
+        sizeof(float) * vertices.size(),
+        &vertices[0],
+        GL_STATIC_DRAW
+    );
+
+    // Configure the vertex attribute so that OpenGL knows how to read the
+    // vertex buffer.
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
+
+    // Enable the vertex attribute.
+    glEnableVertexAttribArray(0);
+
+    return std::shared_ptr<GlCircle>(
+        new GlCircle(vertex_array.value(), vertex_buffer.value())
+    );
+}
+
+void GlCircle::render(bool make_context) const
+{
+    this->vertex_array->bind(make_context);
+    glDrawArrays(GL_TRIANGLE_FAN, 0, GlCircle::number_of_sides + 2);
+}
+
+GlCircle::~GlCircle() {}
+
+GlCircle::GlCircle(
+    std::shared_ptr<GlVertexArray> vertex_array,
+    std::shared_ptr<GlVertexBuffer> vertex_buffer
+)
+    : vertex_array(vertex_array), vertex_buffer(vertex_buffer)
+{}
+
+unsigned int GlCircle::number_of_sides = 40;
+
 Expected<std::shared_ptr<GlLinesegments>, Error> GlLinesegments::create(
     std::shared_ptr<WrappedGlfwWindow> glfw_window,
     const std::vector<Linesegment> &linesegments_data

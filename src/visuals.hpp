@@ -120,6 +120,36 @@ public:
     glm::vec3 specular_color;
     float shininess;
 };
+
+class CircleVisual::Impl
+{
+public:
+
+    Impl(std::shared_ptr<Entity> entity, const glm::vec4 &color);
+
+    void render(
+        const glm::uvec2 &scene_size, const DepthPeelingData &depth_peeling_data
+    ) const;
+
+    Impl(Impl &&other) = delete;
+    Impl &operator=(Impl &&other) = delete;
+    Impl(const Impl &) = delete;
+    Impl &operator=(const Impl &) = delete;
+
+    ~Impl();
+
+private:
+
+    std::shared_ptr<Entity> entity;
+
+public:
+
+    glm::mat4 model;
+    glm::mat4 view;
+    glm::mat4 projection;
+    bool projection_aspect_correction;
+    glm::vec4 color;
+};
 }
 
 #endif

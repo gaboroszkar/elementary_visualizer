@@ -118,10 +118,11 @@ set(SOURCES
     src/gl_shader_program.cpp
     src/glfw_resources.cpp
     src/scene.cpp
-    src/shader_sources_quad.cpp
+    src/shader_sources_circle.cpp
     src/shader_sources_depth_peeling.cpp
     src/shader_sources_linesegments.cpp
     src/shader_sources_lines.cpp
+    src/shader_sources_quad.cpp
     src/shader_sources_surface.cpp
     src/video.cpp
     src/visuals.cpp

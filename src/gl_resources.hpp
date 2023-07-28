@@ -205,6 +205,35 @@ private:
     const std::shared_ptr<GlVertexBuffer> vertex_buffer;
 };
 
+class GlCircle
+{
+public:
+
+    static Expected<std::shared_ptr<GlCircle>, Error>
+        create(std::shared_ptr<WrappedGlfwWindow> glfw_window);
+
+    void render(bool make_context = true) const;
+
+    ~GlCircle();
+
+    GlCircle(GlCircle &&other) = delete;
+    GlCircle &operator=(GlCircle &&other) = delete;
+    GlCircle(const GlCircle &other) = delete;
+    GlCircle &operator=(const GlCircle &other) = delete;
+
+private:
+
+    GlCircle(
+        std::shared_ptr<GlVertexArray> vertex_array,
+        std::shared_ptr<GlVertexBuffer> vertex_buffer
+    );
+
+    const std::shared_ptr<GlVertexArray> vertex_array;
+    const std::shared_ptr<GlVertexBuffer> vertex_buffer;
+
+    static unsigned int number_of_sides;
+};
+
 class GlLinesegments
 {
 public:

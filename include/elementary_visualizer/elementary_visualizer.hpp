@@ -281,6 +281,41 @@ private:
     SurfaceVisual(std::unique_ptr<Impl> impl);
 };
 
+class CircleVisual : public Visual
+{
+public:
+
+    static Expected<std::shared_ptr<CircleVisual>, Error>
+        create(const glm::vec4 &color);
+
+    CircleVisual(CircleVisual &&other);
+    CircleVisual &operator=(CircleVisual &&other);
+
+    CircleVisual(CircleVisual &other);
+    CircleVisual &operator=(CircleVisual &other);
+
+    void render(
+        const glm::uvec2 &scene_size, const DepthPeelingData &depth_peeling_data
+    ) const;
+
+    void set_model(const glm::mat4 &model);
+    void set_view(const glm::mat4 &view);
+    void set_projection(const glm::mat4 &projection);
+    void
+        set_projection_aspect_correction(const bool projection_aspect_correction
+        );
+    void set_color(const glm::vec4 &color);
+
+    ~CircleVisual();
+
+private:
+
+    class Impl;
+    std::unique_ptr<Impl> impl;
+
+    CircleVisual(std::unique_ptr<Impl> impl);
+};
+
 class GlTexture;
 using RenderedScene = GlTexture;
 
