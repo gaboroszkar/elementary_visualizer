@@ -120,6 +120,7 @@ set(SOURCES
     src/scene.cpp
     src/shader_sources_circle.cpp
     src/shader_sources_depth_peeling.cpp
+    src/shader_sources_line_cap.cpp
     src/shader_sources_linesegments.cpp
     src/shader_sources_lines.cpp
     src/shader_sources_quad.cpp

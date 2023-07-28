@@ -16,7 +16,8 @@ public:
 
     Impl(
         std::shared_ptr<Entity> entity,
-        std::shared_ptr<GlLinesegments> linesegments
+        std::shared_ptr<GlLinesegments> linesegments,
+        const LineCap cap
     );
 
     void render(
@@ -40,6 +41,7 @@ private:
 
 public:
 
+    LineCap cap;
     glm::mat4 model;
     glm::mat4 view;
     glm::mat4 projection;
@@ -53,7 +55,8 @@ public:
     Impl(
         std::shared_ptr<Entity> entity,
         std::shared_ptr<GlLines> lines,
-        const float width
+        const float width,
+        const LineCap cap
     );
 
     void render(
@@ -77,6 +80,7 @@ private:
 public:
 
     float width;
+    LineCap cap;
     glm::mat4 model;
     glm::mat4 view;
     glm::mat4 projection;

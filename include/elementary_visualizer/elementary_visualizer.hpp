@@ -47,6 +47,18 @@ struct Vertex
     {}
 };
 
+enum class LineCap
+{
+    butt, /**< Butt line cap.
+           * The line is squared off at the first/last
+           * vertex of the line.
+           */
+    round /**< Round line cap.
+           * The line has a rounded cap before/after the
+           * first/last vertex of the line.
+           */
+};
+
 struct Linesegment
 {
     Vertex start, end;
@@ -64,8 +76,10 @@ class LinesegmentsVisual : public Visual
 {
 public:
 
-    static Expected<std::shared_ptr<LinesegmentsVisual>, Error>
-        create(const std::vector<Linesegment> &linesegments_data);
+    static Expected<std::shared_ptr<LinesegmentsVisual>, Error> create(
+        const std::vector<Linesegment> &linesegments_data,
+        const LineCap cap = LineCap::butt
+    );
 
     LinesegmentsVisual(LinesegmentsVisual &&other);
     LinesegmentsVisual &operator=(LinesegmentsVisual &&other);
@@ -101,8 +115,11 @@ class LinesVisual : public Visual
 {
 public:
 
-    static Expected<std::shared_ptr<LinesVisual>, Error>
-        create(const std::vector<Vertex> &lines_data, const float width = 1.0f);
+    static Expected<std::shared_ptr<LinesVisual>, Error> create(
+        const std::vector<Vertex> &lines_data,
+        const float width = 1.0f,
+        const LineCap cap = LineCap::butt
+    );
 
     LinesVisual(LinesVisual &&other);
     LinesVisual &operator=(LinesVisual &&other);
@@ -123,6 +140,7 @@ public:
 
     void set_lines_data(const std::vector<Vertex> &lines_data);
     void set_width(const float width);
+    void set_cap(const LineCap);
 
     ~LinesVisual();
 

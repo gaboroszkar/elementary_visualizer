@@ -37,15 +37,18 @@ const GlShaderSource &lines_geometry_shader_source()
         std::string(SHADER_HEADER
                     R"(
 layout (lines_adjacency) in;
-layout (triangle_strip, max_vertices = 12) out;
+layout (triangle_strip, max_vertices = 12 + 2 * 3 * 10) out;
 
 uniform uvec2 scene_size;
 uniform float line_width;
+uniform int line_cap;
 
 layout (location = 0) in vec4 position_in[];
 layout (location = 1) in vec4 color_in[];
 
 layout (location = 0) out vec4 color_out;
+
+void emit_line_cap(int cap, vec4 p0, vec4 p1, float width, vec4 color);
 
 vec4 to_scene(vec4 v)
 {
@@ -265,6 +268,8 @@ void main()
     }
     else
     {
+        emit_line_cap(line_cap, p1, p2, line_width, color_in[1]);
+
         vec4 normal_outer = 0.5f * line_width * normalize2(rot_perpendicular(p2 - p1));
         emit_vertex(p1 + normal_outer, color_in[1]);
         emit_vertex(p1 - normal_outer, color_in[1]);
@@ -284,15 +289,19 @@ void main()
         emit_vertex(p2 + tip1.miter, color_in[2]);
         emit_vertex(p2, color_in[2]);
         emit_vertex(p2 + tip1.outer, color_in[2]);
+
+        EndPrimitive();
     }
     else
     {
         vec4 normal_outer = 0.5f * line_width * normalize2(rot_perpendicular(p2 - p1));
         emit_vertex(p2 + normal_outer, color_in[2]);
         emit_vertex(p2 - normal_outer, color_in[2]);
-    }
 
-    EndPrimitive();
+        EndPrimitive();
+
+        emit_line_cap(line_cap, p2, p1, line_width, color_in[2]);
+    }
 }
 
 )")

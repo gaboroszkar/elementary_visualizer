@@ -24,6 +24,9 @@ const GlShaderSource &lines_fragment_shader_source();
 
 const GlShaderSource &surface_vertex_shader_source();
 const GlShaderSource &surface_fragment_shader_source();
+
+int line_cap_to_int(const LineCap cap);
+const GlShaderSource &line_cap_geometry_shader_source();
 }
 
 #endif

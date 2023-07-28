@@ -1,8 +1,7 @@
 #include <glm/gtc/matrix_inverse.hpp>
 #include <scene.hpp>
+#include <shader_sources.hpp>
 #include <visuals.hpp>
-
-#include <iostream>
 
 namespace elementary_visualizer
 {
@@ -25,10 +24,13 @@ glm::mat4 make_projection(
 }
 
 LinesegmentsVisual::Impl::Impl(
-    std::shared_ptr<Entity> entity, std::shared_ptr<GlLinesegments> linesegments
+    std::shared_ptr<Entity> entity,
+    std::shared_ptr<GlLinesegments> linesegments,
+    const LineCap cap
 )
     : entity(entity),
       linesegments(linesegments),
+      cap(cap),
       model(1.0f),
       view(1.0f),
       projection(1.0f),
@@ -44,6 +46,8 @@ void LinesegmentsVisual::Impl::render(
     shader_program->use();
 
     depth_peeling_set_uniforms(shader_program, depth_peeling_data);
+
+    shader_program->set_uniform("line_cap", line_cap_to_int(this->cap));
 
     shader_program->set_uniform("model", this->model);
     shader_program->set_uniform("view", this->view);
@@ -68,12 +72,12 @@ void LinesegmentsVisual::Impl::set_linesegments_data(
 
 LinesegmentsVisual::Impl::~Impl(){};
 
-Expected<std::shared_ptr<LinesegmentsVisual>, Error>
-    LinesegmentsVisual::create(const std::vector<Linesegment> &linesegments_data
-    )
+Expected<std::shared_ptr<LinesegmentsVisual>, Error> LinesegmentsVisual::create(
+    const std::vector<Linesegment> &linesegments_data, const LineCap cap
+)
 {
     return Entity::ensure_initialized_and_get().and_then(
-        [&linesegments_data](std::shared_ptr<Entity> entity
+        [&linesegments_data, &cap](std::shared_ptr<Entity> entity
         ) -> Expected<std::shared_ptr<LinesegmentsVisual>, Error>
         {
             Expected<std::shared_ptr<GlLinesegments>, Error> linesegments =
@@ -83,7 +87,7 @@ Expected<std::shared_ptr<LinesegmentsVisual>, Error>
 
             std::unique_ptr<LinesegmentsVisual::Impl> impl(
                 std::make_unique<LinesegmentsVisual::Impl>(
-                    entity, linesegments.value()
+                    entity, linesegments.value(), cap
                 )
             );
             return std::shared_ptr<LinesegmentsVisual>(
@@ -158,11 +162,13 @@ LinesegmentsVisual::LinesegmentsVisual(
 LinesVisual::Impl::Impl(
     std::shared_ptr<Entity> entity,
     std::shared_ptr<GlLines> lines,
-    const float width
+    const float width,
+    const LineCap cap
 )
     : entity(entity),
       lines(lines),
       width(width),
+      cap(cap),
       model(1.0f),
       view(1.0f),
       projection(1.0f),
@@ -180,6 +186,7 @@ void LinesVisual::Impl::render(
     depth_peeling_set_uniforms(shader_program, depth_peeling_data);
 
     shader_program->set_uniform("line_width", this->width);
+    shader_program->set_uniform("line_cap", line_cap_to_int(this->cap));
 
     shader_program->set_uniform("model", this->model);
     shader_program->set_uniform("view", this->view);
@@ -203,11 +210,11 @@ void LinesVisual::Impl::set_lines_data(const std::vector<Vertex> &lines_data)
 LinesVisual::Impl::~Impl(){};
 
 Expected<std::shared_ptr<LinesVisual>, Error> LinesVisual::create(
-    const std::vector<Vertex> &lines_data, const float width
+    const std::vector<Vertex> &lines_data, const float width, const LineCap cap
 )
 {
     return Entity::ensure_initialized_and_get().and_then(
-        [&lines_data, &width](std::shared_ptr<Entity> entity
+        [&lines_data, &width, &cap](std::shared_ptr<Entity> entity
         ) -> Expected<std::shared_ptr<LinesVisual>, Error>
         {
             Expected<std::shared_ptr<GlLines>, Error> lines =
@@ -217,7 +224,7 @@ Expected<std::shared_ptr<LinesVisual>, Error> LinesVisual::create(
 
             std::unique_ptr<LinesVisual::Impl> impl(
                 std::make_unique<LinesVisual::Impl>(
-                    entity, lines.value(), width
+                    entity, lines.value(), width, cap
                 )
             );
             return std::shared_ptr<LinesVisual>(new LinesVisual(std::move(impl))

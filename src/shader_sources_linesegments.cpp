@@ -18,12 +18,14 @@ layout (location = 1) in vec4 start_color_in;
 layout (location = 2) in vec3 end_position_in;
 layout (location = 3) in vec4 end_color_in;
 layout (location = 4) in float width_in;
+layout (location = 5) in int line_cap_in;
 
 layout (location = 0) out vec4 start_position_out;
 layout (location = 1) out vec4 start_color_out;
 layout (location = 2) out vec4 end_position_out;
 layout (location = 3) out vec4 end_color_out;
 layout (location = 4) out float width_out;
+layout (location = 5) out int line_cap_out;
 
 void main()
 {
@@ -32,6 +34,7 @@ void main()
     end_position_out = projection * view * model * vec4(end_position_in, 1.0f);
     end_color_out = end_color_in;
     width_out = width_in;
+    line_cap_out = line_cap_in;
 }
 
 )")
@@ -47,9 +50,10 @@ const GlShaderSource &linesegments_geometry_shader_source()
                     R"(
 
 uniform uvec2 scene_size;
+uniform int line_cap;
 
 layout (points) in;
-layout (triangle_strip, max_vertices = 4) out;
+layout (triangle_strip, max_vertices = 4 + 2 * 3 * 10) out;
 
 layout (location = 0) in vec4 start_position_in[];
 layout (location = 1) in vec4 start_color_in[];
@@ -58,6 +62,8 @@ layout (location = 3) in vec4 end_color_in[];
 layout (location = 4) in float width_in[];
 
 layout (location = 0) out vec4 color_out;
+
+void emit_line_cap(int cap, vec4 p0, vec4 p1, float width, vec4 color);
 
 vec4 to_scene(vec4 v)
 {
@@ -106,15 +112,18 @@ void main()
     vec4 p0 = to_scene(start_position_in[0]);
     vec4 p1 = to_scene(end_position_in[0]);
 
+    emit_line_cap(line_cap, p0, p1, width_in[0], start_color_in[0]);
+
     float half_line_width = width_in[0] / 2.0f;
+    vec4 normal_outer_absolute = half_line_width * normalize2(rot_perpendicular(p1 - p0));
 
-    vec4 normal_outer = half_line_width * normalize2(rot_perpendicular(p1 - p0));
-
-    emit_vertex(p0 - normal_outer, start_color_in[0]);
-    emit_vertex(p0 + normal_outer, start_color_in[0]);
-    emit_vertex(p1 - normal_outer, end_color_in[0]);
-    emit_vertex(p1 + normal_outer, end_color_in[0]);
+    emit_vertex(p0 - normal_outer_absolute, start_color_in[0]);
+    emit_vertex(p0 + normal_outer_absolute, start_color_in[0]);
+    emit_vertex(p1 - normal_outer_absolute, end_color_in[0]);
+    emit_vertex(p1 + normal_outer_absolute, end_color_in[0]);
     EndPrimitive();
+
+    emit_line_cap(line_cap, p1, p0, width_in[0], end_color_in[0]);
 }
 
 )")

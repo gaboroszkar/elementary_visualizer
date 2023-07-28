@@ -124,6 +124,9 @@ Expected<std::shared_ptr<Entity>, Error> Entity::initialize()
                 depth_peeling_fragment_shader_source()
             );
             linesegments_shader_sources.push_back(
+                line_cap_geometry_shader_source()
+            );
+            linesegments_shader_sources.push_back(
                 linesegments_vertex_shader_source()
             );
             linesegments_shader_sources.push_back(
@@ -142,6 +145,7 @@ Expected<std::shared_ptr<Entity>, Error> Entity::initialize()
             std::vector<GlShaderSource> lines_shader_sources;
             lines_shader_sources.push_back(depth_peeling_fragment_shader_source(
             ));
+            lines_shader_sources.push_back(line_cap_geometry_shader_source());
             lines_shader_sources.push_back(lines_vertex_shader_source());
             lines_shader_sources.push_back(lines_geometry_shader_source());
             lines_shader_sources.push_back(lines_fragment_shader_source());
