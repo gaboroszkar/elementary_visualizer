@@ -360,6 +360,8 @@ public:
 
     std::shared_ptr<const RenderedScene> render();
 
+    glm::uvec2 get_size() const;
+
     ~Scene();
 
     Scene(const Scene &other) = delete;

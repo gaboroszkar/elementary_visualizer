@@ -215,6 +215,11 @@ std::shared_ptr<const GlTexture> Scene::Impl::render()
     return this->framebuffer_texture->texture;
 }
 
+glm::uvec2 Scene::Impl::get_size() const
+{
+    return this->framebuffer_texture->texture->get_size();
+}
+
 Scene::Impl::~Impl(){};
 
 Expected<std::shared_ptr<Scene>, Error> Scene::create(
@@ -311,6 +316,11 @@ void Scene::remove_visual(std::shared_ptr<Visual> visual)
 std::shared_ptr<const RenderedScene> Scene::render()
 {
     return this->impl->render();
+}
+
+glm::uvec2 Scene::get_size() const
+{
+    return this->impl->get_size();
 }
 
 Scene::~Scene() {}

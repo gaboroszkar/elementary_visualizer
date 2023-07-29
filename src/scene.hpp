@@ -45,6 +45,8 @@ public:
 
     std::shared_ptr<const GlTexture> render();
 
+    glm::uvec2 get_size() const;
+
     ~Impl();
 
     Impl(Impl &&other) = delete;
