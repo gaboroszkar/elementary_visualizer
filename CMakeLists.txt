@@ -6,6 +6,12 @@ option(BUILD_TESTING "Build testing" ON)
 option(ELEMENTARY_VISUALIZER_BUILD_EXAMPLES "Build examples" ON)
 set(ELEMENTARY_VISUALIZER_FFMPEG_CONFIG "" CACHE STRING "FFmpeg additional configuration")
 
+if("${ELEMENTARY_VISUALIZER_FFMPEG_CONFIG}" STREQUAL "")
+  set(ELEMENTARY_VISUALIZER_FFMPEG_CONFIG_SPLIT "")
+else()
+  string(REPLACE " " ";" ELEMENTARY_VISUALIZER_FFMPEG_CONFIG_SPLIT ${ELEMENTARY_VISUALIZER_FFMPEG_CONFIG})
+endif()
+
 # Generate compile_commands.json.
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -91,13 +97,13 @@ function(add_external_ffmpeg)
             #--enable-gpl             #allow use of GPL code, the resulting libs
             #                         #and binaries will be under GPL [no]
             #--enable-libx264         #enable H.264 encoding via x264 [no]
-            $(ELEMENTARY_VISUALIZER_FFMPEG_CONFIG)
+            ${ELEMENTARY_VISUALIZER_FFMPEG_CONFIG_SPLIT}
         BUILD_COMMAND make
         INSTALL_COMMAND ""
     )
 
     ExternalProject_Get_property(ffmpeg_external BINARY_DIR)
-    target_include_directories(${PROJECT_NAME} PRIVATE
+    target_include_directories(${PROJECT_NAME} PUBLIC
         ${FFMPEG_DIR}
         ${BINARY_DIR}
     )

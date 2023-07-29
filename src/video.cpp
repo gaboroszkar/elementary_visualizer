@@ -63,6 +63,7 @@ Expected<std::shared_ptr<Video>, Error> Video::create(
     const glm::uvec2 &size,
     const unsigned int frame_rate,
     const int64_t bit_rate,
+    const std::optional<enum AVCodecID> codec_id,
     const bool intermediate_yuv420p_conversion
 )
 {
@@ -78,6 +79,7 @@ Expected<std::shared_ptr<Video>, Error> Video::create(
             frame_rate,
             source_pixel_format,
             WrappedAvDictionary(),
+            codec_id,
             intermediate_yuv420p_conversion
         );
     if (!format_context)

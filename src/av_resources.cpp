@@ -281,6 +281,7 @@ Expected<std::shared_ptr<WrappedOutputVideoAvFormatContext>, Error>
         const unsigned int frame_rate,
         const enum AVPixelFormat source_pixel_format,
         const WrappedAvDictionary &parameters,
+        const std::optional<enum AVCodecID> codec_id,
         const bool intermediate_yuv420p_conversion
     )
 {
@@ -301,7 +302,7 @@ Expected<std::shared_ptr<WrappedOutputVideoAvFormatContext>, Error>
 
     Expected<std::shared_ptr<WrappedAvCodecContext>, Error> codec_context =
         WrappedAvCodecContext::create(
-            format_context->oformat->video_codec,
+            codec_id ? codec_id.value() : format_context->oformat->video_codec,
             bit_rate,
             width,
             height,

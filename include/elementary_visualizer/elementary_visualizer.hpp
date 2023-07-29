@@ -3,6 +3,9 @@
 
 #include <elementary_visualizer/event_values.hpp>
 #include <glm/glm.hpp>
+extern "C" {
+#include <libavcodec/codec_id.h>
+}
 #include <memory>
 #include <optional>
 #include <string>
@@ -473,6 +476,7 @@ public:
         const glm::uvec2 &size,
         const unsigned int frame_rate = 30,
         const int64_t bit_rate = 5000000,
+        const std::optional<enum AVCodecID> codec_id = std::nullopt,
         const bool intermediate_yuv420p_conversion = true
     );
 

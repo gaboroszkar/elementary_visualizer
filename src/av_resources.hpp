@@ -153,6 +153,7 @@ public:
             const unsigned int frame_rate,
             const enum AVPixelFormat source_pixel_format,
             const WrappedAvDictionary &parameters,
+            const std::optional<enum AVCodecID> codec_id = std::nullopt,
             const bool intermediate_yuv420p_conversion = true
         );
 
