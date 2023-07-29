@@ -4,6 +4,7 @@ project(elementary_visualizer)
 
 option(BUILD_TESTING "Build testing" ON)
 option(ELEMENTARY_VISUALIZER_BUILD_EXAMPLES "Build examples" ON)
+set(ELEMENTARY_VISUALIZER_FFMPEG_CONFIG "" CACHE STRING "FFmpeg additional configuration")
 
 # Generate compile_commands.json.
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -58,7 +59,7 @@ function(add_external_ffmpeg)
         ffmpeg_external
         SOURCE_DIR ${FFMPEG_DIR}
         CONFIGURE_COMMAND
-        ${FFMPEG_DIR}/configure
+            ${FFMPEG_DIR}/configure
             --enable-rpath           #use rpath to allow installing libraries in paths
                                      #not part of the dynamic linker search path
                                      #use rpath when linking programs (USE WITH CARE)
@@ -90,6 +91,7 @@ function(add_external_ffmpeg)
             #--enable-gpl             #allow use of GPL code, the resulting libs
             #                         #and binaries will be under GPL [no]
             #--enable-libx264         #enable H.264 encoding via x264 [no]
+            $(ELEMENTARY_VISUALIZER_FFMPEG_CONFIG)
         BUILD_COMMAND make
         INSTALL_COMMAND ""
     )
