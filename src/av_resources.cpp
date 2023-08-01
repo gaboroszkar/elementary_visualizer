@@ -256,7 +256,15 @@ const AVStream *WrappedVideoAvStream::operator*() const
     return this->stream;
 }
 
-WrappedVideoAvStream::~WrappedVideoAvStream() {}
+WrappedVideoAvStream::~WrappedVideoAvStream()
+{
+    if (!this->is_state_eof)
+    {
+        this->enter_codec_flush_mode();
+        this->receive_packet();
+    }
+    avcodec_flush_buffers(**(this->format_context->codec_context));
+}
 
 WrappedVideoAvStream::WrappedVideoAvStream(
     std::shared_ptr<WrappedOutputVideoAvFormatContext> format_context,
@@ -268,6 +276,7 @@ WrappedVideoAvStream::WrappedVideoAvStream(
       stream(stream),
       frame(frame),
       packet(packet),
+      is_state_eof(true),
       timestamp(0)
 {}
 
@@ -513,20 +522,55 @@ Expected<void, Error>
     (**(this->frame))->pts = this->timestamp;
 
     AVCodecContext *codec_context = **(this->format_context->codec_context);
-    AVPacket *packet = **(this->packet);
 
     // Send the frame to the encoder.
     result = avcodec_send_frame(codec_context, **(this->frame));
     if (result < 0)
         return Unexpected<Error>(Error());
 
+    Expected<void, Error> receive_packet_result = this->receive_packet();
+    if (!receive_packet_result)
+        return Unexpected<Error>(Error());
+
+    ++this->timestamp;
+
+    return Expected<void, Error>();
+}
+
+Expected<void, Error> WrappedVideoAvStream::enter_codec_flush_mode()
+{
+    AVCodecContext *codec_context = **(this->format_context->codec_context);
+
+    // Send empty frame to enter into flushing mode for the codec.
+    int result = avcodec_send_frame(codec_context, nullptr);
+    if (result < 0)
+        return Unexpected<Error>(Error());
+    return Expected<void, Error>();
+}
+
+Expected<void, Error> WrappedVideoAvStream::receive_packet()
+{
+    AVCodecContext *codec_context = **(this->format_context->codec_context);
+    AVPacket *packet = **(this->packet);
+
+    int result = 0;
     while (result >= 0)
     {
         result = avcodec_receive_packet(codec_context, packet);
-        if (result == AVERROR(EAGAIN) || result == AVERROR_EOF)
+        if (result == AVERROR_EOF)
+        {
+            this->is_state_eof = true;
             break;
-        else if (result < 0)
-            return Unexpected<Error>(Error());
+        }
+        else
+        {
+            this->is_state_eof = false;
+
+            if (result == AVERROR(EAGAIN))
+                break;
+            else if (result < 0)
+                return Unexpected<Error>(Error());
+        }
 
         // Rescale output packet timestamp values from codec to stream timebase.
         av_packet_rescale_ts(
@@ -542,9 +586,6 @@ Expected<void, Error>
         if (result < 0)
             return Unexpected<Error>(Error());
     }
-
-    ++this->timestamp;
-
     return Expected<void, Error>();
 }
 }

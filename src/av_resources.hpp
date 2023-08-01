@@ -130,10 +130,14 @@ private:
         std::shared_ptr<WrappedAvPacket> packet
     );
 
+    Expected<void, Error> receive_packet();
+    Expected<void, Error> enter_codec_flush_mode();
+
     std::shared_ptr<WrappedOutputVideoAvFormatContext> format_context;
     AVStream *stream;
     std::shared_ptr<WrappedAvFrame> frame;
     std::shared_ptr<WrappedAvPacket> packet;
+    bool is_state_eof;
 
     // Presentation timestamp in time_base units.
     int64_t timestamp;
