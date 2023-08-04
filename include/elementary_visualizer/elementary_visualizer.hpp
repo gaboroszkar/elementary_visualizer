@@ -168,14 +168,17 @@ private:
  * if u, v is not on the edge.
  *
  * The u, v coordinates are represented by the
- * `vertices[v * u_size + u]`. This means, that to get a rectangular
- * shape, you need to have `u_size * v_size` elements in `vertices`.
+ * `vertices[v * u_size + u]`.
+ * Only a rectangular shape is allowed, which means, that
+ * `u_size * v_size` vertices are needed.
+ * Note, that u_size and v_size must be greater than 1.
+ * Otherwise, this will be an empty container.
  *
- * @note Size of `vertices` must be greater than `u_size + 1` to render any
- * surface.
  */
-struct SurfaceData
+class SurfaceData
 {
+public:
+
     /**
      * @brief Mode to specify how data is rendered.
      */
@@ -197,58 +200,96 @@ struct SurfaceData
     };
 
     SurfaceData(
-        std::vector<Vertex> &&vertices,
-        const size_t u_size,
-        const Mode mode = Mode::smooth
-    )
-        : vertices(std::move(vertices)), u_size(u_size), mode(mode)
-    {}
-
-    SurfaceData(
         const std::vector<Vertex> &vertices,
         const size_t u_size,
         const Mode mode = Mode::smooth
-    )
-        : vertices(vertices), u_size(u_size), mode(mode)
-    {}
+    );
 
-    Vertex &operator()(size_t u, size_t v)
-    {
-        return this->vertices[this->index(u, v)];
-    }
+    const std::vector<float> &get_data() const;
 
-    const Vertex &operator()(size_t u, size_t v) const
-    {
-        return this->vertices[this->index(u, v)];
-    }
+    void
+        set_position(const size_t u, const size_t v, const glm::vec3 &position);
 
-    Vertex &operator()(const glm::uvec2 &uv)
-    {
-        return this->vertices[this->index(uv)];
-    }
+    void set_color(const size_t u, const size_t v, const glm::vec4 &color);
 
-    const Vertex &operator()(const glm::uvec2 &uv) const
-    {
-        return this->vertices[this->index(uv)];
-    }
+    size_t get_u_size() const;
 
-    size_t index(const glm::uvec2 &uv) const
-    {
-        return this->index(uv.x, uv.y);
-    }
+private:
 
-    size_t index(size_t u, size_t v) const
-    {
-        return v * this->u_size + u;
-    }
+    static bool is_size_correct(const size_t size, const size_t u_size);
+    static size_t number_of_squares(const size_t size, const size_t u_size);
+    size_t v_size() const;
 
-    glm::uvec2 uv(size_t index) const
-    {
-        size_t u = index % this->u_size;
-        return glm::uvec2(u, (index - u) / this->u_size);
-    }
+    size_t offset(
+        const size_t u,
+        const size_t v,
+        const bool is_lower_triangle,
+        const size_t vertex_offset
+    ) const;
+    void set_vertex_explicitly(
+        const size_t u,
+        const size_t v,
+        std::function<
+            void(const size_t, const size_t, const bool, const size_t)>
+            set_function
+    );
+    void set_vertex_explicitly(
+        const size_t u,
+        const size_t v,
+        const bool is_lower_triangle,
+        std::function<
+            void(const size_t, const size_t, const bool, const size_t)>
+            set_function
+    );
+    void set_position_explicitly(
+        const size_t u, const size_t v, const glm::vec3 &position
+    );
+    void set_position_explicitly(
+        const size_t u,
+        const size_t v,
+        const bool is_lower_triangle,
+        const size_t vertex_offset,
+        const glm::vec3 &position
+    );
+    void set_color_explicitly(
+        const size_t u, const size_t v, const glm::vec4 &color
+    );
+    void set_color_explicitly(
+        const size_t u,
+        const size_t v,
+        const bool is_lower_triangle,
+        const glm::vec4 &color
+    );
+    void set_color_explicitly(
+        const size_t u,
+        const size_t v,
+        const bool is_lower_triangle,
+        const size_t vertex_offset,
+        const glm::vec4 &color
+    );
+    void set_normal_explicitly(
+        const size_t u, const size_t v, const glm::vec3 &normal
+    );
+    void set_normal_explicitly(
+        const size_t u,
+        const size_t v,
+        const bool is_lower_triangle,
+        const glm::vec3 &normal
+    );
+    void set_normal_explicitly(
+        const size_t u,
+        const size_t v,
+        const bool is_lower_triangle,
+        const size_t vertex_offset,
+        const glm::vec3 &normal
+    );
+    glm::vec3 get_position(const size_t u, const size_t v) const;
+    void update_normal(const size_t u, const size_t v);
+    void update_normal(
+        const size_t u, const size_t v, const bool is_lower_triangle
+    );
 
-    std::vector<Vertex> vertices;
+    std::vector<float> triangle_vertex_data;
     size_t u_size;
     Mode mode;
 };

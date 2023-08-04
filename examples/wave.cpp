@@ -4,9 +4,12 @@
 
 namespace ev = elementary_visualizer;
 
-void update_surface_data(ev::SurfaceData &surface_data, const float t)
+std::vector<ev::Vertex>
+    generate_surface_data(const size_t u_size, const float t)
 {
-    const int width_half = (surface_data.u_size - 1) / 2;
+    std::vector<ev::Vertex> surface_data(u_size * u_size);
+
+    const int width_half = (u_size - 1) / 2;
     for (int y = -width_half; y <= width_half; ++y)
     {
         for (int x = -width_half; x <= width_half; ++x)
@@ -16,12 +19,15 @@ void update_surface_data(ev::SurfaceData &surface_data, const float t)
             float r_squared = ((fx * fx) + (fy * fy));
             float fz = 0.5f * expf(-1.5 * r_squared) * cosf(15 * r_squared - t);
 
-            const glm::uvec2 uv(x + width_half, y + width_half);
-            surface_data(uv) = ev::Vertex(
+            const size_t u = x + width_half;
+            const size_t v = y + width_half;
+            surface_data[v * u_size + u] = ev::Vertex(
                 glm::vec3(fx, fy, fz), glm::vec4(0.0f, 0.5f, 1.0f, 0.8f)
             );
         }
     }
+
+    return surface_data;
 }
 
 int main(int, char **)
@@ -81,11 +87,11 @@ int main(int, char **)
 
     const int width_half = 100;
     const int width = (width_half * 2 + 1);
+
     std::vector<ev::Vertex> vertices(width * width);
     ev::SurfaceData surface_data(
-        vertices, width, ev::SurfaceData::Mode::smooth
+        generate_surface_data(width, 0.0f), width, ev::SurfaceData::Mode::smooth
     );
-    update_surface_data(surface_data, 0.0f);
 
     auto surface = ev::SurfaceVisual::create(surface_data);
     if (!surface)
@@ -116,8 +122,11 @@ int main(int, char **)
         );
         surface.value()->set_model(model);
 
-        update_surface_data(surface_data, t);
-        surface.value()->set_surface_data(surface_data);
+        surface.value()->set_surface_data(ev::SurfaceData(
+            generate_surface_data(width, t),
+            width,
+            ev::SurfaceData::Mode::smooth
+        ));
         t += 0.2f;
 
         auto rendered_scene = scene.value()->render();

@@ -800,15 +800,10 @@ Expected<std::shared_ptr<GlSurface>, Error> GlSurface::create(
         return Unexpected<Error>(Error());
     vertex_buffer.value()->bind();
 
-    std::vector<float> vertices;
-    const unsigned int number_of_triangles =
-        GlSurface::generate_vertex_buffer_data(vertices, surface_data);
+    const std::vector<float> &data = surface_data.get_data();
 
     glBufferData(
-        GL_ARRAY_BUFFER,
-        sizeof(float) * vertices.size(),
-        &vertices[0],
-        GL_DYNAMIC_DRAW
+        GL_ARRAY_BUFFER, sizeof(float) * data.size(), &data[0], GL_DYNAMIC_DRAW
     );
 
     // Configure the vertex attribute so that OpenGL knows how to read the
@@ -845,32 +840,30 @@ Expected<std::shared_ptr<GlSurface>, Error> GlSurface::create(
     glEnableVertexAttribArray(2);
 
     return std::shared_ptr<GlSurface>(new GlSurface(
-        vertex_array.value(), vertex_buffer.value(), number_of_triangles
+        vertex_array.value(), vertex_buffer.value(), data.size() / (3 + 4 + 3)
     ));
 }
 
 void GlSurface::render(bool make_context) const
 {
     this->vertex_array->bind(make_context);
-    glDrawArrays(GL_TRIANGLES, 0, 3 * this->number_of_triangles);
+    glDrawArrays(GL_TRIANGLES, 0, this->number_of_vertices);
 }
 
 void GlSurface::set_surface_data(const SurfaceData &surface_data)
 {
-    std::vector<float> vertices;
-    const unsigned int number_of_triangles =
-        GlSurface::generate_vertex_buffer_data(vertices, surface_data);
-
     this->vertex_array->bind();
     this->vertex_buffer->bind();
 
+    const std::vector<float> &data = surface_data.get_data();
+
     glBufferData(
         GL_ARRAY_BUFFER,
-        sizeof(float) * vertices.size(),
-        &vertices[0],
+        sizeof(float) * data.size(),
+        &(data[0]),
         GL_DYNAMIC_DRAW
     );
-    this->number_of_triangles = number_of_triangles;
+    this->number_of_vertices = data.size() / (3 + 4 + 3);
 }
 
 GlSurface::~GlSurface() {}
@@ -878,153 +871,10 @@ GlSurface::~GlSurface() {}
 GlSurface::GlSurface(
     std::shared_ptr<GlVertexArray> vertex_array,
     std::shared_ptr<GlVertexBuffer> vertex_buffer,
-    const int number_of_triangles
+    const int number_of_vertices
 )
     : vertex_array(vertex_array),
       vertex_buffer(vertex_buffer),
-      number_of_triangles(number_of_triangles)
+      number_of_vertices(number_of_vertices)
 {}
-
-void GlSurface::add_vertex(
-    std::vector<float> &vertices,
-    const glm::vec3 &position,
-    const glm::vec4 &color,
-    const glm::vec3 &normal
-)
-{
-    vertices.push_back(position.x);
-    vertices.push_back(position.y);
-    vertices.push_back(position.z);
-
-    vertices.push_back(color.r);
-    vertices.push_back(color.g);
-    vertices.push_back(color.b);
-    vertices.push_back(color.a);
-
-    vertices.push_back(normal.x);
-    vertices.push_back(normal.y);
-    vertices.push_back(normal.z);
-}
-
-void GlSurface::add_triangle_vertex(
-    std::vector<float> &vertices,
-    const SurfaceData &data,
-    const glm::uvec2 &ref,
-    const glm::uvec2 &uv,
-    const bool upper_triangle
-)
-{
-    const size_t size = data.vertices.size();
-    const size_t u_size = data.u_size;
-    const glm::uvec2 du(1, 0);
-    const glm::uvec2 dv(0, 1);
-
-    if (data.mode == SurfaceData::Mode::smooth)
-    {
-        glm::vec3 normal(0.0f);
-        if (uv.x > 0 && uv.y > 0)
-            normal += glm::normalize(glm::cross(
-                data(uv).position - data(uv - du).position,
-                data(uv - dv).position - data(uv).position
-            ));
-        if ((uv.x + 1) < u_size && data.index(uv + du) < size && uv.y > 0)
-            normal += glm::normalize(glm::cross(
-                data(uv).position - data(uv - dv).position,
-                data(uv + du).position - data(uv).position
-            ));
-        if ((uv.x + 1) < u_size && data.index(uv + dv) < size)
-            normal += glm::normalize(glm::cross(
-                data(uv).position - data(uv + du).position,
-                data(uv + dv).position - data(uv).position
-            ));
-        if (uv.x > 0 && data.index(uv + dv) < size)
-            normal += glm::normalize(glm::cross(
-                data(uv).position - data(uv + dv).position,
-                data(uv - du).position - data(uv).position
-            ));
-        normal = glm::normalize(normal);
-
-        add_vertex(vertices, data(uv).position, data(uv).color, normal);
-    }
-    else if (data.mode == SurfaceData::Mode::flat)
-    {
-        glm::vec3 normal(0.0f);
-        if (upper_triangle)
-            normal = glm::cross(
-                data(ref).position - data(ref + du).position,
-                data(ref + dv).position - data(ref).position
-            );
-        else
-            normal = glm::cross(
-                data(ref + du + dv).position - data(ref + dv).position,
-                data(ref + du).position - data(ref + du + dv).position
-            );
-        normal = glm::normalize(normal);
-
-        add_vertex(vertices, data(uv).position, data(ref).color, normal);
-    }
-}
-
-unsigned int GlSurface::generate_vertex_buffer_data(
-    std::vector<float> &vertices, const SurfaceData &surface_data
-)
-{
-    // We go through each square,
-    // and generate the two triangles.
-    //
-    //     (i)                 (i + 1)
-    //    (uv) ---------------(uv + du)
-    //      |                    /|
-    //      |                  /  |
-    //      |                /    |
-    //      |              /      |
-    //      |            /        |
-    //      |          /          |
-    //      |        /            |
-    //      |      /              |
-    //      |    /                |
-    //      |  /                  |
-    //      |/                    |
-    // (i + u_size) ------ (i + u_size + 1)
-    //  (uv + dv)           (uv + du + dv)
-
-    unsigned int number_of_triangles = 0;
-
-    const glm::uvec2 du(1, 0);
-    const glm::uvec2 dv(0, 1);
-
-    const size_t size = surface_data.vertices.size();
-    const size_t u_size = surface_data.u_size;
-    for (size_t i = 0; (i + u_size + 1) < size; ++i)
-    {
-        const glm::uvec2 uv = surface_data.uv(i);
-
-        // If the vertex is at the rightmost edge,
-        // we do not generate a square for that.
-        if (uv.x + 1 == u_size)
-            continue;
-
-        GlSurface::add_triangle_vertex(vertices, surface_data, uv, uv, true);
-        GlSurface::add_triangle_vertex(
-            vertices, surface_data, uv, uv + dv, true
-        );
-        GlSurface::add_triangle_vertex(
-            vertices, surface_data, uv, uv + du, true
-        );
-
-        GlSurface::add_triangle_vertex(
-            vertices, surface_data, uv, uv + du, false
-        );
-        GlSurface::add_triangle_vertex(
-            vertices, surface_data, uv, uv + dv, false
-        );
-        GlSurface::add_triangle_vertex(
-            vertices, surface_data, uv, uv + du + dv, false
-        );
-
-        number_of_triangles += 2;
-    }
-
-    return number_of_triangles;
-}
 }

@@ -338,26 +338,9 @@ private:
         const int number_of_vertices
     );
 
-    static void add_vertex(
-        std::vector<float> &vertices,
-        const glm::vec3 &position,
-        const glm::vec4 &color,
-        const glm::vec3 &normal
-    );
-    static void add_triangle_vertex(
-        std::vector<float> &vertices,
-        const SurfaceData &data,
-        const glm::uvec2 &ref,
-        const glm::uvec2 &uv,
-        const bool upper_triangle
-    );
-    static unsigned int generate_vertex_buffer_data(
-        std::vector<float> &vertices, const SurfaceData &surface_data
-    );
-
     const std::shared_ptr<GlVertexArray> vertex_array;
     const std::shared_ptr<GlVertexBuffer> vertex_buffer;
-    unsigned int number_of_triangles;
+    unsigned int number_of_vertices;
 };
 }
 

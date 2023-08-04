@@ -4,16 +4,11 @@
 
 namespace ev = elementary_visualizer;
 
-ev::SurfaceData generate_surface_data()
+std::vector<ev::Vertex> generate_surface_data(const size_t u_size)
 {
-    const size_t u_size = 50;
     const size_t v_size = 20;
 
-    ev::SurfaceData surface_data(
-        std::vector<ev::Vertex>(u_size * v_size),
-        u_size,
-        ev::SurfaceData::Mode::smooth
-    );
+    std::vector<ev::Vertex> surface_data(u_size * v_size);
 
     for (size_t u = 0; u != u_size; ++u)
     {
@@ -29,7 +24,7 @@ ev::SurfaceData generate_surface_data()
             const float z = r * sinf(fu * phi);
             const float y = 7.0f * (fv - 0.3f);
 
-            surface_data(u, v) = ev::Vertex(
+            surface_data[v * u_size + u] = ev::Vertex(
                 glm::vec3(x, y, z), glm::vec4(0.0f, 0.75f, 1.0f, 0.8f)
             );
         }
@@ -94,7 +89,11 @@ int main(int, char **)
         }
     );
 
-    auto surface = ev::SurfaceVisual::create(generate_surface_data());
+    const size_t u_size = 50;
+
+    auto surface = ev::SurfaceVisual::create(ev::SurfaceData(
+        generate_surface_data(u_size), u_size, ev::SurfaceData::Mode::smooth
+    ));
     if (!surface)
         return EXIT_FAILURE;
     surface.value()->set_diffuse_color(glm::vec3(0.5f));

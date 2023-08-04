@@ -133,6 +133,7 @@ set(SOURCES
     src/shader_sources_lines.cpp
     src/shader_sources_quad.cpp
     src/shader_sources_surface.cpp
+    src/surface_data.cpp
     src/video.cpp
     src/visuals.cpp
     src/window.cpp

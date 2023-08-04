@@ -4,17 +4,14 @@
 
 namespace ev = elementary_visualizer;
 
-void update_surface_data(ev::SurfaceData &surface_data, const float t)
+std::vector<ev::Vertex>
+    generate_surface_data(const size_t width_half, const float t)
 {
-    if (fmod(t, 4.0f * std::numbers::pi) < 2.0f * std::numbers::pi)
-        surface_data.mode = ev::SurfaceData::Mode::flat;
-    else
-        surface_data.mode = ev::SurfaceData::Mode::smooth;
-
-    const int width_half = (surface_data.u_size - 1) / 2;
-    for (int y = -width_half; y <= width_half; ++y)
+    const int width = (width_half * 2 + 1);
+    std::vector<ev::Vertex> vertices(width * width);
+    for (int y = -width_half; y <= static_cast<int>(width_half); ++y)
     {
-        for (int x = -width_half; x <= width_half; ++x)
+        for (int x = -width_half; x <= static_cast<int>(width_half); ++x)
         {
             float fx = static_cast<float>(x) / width_half;
             float fy = static_cast<float>(y) / width_half;
@@ -25,11 +22,14 @@ void update_surface_data(ev::SurfaceData &surface_data, const float t)
             float g = (fz + 0.5f) * 0.25f;
             float b = 1.0f * ((fz + 0.5f));
 
-            const glm::uvec2 uv(x + width_half, y + width_half);
-            surface_data(uv) =
+            const size_t u = x + width_half;
+            const size_t v = y + width_half;
+            vertices[v * width + u] =
                 ev::Vertex(glm::vec3(fx, fy, fz), glm::vec4(r, g, b, 1.0f));
         }
     }
+
+    return vertices;
 }
 
 int main(int, char **)
@@ -88,12 +88,11 @@ int main(int, char **)
     );
 
     const int width_half = 8;
-    const int width = (width_half * 2 + 1);
-    std::vector<ev::Vertex> vertices(width * width);
-    ev::SurfaceData surface_data(vertices, width, ev::SurfaceData::Mode::flat);
-    update_surface_data(surface_data, 0.0f);
+    const size_t width = (width_half * 2 + 1);
 
-    auto surface = ev::SurfaceVisual::create(surface_data);
+    auto surface =
+        ev::SurfaceVisual::create(ev::SurfaceData(std::vector<ev::Vertex>(), 0)
+        );
     if (!surface)
         return EXIT_FAILURE;
     surface.value()->set_diffuse_color(glm::vec3(0.75f));
@@ -125,8 +124,15 @@ int main(int, char **)
         );
         surface.value()->set_model(model);
 
-        update_surface_data(surface_data, t);
+        const ev::SurfaceData::Mode mode =
+            (fmod(t, 4.0f * std::numbers::pi) < 2.0f * std::numbers::pi)
+                ? ev::SurfaceData::Mode::flat
+                : ev::SurfaceData::Mode::smooth;
+        ev::SurfaceData surface_data(
+            generate_surface_data(width_half, t), width, mode
+        );
         surface.value()->set_surface_data(surface_data);
+
         t += 0.1f;
 
         auto rendered_scene = scene.value()->render();
