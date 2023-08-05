@@ -310,6 +310,33 @@ private:
     int number_of_lines;
 };
 
+class GlShaderBuffer
+{
+public:
+
+    static Expected<std::shared_ptr<GlShaderBuffer>, Error>
+        create(std::shared_ptr<WrappedGlfwWindow> glfw_window);
+
+    void bind(bool make_context = true) const;
+    void bind_buffer_base(GLuint binding, bool make_context = true) const;
+
+    ~GlShaderBuffer();
+
+    GlShaderBuffer(GlShaderBuffer &&other) = delete;
+    GlShaderBuffer &operator=(GlShaderBuffer &&other) = delete;
+    GlShaderBuffer(const GlShaderBuffer &other) = delete;
+    GlShaderBuffer &operator=(const GlShaderBuffer &other) = delete;
+
+private:
+
+    GlShaderBuffer(
+        std::shared_ptr<WrappedGlfwWindow> glfw_window, const GLuint index
+    );
+
+    std::shared_ptr<WrappedGlfwWindow> glfw_window;
+    const GLuint index;
+};
+
 class GlSurface
 {
 public:
@@ -335,11 +362,15 @@ private:
     GlSurface(
         std::shared_ptr<GlVertexArray> vertex_array,
         std::shared_ptr<GlVertexBuffer> vertex_buffer,
+        std::shared_ptr<GlShaderBuffer> position_buffer,
+        std::shared_ptr<GlShaderBuffer> color_normal_buffer,
         const int number_of_vertices
     );
 
     const std::shared_ptr<GlVertexArray> vertex_array;
     const std::shared_ptr<GlVertexBuffer> vertex_buffer;
+    const std::shared_ptr<GlShaderBuffer> position_buffer;
+    const std::shared_ptr<GlShaderBuffer> color_normal_buffer;
     unsigned int number_of_vertices;
 };
 }

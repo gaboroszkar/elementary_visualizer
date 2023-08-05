@@ -783,6 +783,46 @@ std::unique_ptr<std::vector<float>>
     return vertices;
 }
 
+Expected<std::shared_ptr<GlShaderBuffer>, Error>
+    GlShaderBuffer::create(std::shared_ptr<WrappedGlfwWindow> glfw_window)
+{
+    if (!glfw_window)
+        return Unexpected<Error>(Error());
+    glfw_window->make_current_context();
+
+    GLuint index;
+    glGenBuffers(1, &index);
+    return std::shared_ptr<GlShaderBuffer>(
+        new GlShaderBuffer(glfw_window, index)
+    );
+}
+
+void GlShaderBuffer::bind(bool make_context) const
+{
+    if (make_context)
+        this->glfw_window->make_current_context();
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, this->index);
+}
+
+void GlShaderBuffer::bind_buffer_base(GLuint binding, bool make_context) const
+{
+    if (make_context)
+        this->glfw_window->make_current_context();
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, binding, this->index);
+}
+
+GlShaderBuffer::~GlShaderBuffer()
+{
+    this->glfw_window->make_current_context();
+    glDeleteBuffers(1, &this->index);
+}
+
+GlShaderBuffer::GlShaderBuffer(
+    std::shared_ptr<WrappedGlfwWindow> glfw_window, const GLuint index
+)
+    : glfw_window(glfw_window), index(index)
+{}
+
 Expected<std::shared_ptr<GlSurface>, Error> GlSurface::create(
     std::shared_ptr<WrappedGlfwWindow> glfw_window,
     const SurfaceData &surface_data
@@ -800,70 +840,116 @@ Expected<std::shared_ptr<GlSurface>, Error> GlSurface::create(
         return Unexpected<Error>(Error());
     vertex_buffer.value()->bind();
 
-    const std::vector<float> &data = surface_data.get_data();
+    Expected<std::shared_ptr<GlShaderBuffer>, Error> position_buffer =
+        GlShaderBuffer::create(glfw_window);
+    if (!position_buffer)
+        return Unexpected<Error>(Error());
 
+    Expected<std::shared_ptr<GlShaderBuffer>, Error> color_normal_buffer =
+        GlShaderBuffer::create(glfw_window);
+    if (!color_normal_buffer)
+        return Unexpected<Error>(Error());
+
+    const std::vector<GLuint> index_data = surface_data.get_index_data();
     glBufferData(
-        GL_ARRAY_BUFFER, sizeof(float) * data.size(), &data[0], GL_DYNAMIC_DRAW
+        GL_ARRAY_BUFFER,
+        sizeof(GLuint) * index_data.size(),
+        &index_data[0],
+        GL_DYNAMIC_DRAW
     );
 
     // Configure the vertex attribute so that OpenGL knows how to read the
-    // vertex buffer. 3 floats for position; 4 floats for color; 3 for normal.
-    const int stride = 3 + 4 + 3;
-    glVertexAttribPointer(
+    // vertex buffer. 2 unsigned ints: one for the position index,
+    // and one for color and normal index.
+    const int stride = 2;
+    glVertexAttribIPointer(
         0,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        stride * sizeof(float),
-        reinterpret_cast<void *>(0 * sizeof(float))
-    );
-    glVertexAttribPointer(
         1,
-        4,
-        GL_FLOAT,
-        GL_FALSE,
-        stride * sizeof(float),
-        reinterpret_cast<void *>(3 * sizeof(float))
+        GL_UNSIGNED_INT,
+        stride * sizeof(GLuint),
+        reinterpret_cast<void *>(0 * sizeof(GLuint))
     );
-    glVertexAttribPointer(
-        2,
-        3,
-        GL_FLOAT,
-        GL_FALSE,
-        stride * sizeof(float),
-        reinterpret_cast<void *>(7 * sizeof(float))
+    glVertexAttribIPointer(
+        1,
+        1,
+        GL_UNSIGNED_INT,
+        stride * sizeof(GLuint),
+        reinterpret_cast<void *>(1 * sizeof(GLuint))
     );
 
     // Enable the vertex attribute.
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
+
+    const std::vector<float> &position_data = surface_data.get_position_data();
+    position_buffer.value()->bind();
+    glBufferData(
+        GL_SHADER_STORAGE_BUFFER,
+        sizeof(float) * position_data.size(),
+        &position_data[0],
+        GL_DYNAMIC_DRAW
+    );
+
+    const std::vector<float> &color_normal_data =
+        surface_data.get_color_normal_data();
+    color_normal_buffer.value()->bind();
+    glBufferData(
+        GL_SHADER_STORAGE_BUFFER,
+        sizeof(float) * color_normal_data.size(),
+        &color_normal_data[0],
+        GL_DYNAMIC_DRAW
+    );
 
     return std::shared_ptr<GlSurface>(new GlSurface(
-        vertex_array.value(), vertex_buffer.value(), data.size() / (3 + 4 + 3)
+        vertex_array.value(),
+        vertex_buffer.value(),
+        position_buffer.value(),
+        color_normal_buffer.value(),
+        index_data.size() / stride
     ));
 }
 
 void GlSurface::render(bool make_context) const
 {
     this->vertex_array->bind(make_context);
+    this->position_buffer->bind_buffer_base(1, make_context);
+    this->color_normal_buffer->bind_buffer_base(2, make_context);
     glDrawArrays(GL_TRIANGLES, 0, this->number_of_vertices);
 }
 
 void GlSurface::set_surface_data(const SurfaceData &surface_data)
 {
+    const std::vector<GLuint> index_data = surface_data.get_index_data();
     this->vertex_array->bind();
     this->vertex_buffer->bind();
-
-    const std::vector<float> &data = surface_data.get_data();
-
     glBufferData(
         GL_ARRAY_BUFFER,
-        sizeof(float) * data.size(),
-        &(data[0]),
+        sizeof(GLuint) * index_data.size(),
+        &(index_data[0]),
         GL_DYNAMIC_DRAW
     );
-    this->number_of_vertices = data.size() / (3 + 4 + 3);
+
+    const std::vector<float> &position_data = surface_data.get_position_data();
+    position_buffer->bind();
+    glBufferData(
+        GL_SHADER_STORAGE_BUFFER,
+        sizeof(float) * position_data.size(),
+        &position_data[0],
+        GL_DYNAMIC_DRAW
+    );
+
+    const std::vector<float> &color_normal_data =
+        surface_data.get_color_normal_data();
+    color_normal_buffer->bind();
+    glBufferData(
+        GL_SHADER_STORAGE_BUFFER,
+        sizeof(float) * color_normal_data.size(),
+        &color_normal_data[0],
+        GL_DYNAMIC_DRAW
+    );
+
+    const int stride = 2;
+    this->number_of_vertices = index_data.size() / stride;
 }
 
 GlSurface::~GlSurface() {}
@@ -871,10 +957,14 @@ GlSurface::~GlSurface() {}
 GlSurface::GlSurface(
     std::shared_ptr<GlVertexArray> vertex_array,
     std::shared_ptr<GlVertexBuffer> vertex_buffer,
+    std::shared_ptr<GlShaderBuffer> position_buffer,
+    std::shared_ptr<GlShaderBuffer> color_normal_buffer,
     const int number_of_vertices
 )
     : vertex_array(vertex_array),
       vertex_buffer(vertex_buffer),
+      position_buffer(position_buffer),
+      color_normal_buffer(color_normal_buffer),
       number_of_vertices(number_of_vertices)
 {}
 }

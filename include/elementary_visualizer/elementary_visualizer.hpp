@@ -2,6 +2,7 @@
 #define ELEMENTARY_VISUALIZER_ELEMENTARY_VISUALIZER_HPP
 
 #include <elementary_visualizer/event_values.hpp>
+#include <glad/gl.h>
 #include <glm/glm.hpp>
 extern "C" {
 #include <libavcodec/codec_id.h>
@@ -205,91 +206,23 @@ public:
         const Mode mode = Mode::smooth
     );
 
-    const std::vector<float> &get_data() const;
-
-    void
-        set_position(const size_t u, const size_t v, const glm::vec3 &position);
-
-    void set_color(const size_t u, const size_t v, const glm::vec4 &color);
-
+    Mode get_mode() const;
     size_t get_u_size() const;
+    const std::vector<float> &get_position_data() const;
+    const std::vector<float> &get_color_normal_data() const;
+    std::vector<GLuint> get_index_data() const;
 
 private:
 
-    static bool is_size_correct(const size_t size, const size_t u_size);
-    static size_t number_of_squares(const size_t size, const size_t u_size);
     size_t v_size() const;
-
-    size_t offset(
-        const size_t u,
-        const size_t v,
-        const bool is_lower_triangle,
-        const size_t vertex_offset
-    ) const;
-    void set_vertex_explicitly(
-        const size_t u,
-        const size_t v,
-        std::function<
-            void(const size_t, const size_t, const bool, const size_t)>
-            set_function
-    );
-    void set_vertex_explicitly(
-        const size_t u,
-        const size_t v,
-        const bool is_lower_triangle,
-        std::function<
-            void(const size_t, const size_t, const bool, const size_t)>
-            set_function
-    );
-    void set_position_explicitly(
-        const size_t u, const size_t v, const glm::vec3 &position
-    );
-    void set_position_explicitly(
-        const size_t u,
-        const size_t v,
-        const bool is_lower_triangle,
-        const size_t vertex_offset,
-        const glm::vec3 &position
-    );
-    void set_color_explicitly(
-        const size_t u, const size_t v, const glm::vec4 &color
-    );
-    void set_color_explicitly(
-        const size_t u,
-        const size_t v,
-        const bool is_lower_triangle,
-        const glm::vec4 &color
-    );
-    void set_color_explicitly(
-        const size_t u,
-        const size_t v,
-        const bool is_lower_triangle,
-        const size_t vertex_offset,
-        const glm::vec4 &color
-    );
-    void set_normal_explicitly(
-        const size_t u, const size_t v, const glm::vec3 &normal
-    );
-    void set_normal_explicitly(
-        const size_t u,
-        const size_t v,
-        const bool is_lower_triangle,
-        const glm::vec3 &normal
-    );
-    void set_normal_explicitly(
-        const size_t u,
-        const size_t v,
-        const bool is_lower_triangle,
-        const size_t vertex_offset,
-        const glm::vec3 &normal
-    );
     glm::vec3 get_position(const size_t u, const size_t v) const;
-    void update_normal(const size_t u, const size_t v);
-    void update_normal(
+    glm::vec3 calculate_normal_smooth(const size_t u, const size_t v) const;
+    glm::vec3 calculate_normal_flat(
         const size_t u, const size_t v, const bool is_lower_triangle
-    );
+    ) const;
 
-    std::vector<float> triangle_vertex_data;
+    std::vector<float> position_data;
+    std::vector<float> color_normal_data;
     size_t u_size;
     Mode mode;
 };

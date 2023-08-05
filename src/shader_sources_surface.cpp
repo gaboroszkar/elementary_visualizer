@@ -13,9 +13,18 @@ uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
 
-layout (location = 0) in vec3 position_in;
-layout (location = 1) in vec4 color_in;
-layout (location = 2) in vec3 normal_in;
+layout(binding = 1, std430) readonly buffer position_layout
+{
+    float position_in[];
+};
+
+layout(binding = 2, std430) readonly buffer color_normal_layout
+{
+    float color_normal_in[];
+};
+
+layout (location = 0) in uint position_index_in;
+layout (location = 1) in uint color_normal_index_in;
 
 layout (location = 0) out vec3 position_out;
 layout (location = 1) out vec4 color_out;
@@ -41,10 +50,27 @@ mat3 get_normal_model(mat4 model)
 
 void main()
 {
-    gl_Position = projection * view * model * vec4(position_in, 1.0f);
-    position_out = vec3(model * vec4(position_in, 1.0f));
-    color_out = color_in;
-    normal_out = normalize(get_normal_model(model) * normal_in);
+    vec3 position = vec3(
+        position_in[3 * position_index_in + 0],
+        position_in[3 * position_index_in + 1],
+        position_in[3 * position_index_in + 2]
+    );
+    vec4 color = vec4(
+        color_normal_in[7 * color_normal_index_in + 0],
+        color_normal_in[7 * color_normal_index_in + 1],
+        color_normal_in[7 * color_normal_index_in + 2],
+        color_normal_in[7 * color_normal_index_in + 3]
+    );
+    vec3 normal = vec3(
+        color_normal_in[7 * color_normal_index_in + 4],
+        color_normal_in[7 * color_normal_index_in + 5],
+        color_normal_in[7 * color_normal_index_in + 6]
+    );
+
+    gl_Position = projection * view * model * vec4(position, 1.0f);
+    position_out = vec3(model * vec4(position, 1.0f));
+    color_out = color;
+    normal_out = normalize(get_normal_model(model) * normal);
 }
 
 )")
