@@ -124,10 +124,10 @@ int main(int, char **)
         );
         surface.value()->set_model(model);
 
-        const ev::SurfaceData::Mode mode =
+        const ev::SurfaceMode mode =
             (fmod(t, 4.0f * std::numbers::pi) < 2.0f * std::numbers::pi)
-                ? ev::SurfaceData::Mode::flat
-                : ev::SurfaceData::Mode::smooth;
+                ? ev::SurfaceMode::flat
+                : ev::SurfaceMode::smooth;
         ev::SurfaceData surface_data(
             generate_surface_data(width_half, t), width, mode
         );

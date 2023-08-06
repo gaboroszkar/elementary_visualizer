@@ -7,7 +7,9 @@ constexpr size_t position_stride = 3;
 constexpr size_t color_normal_stride = 4 + 3;
 
 SurfaceData::SurfaceData(
-    const std::vector<Vertex> &vertices, const size_t u_size, const Mode mode
+    const std::vector<Vertex> &vertices,
+    const size_t u_size,
+    const SurfaceMode mode
 )
     : position_data(0), color_normal_data(0), u_size(u_size), mode(mode)
 {
@@ -24,7 +26,7 @@ SurfaceData::SurfaceData(
 
     const size_t v_size = this->v_size();
 
-    if (this->mode == Mode::smooth)
+    if (this->mode == SurfaceMode::smooth)
     {
         this->color_normal_data.resize(
             color_normal_stride * this->u_size * v_size
@@ -48,7 +50,7 @@ SurfaceData::SurfaceData(
             }
         }
     }
-    else if (this->mode == Mode::flat)
+    else if (this->mode == SurfaceMode::flat)
     {
         this->color_normal_data.resize(
             color_normal_stride * 2 * (this->u_size - 1) * (v_size - 1)
@@ -81,11 +83,6 @@ SurfaceData::SurfaceData(
     }
 }
 
-SurfaceData::Mode SurfaceData::get_mode() const
-{
-    return SurfaceData::Mode::smooth;
-}
-
 size_t SurfaceData::get_u_size() const
 {
     return this->u_size;
@@ -112,7 +109,7 @@ std::vector<GLuint> SurfaceData::get_index_data() const
         2 * 2 * 3 * (v_size - 1) * (this->u_size - 1)
     );
 
-    if (this->mode == Mode::smooth)
+    if (this->mode == SurfaceMode::smooth)
     {
         for (size_t v = 0; v != v_size - 1; ++v)
         {
@@ -137,7 +134,7 @@ std::vector<GLuint> SurfaceData::get_index_data() const
             }
         }
     }
-    else if (this->mode == Mode::flat)
+    else if (this->mode == SurfaceMode::flat)
     {
         for (size_t v = 0; v != v_size - 1; ++v)
         {

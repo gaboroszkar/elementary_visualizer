@@ -66,10 +66,10 @@ int main(int, char **)
     const size_t u_size = 5;
 
     ev::SurfaceData surface_data_flat(
-        vertex_data, u_size, ev::SurfaceData::Mode::flat
+        vertex_data, u_size, ev::SurfaceMode::flat
     );
     ev::SurfaceData surface_data_smooth(
-        vertex_data, u_size, ev::SurfaceData::Mode::smooth
+        vertex_data, u_size, ev::SurfaceMode::smooth
     );
 
     std::vector<std::pair<ev::SurfaceData, size_t>> surface_datas(

@@ -90,7 +90,7 @@ int main(int, char **)
 
     std::vector<ev::Vertex> vertices(width * width);
     ev::SurfaceData surface_data(
-        generate_surface_data(width, 0.0f), width, ev::SurfaceData::Mode::smooth
+        generate_surface_data(width, 0.0f), width, ev::SurfaceMode::smooth
     );
 
     auto surface = ev::SurfaceVisual::create(surface_data);
@@ -123,9 +123,7 @@ int main(int, char **)
         surface.value()->set_model(model);
 
         surface.value()->set_surface_data(ev::SurfaceData(
-            generate_surface_data(width, t),
-            width,
-            ev::SurfaceData::Mode::smooth
+            generate_surface_data(width, t), width, ev::SurfaceMode::smooth
         ));
         t += 0.2f;
 

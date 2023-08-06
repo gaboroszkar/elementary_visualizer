@@ -92,7 +92,7 @@ int main(int, char **)
     const size_t u_size = 50;
 
     auto surface = ev::SurfaceVisual::create(ev::SurfaceData(
-        generate_surface_data(u_size), u_size, ev::SurfaceData::Mode::smooth
+        generate_surface_data(u_size), u_size, ev::SurfaceMode::smooth
     ));
     if (!surface)
         return EXIT_FAILURE;

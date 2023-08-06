@@ -158,6 +158,26 @@ private:
 };
 
 /**
+ * @brief Mode to specify how data is rendered.
+ */
+enum class SurfaceMode
+{
+    smooth, /**< Smooth mode.
+             * Each vertex has it's own inherent color and normal,
+             * and the colors and normals between vertices are interpolated.
+             */
+    flat    /**< Flat mode.
+             * Each surface segment enclosed by 4 coordinates
+             * has it's inherent color.
+             * The color of a point enclosed by the 4 coordinates
+             * u, v and u + 1, v and u, v + 1 and u + 1, v + 1
+             * will be `vertices[u * v_size + v].color`.
+             * The normal will be calculated based on the 3 vertices
+             * enclosing a triangle.
+             */
+};
+
+/**
  * @brief Container to hold all data for a Surface.
  *
  * This container holds all vertices to the surface.
@@ -180,33 +200,12 @@ class SurfaceData
 {
 public:
 
-    /**
-     * @brief Mode to specify how data is rendered.
-     */
-    enum class Mode
-    {
-        smooth, /**< Smooth mode.
-                 * Each vertex has it's own inherent color and normal,
-                 * and the colors and normals between vertices are interpolated.
-                 */
-        flat    /**< Flat mode.
-                 * Each surface segment enclosed by 4 coordinates
-                 * has it's inherent color.
-                 * The color of a point enclosed by the 4 coordinates
-                 * u, v and u + 1, v and u, v + 1 and u + 1, v + 1
-                 * will be `vertices[u * v_size + v].color`.
-                 * The normal will be calculated based on the 3 vertices
-                 * enclosing a triangle.
-                 */
-    };
-
     SurfaceData(
         const std::vector<Vertex> &vertices,
         const size_t u_size,
-        const Mode mode = Mode::smooth
+        const SurfaceMode mode = SurfaceMode::smooth
     );
 
-    Mode get_mode() const;
     size_t get_u_size() const;
     const std::vector<float> &get_position_data() const;
     const std::vector<float> &get_color_normal_data() const;
@@ -224,7 +223,7 @@ private:
     std::vector<float> position_data;
     std::vector<float> color_normal_data;
     size_t u_size;
-    Mode mode;
+    SurfaceMode mode;
 };
 
 class SurfaceVisual : public Visual
