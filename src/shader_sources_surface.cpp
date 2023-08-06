@@ -109,19 +109,21 @@ void main()
     // interpolation between vertices.
     vec3 normal = normalize(normal_in);
 
+    vec3 eye_direction = normalize(eye - position_in);
+
+    // We need to find out which side of
+    // the surface we see, and then decide
+    // what is the normal based on that.
+    if (dot(normal, -eye_direction) < 0.0f)
+        normal = -normal;
+
     vec3 light_direction = normalize(light_position - position_in);
 
-    // The surface has two sides, and both sides function the same
-    // as light shines on it. That's why we use abs(dot(...)) instead
-    // of the usual max(dot(...), 0) function here.
-    float diffuse_magnitude = abs(dot(normal, light_direction));
+    float diffuse_magnitude = max(dot(normal, -light_direction), 0.0f);
     vec3 diffuse = diffuse_magnitude * diffuse_color;
 
-    vec3 eye_direction = normalize(eye - position_in);
     vec3 reflection_direction = reflect(-light_direction, normal);
-    // Again here (as with the diffuse) light, the surface has two sides,
-    // that's why we use abs(dot(...)) here instead of the usual max(dot(...), 0).
-    float specular_magnitude = pow(abs(dot(eye_direction, reflection_direction)), shininess);
+    float specular_magnitude = pow(max(dot(eye_direction, reflection_direction), 0.0f), shininess);
     vec3 specular = specular_magnitude * specular_color;
 
     color_out = vec4((ambient_color + diffuse + specular) * color_in.rgb, color_in.a);

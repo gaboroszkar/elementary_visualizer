@@ -73,8 +73,8 @@ int main(int, char **)
     );
 
     std::vector<std::pair<ev::SurfaceData, size_t>> surface_datas(
-        {{surface_data_flat, 6461520896486878588U},
-         {surface_data_smooth, 6128946808746318154U}}
+        {{surface_data_flat, 10406432602562296591U},
+         {surface_data_smooth, 2525177585451331912U}}
     );
 
     for (auto i : std::vector<std::pair<size_t, size_t>>({{0, 1}, {1, 0}}))
