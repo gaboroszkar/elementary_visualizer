@@ -15,6 +15,7 @@ setup_example(translucent_helix translucent_helix.cpp)
 setup_example(surface_mode surface_mode.cpp)
 setup_example(gabriels_horn gabriels_horn.cpp)
 setup_example(circles circles.cpp)
+setup_example(lines_cap lines_cap.cpp)
 
 if(BUILD_SHARED_LIBS)
     # By default the library search path for the executable is set

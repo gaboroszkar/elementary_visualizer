@@ -47,6 +47,16 @@ For examples, see the [./examples](examples) directory or the [./tests](tests).
       <a href="./examples/gabriels_horn.cpp">gabriels_horn.cpp</a>
     </td>
   </tr>
+  <tr>
+    <td align="center">
+      <img src="./examples/circles.gif" alt="Circles example"/>
+      <a href="./examples/circles.cpp">circles.cpp</a>
+    </td>
+    <td align="center">
+      <img src="./examples/lines_cap.gif" alt="Lines cap example"/>
+      <a href="./examples/lines_cap.cpp">lines_cap.cpp</a>
+    </td>
+  </tr>
 </table>
 
 ## Building
