@@ -58,7 +58,7 @@ void emit_line_cap(int cap, vec4 p0, vec4 p1, float width, vec4 color)
         {
             emit_vertex(p0, color);
 
-            const float f = pi / number_of_sides;
+            float f = pi / number_of_sides;
             emit_vertex(p0 + r * angled_v(i * f), color);
             emit_vertex(p0 + r * angled_v((i + 1) * f), color);
 

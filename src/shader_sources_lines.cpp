@@ -40,7 +40,7 @@ const GlShaderSource &lines_geometry_shader_source()
             SHADER_HEADER
             R"(
 layout (lines_adjacency) in;
-layout (triangle_strip, max_vertices = 12 + 2 * 3 * 10) out;
+layout (triangle_strip, max_vertices = 72) out; // 72 = 12 + 2 * 3 * 10.
 
 uniform uvec2 scene_size;
 uniform float line_width;

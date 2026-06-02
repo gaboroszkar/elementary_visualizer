@@ -36,7 +36,7 @@ function(add_external_subdirectories)
 
     # glad.
     set(GL_VERSION_MAJOR 4)
-    set(GL_VERSION_MINOR 6)
+    set(GL_VERSION_MINOR 3)
     set(GLAD_CORE_LIBRARY glad_gl_core_${GL_VERSION_MAJOR}${GL_VERSION_MINOR})
     set(GLAD_DIR ${PROJECT_SOURCE_DIR}/external/glad/)
     add_subdirectory(${GLAD_DIR}/cmake)

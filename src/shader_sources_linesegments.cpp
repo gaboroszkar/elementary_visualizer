@@ -56,7 +56,7 @@ uniform uvec2 scene_size;
 uniform int line_cap;
 
 layout (points) in;
-layout (triangle_strip, max_vertices = 4 + 2 * 3 * 10) out;
+layout (triangle_strip, max_vertices = 64) out; // 64 = 4 + 2 * 3 * 10.
 
 layout (location = 0) in vec4 start_position_in[];
 layout (location = 1) in vec4 start_color_in[];
