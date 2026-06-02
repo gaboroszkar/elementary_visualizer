@@ -15,7 +15,7 @@ bool shader_info(
 
         std::vector<GLchar> info_log(log_max_length);
         glGetShaderInfoLog(
-            index, log_max_length, &log_max_length, &info_log[0]
+            index, log_max_length, &log_max_length, info_log.data()
         );
         std::cout << "Error! Shader program " << action
                   << " error with index=" << index << "!\n";
@@ -238,9 +238,9 @@ std::map<std::string, GLint>
                 &character_length,
                 &size,
                 &data_type,
-                &name_buffer[0]
+                name_buffer.data()
             );
-            GLint location = glGetUniformLocation(index, &name_buffer[0]);
+            GLint location = glGetUniformLocation(index, name_buffer.data());
             std::string uniform_name =
                 buffer_to_string(name_buffer, character_length);
             uniform_locations[uniform_name] = location;

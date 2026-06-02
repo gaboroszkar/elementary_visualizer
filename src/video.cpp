@@ -30,7 +30,9 @@ void Video::Impl::render(
 
     std::vector<float> rendered_scene_data(4 * this->size.x * this->size.y);
     rendered_scene->bind();
-    glGetTexImage(GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, &rendered_scene_data[0]);
+    glGetTexImage(
+        GL_TEXTURE_2D, 0, GL_RGBA, GL_FLOAT, rendered_scene_data.data()
+    );
 
     AVFrame *av_frame = **(this->frame);
     const int linesize = av_frame->linesize[0];

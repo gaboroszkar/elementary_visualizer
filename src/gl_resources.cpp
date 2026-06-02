@@ -356,7 +356,7 @@ Expected<std::shared_ptr<GlQuad>, Error>
     glBufferData(
         GL_ARRAY_BUFFER,
         sizeof(float) * vertices.size(),
-        &vertices[0],
+        vertices.data(),
         GL_STATIC_DRAW
     );
 
@@ -489,7 +489,7 @@ Expected<std::shared_ptr<GlLinesegments>, Error> GlLinesegments::create(
     glBufferData(
         GL_ARRAY_BUFFER,
         sizeof(float) * vertices->size(),
-        &(*vertices)[0],
+        vertices->data(),
         GL_DYNAMIC_DRAW
     );
     const int number_of_linesegments = linesegments_data.size();
@@ -572,7 +572,7 @@ void GlLinesegments::set_linesegments_data(
     glBufferData(
         GL_ARRAY_BUFFER,
         sizeof(float) * vertices->size(),
-        &(*vertices)[0],
+        vertices->data(),
         GL_DYNAMIC_DRAW
     );
     this->number_of_linesegments = linesegments_data.size();
@@ -653,7 +653,7 @@ Expected<std::shared_ptr<GlLines>, Error> GlLines::create(
     glBufferData(
         GL_ARRAY_BUFFER,
         sizeof(float) * vertices->size(),
-        &(*vertices)[0],
+        vertices->data(),
         GL_DYNAMIC_DRAW
     );
     const int number_of_lines =
@@ -707,7 +707,7 @@ void GlLines::set_lines_data(const std::vector<Vertex> &lines_data)
     glBufferData(
         GL_ARRAY_BUFFER,
         sizeof(float) * vertices->size(),
-        &(*vertices)[0],
+        vertices->data(),
         GL_DYNAMIC_DRAW
     );
     this->number_of_lines = lines_data.size();
@@ -856,7 +856,7 @@ Expected<std::shared_ptr<GlSurface>, Error> GlSurface::create(
     glBufferData(
         GL_ARRAY_BUFFER,
         sizeof(GLuint) * index_data.size(),
-        &index_data[0],
+        index_data.data(),
         GL_DYNAMIC_DRAW
     );
 
@@ -888,7 +888,7 @@ Expected<std::shared_ptr<GlSurface>, Error> GlSurface::create(
     glBufferData(
         GL_SHADER_STORAGE_BUFFER,
         sizeof(float) * position_data.size(),
-        &position_data[0],
+        position_data.data(),
         GL_DYNAMIC_DRAW
     );
 
@@ -898,7 +898,7 @@ Expected<std::shared_ptr<GlSurface>, Error> GlSurface::create(
     glBufferData(
         GL_SHADER_STORAGE_BUFFER,
         sizeof(float) * color_normal_data.size(),
-        &color_normal_data[0],
+        color_normal_data.data(),
         GL_DYNAMIC_DRAW
     );
 
@@ -927,7 +927,7 @@ void GlSurface::set_surface_data(const SurfaceData &surface_data)
     glBufferData(
         GL_ARRAY_BUFFER,
         sizeof(GLuint) * index_data.size(),
-        &(index_data[0]),
+        index_data.data(),
         GL_DYNAMIC_DRAW
     );
 
@@ -936,7 +936,7 @@ void GlSurface::set_surface_data(const SurfaceData &surface_data)
     glBufferData(
         GL_SHADER_STORAGE_BUFFER,
         sizeof(float) * position_data.size(),
-        &position_data[0],
+        position_data.data(),
         GL_DYNAMIC_DRAW
     );
 
@@ -946,7 +946,7 @@ void GlSurface::set_surface_data(const SurfaceData &surface_data)
     glBufferData(
         GL_SHADER_STORAGE_BUFFER,
         sizeof(float) * color_normal_data.size(),
-        &color_normal_data[0],
+        color_normal_data.data(),
         GL_DYNAMIC_DRAW
     );
 
