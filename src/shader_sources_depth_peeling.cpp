@@ -6,8 +6,9 @@ const GlShaderSource &depth_peeling_fragment_shader_source()
 {
     static GlShaderSource source(
         GL_FRAGMENT_SHADER,
-        std::string(SHADER_HEADER
-                    R"(
+        std::string(
+            SHADER_HEADER
+            R"(
 
 uniform bool depth_peeling_first_pass;
 uniform bool depth_peeling_multisampled;
@@ -45,7 +46,8 @@ void depth_peeling_discard()
     }
 }
 
-)")
+)"
+        )
     );
     return source;
 }

@@ -245,7 +245,8 @@ public:
 
     void render(bool make_context = true) const;
 
-    void set_linesegments_data(const std::vector<Linesegment> &linesegments_data
+    void set_linesegments_data(
+        const std::vector<Linesegment> &linesegments_data
     );
 
     ~GlLinesegments();

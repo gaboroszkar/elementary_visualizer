@@ -70,12 +70,14 @@ int main(int, char **)
     {
         const float t = static_cast<float>(i) / (n - 1);
         const float phi = t * turns * 2.0f * std::numbers::pi;
-        lines_data.push_back(ev::Vertex(
-            glm::vec3(
-                radius * cosf(phi), radius * sinf(phi), (t - 0.5f) * height
-            ),
-            glm::vec4((1.0f - t), 0.0f, t, t)
-        ));
+        lines_data.push_back(
+            ev::Vertex(
+                glm::vec3(
+                    radius * cosf(phi), radius * sinf(phi), (t - 0.5f) * height
+                ),
+                glm::vec4((1.0f - t), 0.0f, t, t)
+            )
+        );
     }
 
     auto lines = ev::LinesVisual::create(lines_data, 40.0f);

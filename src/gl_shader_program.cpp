@@ -89,7 +89,7 @@ public:
 private:
 
     GlShader(std::shared_ptr<WrappedGlfwWindow> glfw_window, const GLuint index)
-        : glfw_window(glfw_window), index(index){};
+        : glfw_window(glfw_window), index(index) {};
 
     std::shared_ptr<WrappedGlfwWindow> glfw_window;
     const GLuint index;

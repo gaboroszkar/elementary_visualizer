@@ -136,8 +136,9 @@ void emulate_mouse_button_event(
     GLFWwindow *glfw_window, int button, int action, int mods
 )
 {
-    glfw_get_mouse_button_callback(glfw_window
-    )(glfw_window, button, action, mods);
+    glfw_get_mouse_button_callback(glfw_window)(
+        glfw_window, button, action, mods
+    );
 }
 
 GLFWcursorposfun glfw_get_mouse_move_callback(GLFWwindow *window)

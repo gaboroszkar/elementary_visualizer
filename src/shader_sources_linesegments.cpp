@@ -6,8 +6,9 @@ const GlShaderSource &linesegments_vertex_shader_source()
 {
     static GlShaderSource source(
         GL_VERTEX_SHADER,
-        std::string(SHADER_HEADER
-                    R"(
+        std::string(
+            SHADER_HEADER
+            R"(
 
 uniform mat4 model;
 uniform mat4 view;
@@ -37,7 +38,8 @@ void main()
     line_cap_out = line_cap_in;
 }
 
-)")
+)"
+        )
     );
     return source;
 }
@@ -46,8 +48,9 @@ const GlShaderSource &linesegments_geometry_shader_source()
 {
     static GlShaderSource source(
         GL_GEOMETRY_SHADER,
-        std::string(SHADER_HEADER
-                    R"(
+        std::string(
+            SHADER_HEADER
+            R"(
 
 uniform uvec2 scene_size;
 uniform int line_cap;
@@ -126,7 +129,8 @@ void main()
     emit_line_cap(line_cap, p1, p0, width_in[0], end_color_in[0]);
 }
 
-)")
+)"
+        )
     );
     return source;
 }
@@ -135,8 +139,9 @@ const GlShaderSource &linesegments_fragment_shader_source()
 {
     static GlShaderSource source(
         GL_FRAGMENT_SHADER,
-        std::string(SHADER_HEADER
-                    R"(
+        std::string(
+            SHADER_HEADER
+            R"(
 
 layout (location = 0) in vec4 color_in;
 
@@ -150,7 +155,8 @@ void main()
     color_out = color_in;
 }
 
-)")
+)"
+        )
     );
     return source;
 }

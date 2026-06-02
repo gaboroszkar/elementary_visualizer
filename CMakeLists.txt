@@ -200,7 +200,7 @@ file(
 add_custom_target(
     clangformat
     ALL
-    COMMAND /usr/bin/clang-format
+    COMMAND clang-format
     -i
     ${SOURCES_TO_FORMAT}
 )

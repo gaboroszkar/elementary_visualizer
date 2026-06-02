@@ -13,7 +13,7 @@ Video::Impl::Impl(
 
 uint8_t to_8_bit(float color)
 {
-    return std::clamp(int(255 * color), 0, 255);
+    return glm::clamp(int(255 * color), 0, 255);
 }
 
 void Video::Impl::render(
@@ -53,10 +53,10 @@ void Video::Impl::render(
         }
     }
 
-    this->stream->write_frame(this->frame);
+    std::ignore = this->stream->write_frame(this->frame);
 }
 
-Video::Impl::~Impl(){};
+Video::Impl::~Impl() {};
 
 Expected<std::shared_ptr<Video>, Error> Video::create(
     const std::string &filename,

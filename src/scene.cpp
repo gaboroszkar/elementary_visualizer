@@ -220,7 +220,7 @@ glm::uvec2 Scene::Impl::get_size() const
     return this->framebuffer_texture->texture->get_size();
 }
 
-Scene::Impl::~Impl(){};
+Scene::Impl::~Impl() {};
 
 Expected<std::shared_ptr<Scene>, Error> Scene::create(
     const glm::uvec2 &size,
@@ -269,16 +269,18 @@ Expected<std::shared_ptr<Scene>, Error> Scene::create(
                 depth_peeling_render_textures.push_back(render_texture.value());
             }
 
-            std::unique_ptr<Scene::Impl> impl(std::make_unique<Impl>(
-                entity,
-                framebuffer_texture.value(),
-                framebuffer_texture_possibly_multisampled.value(),
-                std::array<std::shared_ptr<GlTexture>, 2>(
-                    {depth_texture_0.value(), depth_texture_1.value()}
-                ),
-                depth_peeling_render_textures,
-                background_color
-            ));
+            std::unique_ptr<Scene::Impl> impl(
+                std::make_unique<Impl>(
+                    entity,
+                    framebuffer_texture.value(),
+                    framebuffer_texture_possibly_multisampled.value(),
+                    std::array<std::shared_ptr<GlTexture>, 2>(
+                        {depth_texture_0.value(), depth_texture_1.value()}
+                    ),
+                    depth_peeling_render_textures,
+                    background_color
+                )
+            );
 
             return std::shared_ptr<Scene>(new Scene(std::move(impl)));
         }

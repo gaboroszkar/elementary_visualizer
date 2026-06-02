@@ -6,8 +6,9 @@ const GlShaderSource &quad_vertex_shader_source()
 {
     static GlShaderSource source(
         GL_VERTEX_SHADER,
-        std::string(SHADER_HEADER
-                    R"(
+        std::string(
+            SHADER_HEADER
+            R"(
 
 uniform mat4 model;
 uniform mat4 view;
@@ -24,7 +25,8 @@ void main()
     texture_coordinate_out = texture_coordinate_in;
 }
 
-)")
+)"
+        )
     );
     return source;
 }
@@ -33,8 +35,9 @@ const GlShaderSource &quad_fragment_shader_source()
 {
     static GlShaderSource source(
         GL_FRAGMENT_SHADER,
-        std::string(SHADER_HEADER
-                    R"(
+        std::string(
+            SHADER_HEADER
+            R"(
 
 uniform sampler2D texture_slot;
 
@@ -47,7 +50,8 @@ void main()
     color_out = texture(texture_slot, texture_coordinate_in);
 }
 
-)")
+)"
+        )
     );
     return source;
 }
@@ -56,8 +60,9 @@ const GlShaderSource &quad_multisampled_fragment_shader_source()
 {
     static GlShaderSource source(
         GL_FRAGMENT_SHADER,
-        std::string(SHADER_HEADER
-                    R"(
+        std::string(
+            SHADER_HEADER
+            R"(
 
 uniform uvec2 scene_size;
 uniform sampler2DMS texture_slot;
@@ -73,7 +78,8 @@ void main()
     color_out = texelFetch(texture_slot, ivec2(x, y), gl_SampleID);
 }
 
-)")
+)"
+        )
     );
     return source;
 }

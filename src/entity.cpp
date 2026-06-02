@@ -67,8 +67,8 @@ Expected<std::shared_ptr<Entity>, Error> Entity::initialize()
             "Entity", glm::uvec2(1, 1), false, nullptr, false
         );
     return window_creation_result.and_then(
-        [](std::shared_ptr<WrappedGlfwWindow> glfw_window
-        ) -> Expected<std::shared_ptr<Entity>, Error>
+        [](std::shared_ptr<WrappedGlfwWindow> glfw_window)
+            -> Expected<std::shared_ptr<Entity>, Error>
         {
             Expected<std::shared_ptr<GlQuad>, Error> quad(
                 GlQuad::create(glfw_window)
@@ -100,9 +100,11 @@ Expected<std::shared_ptr<Entity>, Error> Entity::initialize()
                 quad_multisampled_fragment_shader_source()
             );
             Expected<std::shared_ptr<GlShaderProgram>, Error>
-                quad_multisampled_shader_program(GlShaderProgram::create(
-                    glfw_window, quad_multisampled_shader_sources
-                ));
+                quad_multisampled_shader_program(
+                    GlShaderProgram::create(
+                        glfw_window, quad_multisampled_shader_sources
+                    )
+                );
             if (!quad_multisampled_shader_program)
                 return Unexpected<Error>(Error());
 
@@ -136,15 +138,18 @@ Expected<std::shared_ptr<Entity>, Error> Entity::initialize()
                 linesegments_fragment_shader_source()
             );
             Expected<std::shared_ptr<GlShaderProgram>, Error>
-                linesegments_shader_program(GlShaderProgram::create(
-                    glfw_window, linesegments_shader_sources
-                ));
+                linesegments_shader_program(
+                    GlShaderProgram::create(
+                        glfw_window, linesegments_shader_sources
+                    )
+                );
             if (!linesegments_shader_program)
                 return Unexpected<Error>(Error());
 
             std::vector<GlShaderSource> lines_shader_sources;
-            lines_shader_sources.push_back(depth_peeling_fragment_shader_source(
-            ));
+            lines_shader_sources.push_back(
+                depth_peeling_fragment_shader_source()
+            );
             lines_shader_sources.push_back(line_cap_geometry_shader_source());
             lines_shader_sources.push_back(lines_vertex_shader_source());
             lines_shader_sources.push_back(lines_geometry_shader_source());

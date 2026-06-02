@@ -76,8 +76,9 @@ Expected<std::shared_ptr<WrappedGlfwWindow>, Error> WrappedGlfwWindow::create(
                             glfwGetWindowUserPointer(glfw_window)
                         );
                     if (window && window->key_callback)
-                        window->key_callback.value(
-                        )(key, scancode, action, mods);
+                        window->key_callback.value()(
+                            key, scancode, action, mods
+                        );
                 }
             );
             glfwSetMouseButtonCallback(
@@ -89,8 +90,9 @@ Expected<std::shared_ptr<WrappedGlfwWindow>, Error> WrappedGlfwWindow::create(
                             glfwGetWindowUserPointer(glfw_window)
                         );
                     if (window && window->mouse_button_callback)
-                        window->mouse_button_callback.value(
-                        )(button, action, mods);
+                        window->mouse_button_callback.value()(
+                            button, action, mods
+                        );
                 }
             );
             glfwSetCursorPosCallback(

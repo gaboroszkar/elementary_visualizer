@@ -260,8 +260,8 @@ WrappedVideoAvStream::~WrappedVideoAvStream()
 {
     if (!this->is_state_eof)
     {
-        this->enter_codec_flush_mode();
-        this->receive_packet();
+        std::ignore = this->enter_codec_flush_mode();
+        std::ignore = this->receive_packet();
     }
     avcodec_flush_buffers(**(this->format_context->codec_context));
 }
@@ -338,8 +338,8 @@ bool WrappedOutputVideoAvFormatContext::is_opened() const
     return this->opened;
 }
 
-bool WrappedOutputVideoAvFormatContext::is_intermediate_yuv420p_conversion(
-) const
+bool WrappedOutputVideoAvFormatContext::
+    is_intermediate_yuv420p_conversion() const
 {
     return this->intermediate_yuv420p_conversion;
 }
@@ -511,12 +511,12 @@ Expected<void, Error>
             );
         if (!tmp_frame_yuv420p)
             return Unexpected<Error>(Error());
-        (tmp_frame_yuv420p.value())->convert_and_copy(*frame_in);
-        this->frame->convert_and_copy(*tmp_frame_yuv420p.value());
+        std::ignore = (tmp_frame_yuv420p.value())->convert_and_copy(*frame_in);
+        std::ignore = this->frame->convert_and_copy(*tmp_frame_yuv420p.value());
     }
     else
     {
-        this->frame->convert_and_copy(*frame_in);
+        std::ignore = this->frame->convert_and_copy(*frame_in);
     }
 
     (**(this->frame))->pts = this->timestamp;

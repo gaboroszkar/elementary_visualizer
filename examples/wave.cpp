@@ -122,9 +122,11 @@ int main(int, char **)
         );
         surface.value()->set_model(model);
 
-        surface.value()->set_surface_data(ev::SurfaceData(
-            generate_surface_data(width, t), width, ev::SurfaceMode::smooth
-        ));
+        surface.value()->set_surface_data(
+            ev::SurfaceData(
+                generate_surface_data(width, t), width, ev::SurfaceMode::smooth
+            )
+        );
         t += 0.2f;
 
         auto rendered_scene = scene.value()->render();

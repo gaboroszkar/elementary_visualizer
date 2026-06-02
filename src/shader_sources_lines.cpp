@@ -6,8 +6,9 @@ const GlShaderSource &lines_vertex_shader_source()
 {
     static GlShaderSource source(
         GL_VERTEX_SHADER,
-        std::string(SHADER_HEADER
-                    R"(
+        std::string(
+            SHADER_HEADER
+            R"(
 
 uniform mat4 model;
 uniform mat4 view;
@@ -25,7 +26,8 @@ void main()
     color_out = color_in;
 }
 
-)")
+)"
+        )
     );
     return source;
 }
@@ -34,8 +36,9 @@ const GlShaderSource &lines_geometry_shader_source()
 {
     static GlShaderSource source(
         GL_GEOMETRY_SHADER,
-        std::string(SHADER_HEADER
-                    R"(
+        std::string(
+            SHADER_HEADER
+            R"(
 layout (lines_adjacency) in;
 layout (triangle_strip, max_vertices = 12 + 2 * 3 * 10) out;
 
@@ -304,7 +307,8 @@ void main()
     }
 }
 
-)")
+)"
+        )
     );
     return source;
 }
@@ -313,8 +317,9 @@ const GlShaderSource &lines_fragment_shader_source()
 {
     static GlShaderSource source(
         GL_FRAGMENT_SHADER,
-        std::string(SHADER_HEADER
-                    R"(
+        std::string(
+            SHADER_HEADER
+            R"(
 
 layout (location = 0) in vec4 color_in;
 
@@ -328,7 +333,8 @@ void main()
     color_out = color_in;
 }
 
-)")
+)"
+        )
     );
     return source;
 }

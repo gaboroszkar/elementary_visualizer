@@ -6,8 +6,9 @@ const GlShaderSource &surface_vertex_shader_source()
 {
     static GlShaderSource source(
         GL_VERTEX_SHADER,
-        std::string(SHADER_HEADER
-                    R"(
+        std::string(
+            SHADER_HEADER
+            R"(
 
 uniform mat4 model;
 uniform mat4 view;
@@ -73,7 +74,8 @@ void main()
     normal_out = normalize(get_normal_model(model) * normal);
 }
 
-)")
+)"
+        )
     );
     return source;
 }
@@ -82,8 +84,9 @@ const GlShaderSource &surface_fragment_shader_source()
 {
     static GlShaderSource source(
         GL_FRAGMENT_SHADER,
-        std::string(SHADER_HEADER
-                    R"(
+        std::string(
+            SHADER_HEADER
+            R"(
 
 uniform vec3 eye;
 uniform vec3 light_position;
@@ -129,7 +132,8 @@ void main()
     color_out = vec4((ambient_color + diffuse + specular) * color_in.rgb, color_in.a);
 }
 
-)")
+)"
+        )
     );
     return source;
 }

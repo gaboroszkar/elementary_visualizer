@@ -61,8 +61,8 @@ private:
         const std::map<std::string, GLint> &uniform_locations
     );
 
-    static std::map<std::string, GLint> generate_uniform_locations(GLuint index
-    );
+    static std::map<std::string, GLint>
+        generate_uniform_locations(GLuint index);
 
     std::shared_ptr<WrappedGlfwWindow> glfw_window;
     const GLuint index;

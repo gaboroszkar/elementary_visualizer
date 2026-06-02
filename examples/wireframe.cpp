@@ -103,7 +103,8 @@ int main(int, char **)
     const int width = (width_half * 2 + 1);
 
     // Creating all the horizontal and vertical lines.
-    std::vector<std::array<std::shared_ptr<ev::LinesVisual>, 2>> all_lines(width
+    std::vector<std::array<std::shared_ptr<ev::LinesVisual>, 2>> all_lines(
+        width
     );
     for (auto &lines_pair : all_lines)
     {

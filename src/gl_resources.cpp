@@ -161,7 +161,8 @@ Expected<std::shared_ptr<GlFramebuffer>, Error>
     glGenFramebuffers(1, &index);
     glBindFramebuffer(GL_FRAMEBUFFER, index);
 
-    return std::shared_ptr<GlFramebuffer>(new GlFramebuffer(glfw_window, index)
+    return std::shared_ptr<GlFramebuffer>(
+        new GlFramebuffer(glfw_window, index)
     );
 }
 
@@ -285,7 +286,8 @@ Expected<std::shared_ptr<GlVertexArray>, Error>
 
     GLuint index;
     glGenVertexArrays(1, &index);
-    return std::shared_ptr<GlVertexArray>(new GlVertexArray(glfw_window, index)
+    return std::shared_ptr<GlVertexArray>(
+        new GlVertexArray(glfw_window, index)
     );
 }
 

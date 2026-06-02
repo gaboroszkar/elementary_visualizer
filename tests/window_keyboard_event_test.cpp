@@ -119,6 +119,7 @@ void emulate_key_event(
     GLFWwindow *glfw_window, int key, int scancode, int action, int mods
 )
 {
-    glfw_get_key_callback(glfw_window
-    )(glfw_window, key, scancode, action, mods);
+    glfw_get_key_callback(glfw_window)(
+        glfw_window, key, scancode, action, mods
+    );
 }

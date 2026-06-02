@@ -24,7 +24,8 @@ public:
         const glm::uvec2 &scene_size, const DepthPeelingData &depth_peeling_data
     ) const;
 
-    void set_linesegments_data(const std::vector<Linesegment> &linesegments_data
+    void set_linesegments_data(
+        const std::vector<Linesegment> &linesegments_data
     );
 
     Impl(Impl &&other) = delete;

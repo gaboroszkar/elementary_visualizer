@@ -90,9 +90,9 @@ int main(int, char **)
     const int width_half = 8;
     const size_t width = (width_half * 2 + 1);
 
-    auto surface =
-        ev::SurfaceVisual::create(ev::SurfaceData(std::vector<ev::Vertex>(), 0)
-        );
+    auto surface = ev::SurfaceVisual::create(
+        ev::SurfaceData(std::vector<ev::Vertex>(), 0)
+    );
     if (!surface)
         return EXIT_FAILURE;
     surface.value()->set_diffuse_color(glm::vec3(0.75f));

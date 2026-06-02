@@ -15,53 +15,83 @@ int main(int, char **)
         return EXIT_FAILURE;
 
     std::vector<ev::Vertex> vertex_data;
-    vertex_data.push_back(ev::Vertex(
-        glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)
-    ));
-    vertex_data.push_back(ev::Vertex(
-        glm::vec3(-1.0f, 1.0f, 0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)
-    ));
-    vertex_data.push_back(ev::Vertex(
-        glm::vec3(+0.0f, 1.0f, 0.1f), glm::vec4(0.0f, 1.0f, 1.0f, 1.0f)
-    ));
-    vertex_data.push_back(ev::Vertex(
-        glm::vec3(+1.0f, 1.0f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)
-    ));
-    vertex_data.push_back(ev::Vertex(
-        glm::vec3(+2.0f, 1.0f, 0.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f)
-    ));
+    vertex_data.push_back(
+        ev::Vertex(
+            glm::vec3(-2.0f, 1.0f, 0.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)
+        )
+    );
+    vertex_data.push_back(
+        ev::Vertex(
+            glm::vec3(-1.0f, 1.0f, 0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)
+        )
+    );
+    vertex_data.push_back(
+        ev::Vertex(
+            glm::vec3(+0.0f, 1.0f, 0.1f), glm::vec4(0.0f, 1.0f, 1.0f, 1.0f)
+        )
+    );
+    vertex_data.push_back(
+        ev::Vertex(
+            glm::vec3(+1.0f, 1.0f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)
+        )
+    );
+    vertex_data.push_back(
+        ev::Vertex(
+            glm::vec3(+2.0f, 1.0f, 0.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f)
+        )
+    );
 
-    vertex_data.push_back(ev::Vertex(
-        glm::vec3(-2.0f, 0.0f, 0.0f), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)
-    ));
-    vertex_data.push_back(ev::Vertex(
-        glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)
-    ));
-    vertex_data.push_back(ev::Vertex(
-        glm::vec3(+0.0f, 0.0f, 0.5f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)
-    ));
-    vertex_data.push_back(ev::Vertex(
-        glm::vec3(+1.0f, 0.0f, 0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)
-    ));
-    vertex_data.push_back(ev::Vertex(
-        glm::vec3(+2.0f, 0.0f, 0.0f), glm::vec4(0.0f, 1.0f, 1.0f, 1.0f)
-    ));
+    vertex_data.push_back(
+        ev::Vertex(
+            glm::vec3(-2.0f, 0.0f, 0.0f), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)
+        )
+    );
+    vertex_data.push_back(
+        ev::Vertex(
+            glm::vec3(-1.0f, 0.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)
+        )
+    );
+    vertex_data.push_back(
+        ev::Vertex(
+            glm::vec3(+0.0f, 0.0f, 0.5f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)
+        )
+    );
+    vertex_data.push_back(
+        ev::Vertex(
+            glm::vec3(+1.0f, 0.0f, 0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)
+        )
+    );
+    vertex_data.push_back(
+        ev::Vertex(
+            glm::vec3(+2.0f, 0.0f, 0.0f), glm::vec4(0.0f, 1.0f, 1.0f, 1.0f)
+        )
+    );
 
-    vertex_data.push_back(ev::Vertex(
-        glm::vec3(-2.0f, -1.0f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)
-    ));
-    vertex_data.push_back(ev::Vertex(
-        glm::vec3(-1.0f, -1.0f, 0.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f)
-    ));
-    vertex_data.push_back(ev::Vertex(
-        glm::vec3(+0.0f, -1.0f, 0.2f), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)
-    ));
-    vertex_data.push_back(ev::Vertex(
-        glm::vec3(+1.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)
-    ));
-    vertex_data.push_back(ev::Vertex(
-        glm::vec3(+2.0f, -1.0f, 0.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)
-    ));
+    vertex_data.push_back(
+        ev::Vertex(
+            glm::vec3(-2.0f, -1.0f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f)
+        )
+    );
+    vertex_data.push_back(
+        ev::Vertex(
+            glm::vec3(-1.0f, -1.0f, 0.0f), glm::vec4(1.0f, 0.0f, 1.0f, 1.0f)
+        )
+    );
+    vertex_data.push_back(
+        ev::Vertex(
+            glm::vec3(+0.0f, -1.0f, 0.2f), glm::vec4(1.0f, 1.0f, 0.0f, 1.0f)
+        )
+    );
+    vertex_data.push_back(
+        ev::Vertex(
+            glm::vec3(+1.0f, -1.0f, 0.0f), glm::vec4(1.0f, 1.0f, 1.0f, 1.0f)
+        )
+    );
+    vertex_data.push_back(
+        ev::Vertex(
+            glm::vec3(+2.0f, -1.0f, 0.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f)
+        )
+    );
 
     const size_t u_size = 5;
 

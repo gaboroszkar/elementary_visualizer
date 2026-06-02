@@ -188,21 +188,33 @@ glm::vec3
 
     glm::vec3 normal(0.0f);
     if (u > 0 && v > 0)
-        normal += glm::normalize(glm::cross(
-            p - this->get_position(u - 1, v), this->get_position(u, v - 1) - p
-        ));
+        normal += glm::normalize(
+            glm::cross(
+                p - this->get_position(u - 1, v),
+                this->get_position(u, v - 1) - p
+            )
+        );
     if ((u + 1) < this->u_size && v > 0)
-        normal += glm::normalize(glm::cross(
-            p - this->get_position(u, v - 1), this->get_position(u + 1, v) - p
-        ));
+        normal += glm::normalize(
+            glm::cross(
+                p - this->get_position(u, v - 1),
+                this->get_position(u + 1, v) - p
+            )
+        );
     if ((u + 1) < this->u_size && (v + 1) < v_size)
-        normal += glm::normalize(glm::cross(
-            p - this->get_position(u + 1, v), this->get_position(u, v + 1) - p
-        ));
+        normal += glm::normalize(
+            glm::cross(
+                p - this->get_position(u + 1, v),
+                this->get_position(u, v + 1) - p
+            )
+        );
     if (u > 0 && (v + 1) < v_size)
-        normal += glm::normalize(glm::cross(
-            p - this->get_position(u, v + 1), this->get_position(u - 1, v) - p
-        ));
+        normal += glm::normalize(
+            glm::cross(
+                p - this->get_position(u, v + 1),
+                this->get_position(u - 1, v) - p
+            )
+        );
 
     return glm::normalize(normal);
 }

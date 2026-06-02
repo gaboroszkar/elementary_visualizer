@@ -70,15 +70,15 @@ void LinesegmentsVisual::Impl::set_linesegments_data(
     this->linesegments->set_linesegments_data(linesegments_data);
 }
 
-LinesegmentsVisual::Impl::~Impl(){};
+LinesegmentsVisual::Impl::~Impl() {};
 
 Expected<std::shared_ptr<LinesegmentsVisual>, Error> LinesegmentsVisual::create(
     const std::vector<Linesegment> &linesegments_data, const LineCap cap
 )
 {
     return Entity::ensure_initialized_and_get().and_then(
-        [&linesegments_data, &cap](std::shared_ptr<Entity> entity
-        ) -> Expected<std::shared_ptr<LinesegmentsVisual>, Error>
+        [&linesegments_data, &cap](std::shared_ptr<Entity> entity)
+            -> Expected<std::shared_ptr<LinesegmentsVisual>, Error>
         {
             Expected<std::shared_ptr<GlLinesegments>, Error> linesegments =
                 entity->create_linesegments(linesegments_data);
@@ -212,15 +212,15 @@ void LinesVisual::Impl::set_lines_data(const std::vector<Vertex> &lines_data)
     this->lines->set_lines_data(lines_data);
 }
 
-LinesVisual::Impl::~Impl(){};
+LinesVisual::Impl::~Impl() {};
 
 Expected<std::shared_ptr<LinesVisual>, Error> LinesVisual::create(
     const std::vector<Vertex> &lines_data, const float width, const LineCap cap
 )
 {
     return Entity::ensure_initialized_and_get().and_then(
-        [&lines_data, &width, &cap](std::shared_ptr<Entity> entity
-        ) -> Expected<std::shared_ptr<LinesVisual>, Error>
+        [&lines_data, &width, &cap](std::shared_ptr<Entity> entity)
+            -> Expected<std::shared_ptr<LinesVisual>, Error>
         {
             Expected<std::shared_ptr<GlLines>, Error> lines =
                 entity->create_lines(lines_data);
@@ -232,7 +232,8 @@ Expected<std::shared_ptr<LinesVisual>, Error> LinesVisual::create(
                     entity, lines.value(), width, cap
                 )
             );
-            return std::shared_ptr<LinesVisual>(new LinesVisual(std::move(impl))
+            return std::shared_ptr<LinesVisual>(
+                new LinesVisual(std::move(impl))
             );
         }
     );
@@ -365,14 +366,14 @@ void SurfaceVisual::Impl::set_surface_data(const SurfaceData &surface_data)
     this->surface->set_surface_data(surface_data);
 }
 
-SurfaceVisual::Impl::~Impl(){};
+SurfaceVisual::Impl::~Impl() {};
 
 Expected<std::shared_ptr<SurfaceVisual>, Error>
     SurfaceVisual::create(const SurfaceData &surface_data)
 {
     return Entity::ensure_initialized_and_get().and_then(
-        [&surface_data](std::shared_ptr<Entity> entity
-        ) -> Expected<std::shared_ptr<SurfaceVisual>, Error>
+        [&surface_data](std::shared_ptr<Entity> entity)
+            -> Expected<std::shared_ptr<SurfaceVisual>, Error>
         {
             Expected<std::shared_ptr<GlSurface>, Error> surface =
                 entity->create_surface(surface_data);
@@ -508,20 +509,21 @@ void CircleVisual::Impl::render(
     this->entity->circle->render(false);
 }
 
-CircleVisual::Impl::~Impl(){};
+CircleVisual::Impl::~Impl() {};
 
 Expected<std::shared_ptr<CircleVisual>, Error>
     CircleVisual::create(const glm::vec4 &color)
 {
     return Entity::ensure_initialized_and_get().and_then(
-        [&color](std::shared_ptr<Entity> entity
-        ) -> Expected<std::shared_ptr<CircleVisual>, Error>
+        [&color](std::shared_ptr<Entity> entity)
+            -> Expected<std::shared_ptr<CircleVisual>, Error>
         {
             std::unique_ptr<CircleVisual::Impl> impl(
                 std::make_unique<CircleVisual::Impl>(entity, color)
             );
-            return std::shared_ptr<CircleVisual>(new CircleVisual(std::move(impl
-            )));
+            return std::shared_ptr<CircleVisual>(
+                new CircleVisual(std::move(impl))
+            );
         }
     );
 }

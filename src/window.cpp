@@ -73,7 +73,10 @@ void Window::Impl::render(
                 +scene_aspect / window_aspect
             );
         }
-        else if ((render_mode == RenderMode::fill && window_aspect <= scene_aspect) || (render_mode == RenderMode::fit && window_aspect > scene_aspect))
+        else if ((render_mode == RenderMode::fill &&
+                  window_aspect <= scene_aspect) ||
+                 (render_mode == RenderMode::fit &&
+                  window_aspect > scene_aspect))
         {
             projection =
                 glm::ortho(-window_aspect, +window_aspect, -1.0f, +1.0f);
@@ -119,10 +122,11 @@ void Window::Impl::on_keyboard_event(
             [function](int key, int, int action, int mods) -> void
         {
             if (function)
-                function.value(
-                )(static_cast<EventAction>(action),
-                  static_cast<Key>(key),
-                  static_cast<ModifierKey>(mods));
+                function.value()(
+                    static_cast<EventAction>(action),
+                    static_cast<Key>(key),
+                    static_cast<ModifierKey>(mods)
+                );
         };
     }
 }
@@ -138,10 +142,11 @@ void Window::Impl::on_mouse_button_event(
             [function](int button, int action, int mods) -> void
         {
             if (function)
-                function.value(
-                )(static_cast<EventAction>(action),
-                  static_cast<MouseButton>(button),
-                  static_cast<ModifierKey>(mods));
+                function.value()(
+                    static_cast<EventAction>(action),
+                    static_cast<MouseButton>(button),
+                    static_cast<ModifierKey>(mods)
+                );
         };
     }
 }
@@ -166,7 +171,7 @@ glm::uvec2 Window::Impl::get_size() const
     return this->glfw_window->get_window_size();
 }
 
-Window::Impl::~Impl(){};
+Window::Impl::~Impl() {};
 
 Expected<std::shared_ptr<Window>, Error> Window::create(
     const std::string &title, const glm::uvec2 &size, const bool resizable
@@ -189,9 +194,11 @@ Expected<std::shared_ptr<Window>, Error> Window::create(
     if (!quad)
         return Unexpected<Error>(Error());
 
-    std::unique_ptr<Window::Impl> impl(std::make_unique<Impl>(
-        entity.value(), glfw_window.value(), quad.value()
-    ));
+    std::unique_ptr<Window::Impl> impl(
+        std::make_unique<Impl>(
+            entity.value(), glfw_window.value(), quad.value()
+        )
+    );
 
     return std::shared_ptr<Window>(new Window(std::move(impl)));
 }

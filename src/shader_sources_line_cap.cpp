@@ -19,8 +19,9 @@ const GlShaderSource &line_cap_geometry_shader_source()
 {
     static GlShaderSource source(
         GL_GEOMETRY_SHADER,
-        std::string(SHADER_HEADER
-                    R"(
+        std::string(
+            SHADER_HEADER
+            R"(
 
 void emit_vertex(vec4 v, vec4 color);
 
@@ -66,7 +67,8 @@ void emit_line_cap(int cap, vec4 p0, vec4 p1, float width, vec4 color)
     }
 }
 
-)")
+)"
+        )
     );
     return source;
 }

@@ -14,10 +14,12 @@ std::vector<ev::Vertex> generate_lines_data(
         const float t = static_cast<float>(i) / (n - 1);
         const float phi =
             (turn_0 + t * (turn_1 - turn_0)) * 2.0f * std::numbers::pi;
-        lines_data.push_back(ev::Vertex(
-            glm::vec3(radius * cosf(phi), radius * sinf(phi), 0.0f),
-            glm::vec4((1.0f - t), t, 1.0f, 1.0f)
-        ));
+        lines_data.push_back(
+            ev::Vertex(
+                glm::vec3(radius * cosf(phi), radius * sinf(phi), 0.0f),
+                glm::vec4((1.0f - t), t, 1.0f, 1.0f)
+            )
+        );
     }
     return lines_data;
 }

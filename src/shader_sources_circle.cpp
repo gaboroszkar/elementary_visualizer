@@ -6,8 +6,9 @@ const GlShaderSource &circle_vertex_shader_source()
 {
     static GlShaderSource source(
         GL_VERTEX_SHADER,
-        std::string(SHADER_HEADER
-                    R"(
+        std::string(
+            SHADER_HEADER
+            R"(
 
 uniform mat4 model;
 uniform mat4 view;
@@ -20,7 +21,8 @@ void main()
     gl_Position = projection * view * model * vec4(position_in, 1.0f);
 }
 
-)")
+)"
+        )
     );
     return source;
 }
@@ -29,8 +31,9 @@ const GlShaderSource &circle_fragment_shader_source()
 {
     static GlShaderSource source(
         GL_FRAGMENT_SHADER,
-        std::string(SHADER_HEADER
-                    R"(
+        std::string(
+            SHADER_HEADER
+            R"(
 
 uniform vec4 color;
 
@@ -45,7 +48,8 @@ void main()
     color_out = color;
 }
 
-)")
+)"
+        )
     );
     return source;
 }

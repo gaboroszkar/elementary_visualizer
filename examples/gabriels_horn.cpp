@@ -91,9 +91,11 @@ int main(int, char **)
 
     const size_t u_size = 50;
 
-    auto surface = ev::SurfaceVisual::create(ev::SurfaceData(
-        generate_surface_data(u_size), u_size, ev::SurfaceMode::smooth
-    ));
+    auto surface = ev::SurfaceVisual::create(
+        ev::SurfaceData(
+            generate_surface_data(u_size), u_size, ev::SurfaceMode::smooth
+        )
+    );
     if (!surface)
         return EXIT_FAILURE;
     surface.value()->set_diffuse_color(glm::vec3(0.5f));

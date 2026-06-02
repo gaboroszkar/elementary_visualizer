@@ -117,15 +117,19 @@ int main(int, char **)
     std::vector<ev::Linesegment> square_linesegments_data;
     const float square_length = 30.0f;
     for (int x = -1; x != 3; x += 2)
-        square_linesegments_data.push_back(ev::Linesegment(
-            square_vertex(glm::vec2(square_length * x, -square_length)),
-            square_vertex(glm::vec2(square_length * x, square_length))
-        ));
+        square_linesegments_data.push_back(
+            ev::Linesegment(
+                square_vertex(glm::vec2(square_length * x, -square_length)),
+                square_vertex(glm::vec2(square_length * x, square_length))
+            )
+        );
     for (int y = -1; y != 3; y += 2)
-        square_linesegments_data.push_back(ev::Linesegment(
-            square_vertex(glm::vec2(-square_length, square_length * y)),
-            square_vertex(glm::vec2(square_length, square_length * y))
-        ));
+        square_linesegments_data.push_back(
+            ev::Linesegment(
+                square_vertex(glm::vec2(-square_length, square_length * y)),
+                square_vertex(glm::vec2(square_length, square_length * y))
+            )
+        );
     auto square = ev::LinesegmentsVisual::create(square_linesegments_data);
     if (!square)
         return EXIT_FAILURE;
