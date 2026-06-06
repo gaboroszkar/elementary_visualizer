@@ -126,7 +126,11 @@ void main()
     vec3 diffuse = diffuse_magnitude * diffuse_color;
 
     vec3 reflection_direction = reflect(-light_direction, normal);
-    float specular_magnitude = pow(max(dot(eye_direction, reflection_direction), 0.0f), shininess);
+    float specular_magnitude = max(dot(eye_direction, reflection_direction), 0.0f);
+    if (shininess > 0.00001f && specular_magnitude > 0.00001f)
+    {
+        specular_magnitude = pow(specular_magnitude, shininess);
+    }
     vec3 specular = specular_magnitude * specular_color;
 
     color_out = vec4((ambient_color + diffuse + specular) * color_in.rgb, color_in.a);
